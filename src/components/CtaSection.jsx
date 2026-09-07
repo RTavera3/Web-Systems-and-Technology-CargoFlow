@@ -5,7 +5,9 @@ export default function CtaSection() {
     <section className="container cta-section">
       <div className="cta">
         <div>
-          <span className="section-kicker">SAME DIRECTION. SHARED AMBITION.</span>
+          <span className="section-kicker">
+            SAME DIRECTION. SHARED AMBITION.
+          </span>
           <h2>
             Let’s move more.
             <br />

@@ -1,7 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Manrope:wght@400;500;600;650;700;750;800&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Manrope:wght@400;500;600;650;700;750;800&display=swap');
 
 :root {
-  font-family: "DM Sans", sans-serif;
+  font-family: 'DM Sans', sans-serif;
   color: #153354;
   background: #fff;
   font-synthesis: none;
@@ -72,7 +72,7 @@ p {
 h1,
 h2,
 h3 {
-  font-family: "Manrope", sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 h2 {
   font-size: 36px;
@@ -124,7 +124,7 @@ p {
   height: 43px;
 }
 .brand > span {
-  font-family: "Manrope", sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -1.4px;
@@ -144,7 +144,7 @@ p {
   color: var(--orange);
 }
 .nav .active:after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 21px;
   width: 17px;
@@ -565,7 +565,7 @@ h1 > span {
   color: #457365;
 }
 .step-number {
-  font-family: "Manrope", sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 35px;
   letter-spacing: -2px;
   color: #d3dbe3;
@@ -612,7 +612,7 @@ h1 > span {
   position: absolute;
   bottom: 10px;
   left: 30px;
-  font-family: "Manrope", sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 28px;
   letter-spacing: -1px;
   line-height: 1.2;
@@ -643,7 +643,7 @@ h1 > span {
 }
 .parcel-back:after,
 .parcel-front:before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   bottom: 0;
@@ -676,7 +676,7 @@ h1 > span {
   z-index: 1;
 }
 .parcel-front strong {
-  font-family: "Manrope", sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 26px;
   color: #173d70;
   letter-spacing: -1.6px;
@@ -807,7 +807,7 @@ h1 > span {
   transform: rotate(-30deg);
 }
 .cta-road:after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 22px;
   border: 2px dashed #ff922d50;

@@ -2,7 +2,10 @@ import Icon from './Icon.jsx';
 
 export default function BenefitStrip() {
   return (
-    <section className="benefit-strip container" aria-label="CargoFlow benefits">
+    <section
+      className="benefit-strip container"
+      aria-label="CargoFlow benefits"
+    >
       <div>
         <Icon name="box" size={24} />
         <span>

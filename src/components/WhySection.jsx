@@ -66,9 +66,9 @@ export default function WhySection() {
             <span>Better for the road.</span>
           </h2>
           <p>
-            There’s opportunity in every empty space. We bring shippers and local
-            carriers together to make deliveries more practical, more connected,
-            and less wasteful.
+            There’s opportunity in every empty space. We bring shippers and
+            local carriers together to make deliveries more practical, more
+            connected, and less wasteful.
           </p>
           <ul>
             {reasons.map((reason) => (

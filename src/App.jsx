@@ -28,7 +28,7 @@ export default function App() {
     setError('');
     setResults(findRoutes({ from, to, weight }));
     requestAnimationFrame(() =>
-      resultsRef.current?.focus({ preventScroll: false })
+      resultsRef.current?.focus({ preventScroll: false }),
     );
   }
 
@@ -43,7 +43,9 @@ export default function App() {
 
   function hideResults() {
     setResults(null);
-    document.getElementById('search-title')?.scrollIntoView({ block: 'center' });
+    document
+      .getElementById('search-title')
+      ?.scrollIntoView({ block: 'center' });
   }
 
   return (
@@ -77,7 +79,11 @@ export default function App() {
             onSearch={search}
             onChooseRoute={chooseRoute}
           />
-          <Results results={results} resultsRef={resultsRef} onHide={hideResults} />
+          <Results
+            results={results}
+            resultsRef={resultsRef}
+            onHide={hideResults}
+          />
         </section>
 
         <BenefitStrip />

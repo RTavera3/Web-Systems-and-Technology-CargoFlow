@@ -2,7 +2,7 @@
 
 # CargoFlow
 
-### *Share the Road. Share the Cost.*
+### _Share the Road. Share the Cost._
 
 **A browser-based cargo-sharing platform for the Philippines** — connecting SMEs, online sellers, manufacturers, independent shippers, and local carriers by matching partial shipments with unused truck capacity.
 
@@ -32,14 +32,14 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 
 ## Key Features
 
-| Feature | Description |
-|---|---|
-| **Smart Matching** | Find compatible shipments and carriers going along the same route |
-| **Cost Sharing** | Split transport costs among multiple shippers sharing one truck |
-| **Cargo Booking** | Reserve available cargo space in a few clicks |
-| **Shipment Tracking** | Monitor shipment status from pickup to delivery |
-| **Direct Messaging** | Communicate with carriers directly inside the platform |
-| **Capacity Utilization** | Help carriers earn more by filling empty truck space |
+| Feature                  | Description                                                       |
+| ------------------------ | ----------------------------------------------------------------- |
+| **Smart Matching**       | Find compatible shipments and carriers going along the same route |
+| **Cost Sharing**         | Split transport costs among multiple shippers sharing one truck   |
+| **Cargo Booking**        | Reserve available cargo space in a few clicks                     |
+| **Shipment Tracking**    | Monitor shipment status from pickup to delivery                   |
+| **Direct Messaging**     | Communicate with carriers directly inside the platform            |
+| **Capacity Utilization** | Help carriers earn more by filling empty truck space              |
 
 ---
 
@@ -57,16 +57,16 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 
 <div align="center">
 
-| Technology | Logo | Purpose |
-|:---:|:---:|:---|
-| **React** | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="48" /> | Component-based UI library for building the interface |
-| **JavaScript (ES6+)** | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="48" /> | Core programming language powering app logic |
-| **HTML5** | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" width="48" /> | Markup and page structure |
-| **CSS3** | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="48" /> | Styling, layout, and responsive design |
-| **React Router** | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/reactrouter/reactrouter-original.svg" width="48" /> | Client-side routing between pages |
-| **Vite** | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vitejs/vitejs-original.svg" width="48" /> | Fast development server and build tool |
-| **npm** | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/npm/npm-original-wordmark.svg" width="48" /> | Package management |
-| **Git & GitHub** | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="48" /> | Version control and collaboration |
+|      Technology       |                                                       Logo                                                       | Purpose                                               |
+| :-------------------: | :--------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------- |
+|       **React**       |       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="48" />       | Component-based UI library for building the interface |
+| **JavaScript (ES6+)** |  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="48" />  | Core programming language powering app logic          |
+|       **HTML5**       |       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" width="48" />       | Markup and page structure                             |
+|       **CSS3**        |        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="48" />        | Styling, layout, and responsive design                |
+|   **React Router**    | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/reactrouter/reactrouter-original.svg" width="48" /> | Client-side routing between pages                     |
+|       **Vite**        |      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vitejs/vitejs-original.svg" width="48" />      | Fast development server and build tool                |
+|        **npm**        |    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/npm/npm-original-wordmark.svg" width="48" />     | Package management                                    |
+|   **Git & GitHub**    |      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="48" />      | Version control and collaboration                     |
 
 </div>
 
@@ -111,9 +111,12 @@ The design follows the supplied CargoFlow brand board: deep blue (`#0B3D91`), sk
 Fonts (DM Sans and Manrope) load from Google Fonts, which receives normal browser request metadata. System sans-serif fallbacks are used when offline; all artwork is local.
 
 ```bash
-npm run build    # Create production assets in dist/
-npm run preview  # Preview the production build locally
-npm test         # Run the route-search unit tests
+npm run build         # Create production assets in dist/
+npm run preview       # Preview the production build locally
+npm test              # Run the Vitest suite (route search + search UI)
+npm run test:watch    # Run tests in watch mode
+npm run lint          # Lint with ESLint
+npm run format        # Format the codebase with Prettier
 ```
 
 ---
@@ -122,19 +125,26 @@ npm test         # Run the route-search unit tests
 
 ```
 Web-Systems-and-Technology-CargoFlow/
+├── .github/workflows/ci.yml  # Lint, test, and build on every push/PR
 ├── public/
-│   ├── cargo-journey.svg   # Local branded truck illustration
-│   └── favicon.svg        # CargoFlow-inspired icon
+│   ├── cargo-journey.svg     # Local branded truck illustration
+│   └── favicon.svg           # CargoFlow-inspired icon
 ├── src/
-│   ├── App.jsx            # Homepage, navigation, search, and results
-│   ├── main.jsx           # React entry point
-│   ├── search.js          # Mock routes and search filtering
-│   ├── search.test.js     # Node.js search unit tests
-│   └── styles.css         # Brand styles and responsive layouts
+│   ├── components/           # Header, Hero, SearchPanel, Results, Footer, ...
+│   ├── test/setup.js         # Vitest + Testing Library setup
+│   ├── App.jsx               # Page composition and search state
+│   ├── App.test.jsx          # Search UI tests (React Testing Library)
+│   ├── main.jsx              # React entry point
+│   ├── search.js             # Mock routes and search filtering
+│   ├── search.test.js        # Route-search unit tests
+│   └── styles.css            # Brand styles and responsive layouts
+├── .nvmrc                    # Node version (22)
+├── eslint.config.js
+├── .prettierrc.json
 ├── index.html
 ├── package.json
 ├── package-lock.json
-└── vite.config.js
+└── vite.config.js            # Vite + Vitest config
 ```
 
 ---
@@ -151,22 +161,22 @@ Web-Systems-and-Technology-CargoFlow/
 
 ## Screenshots
 
-> *Add screenshots of the running app here.*
+> _Add screenshots of the running app here._
 
-| Home | Find Matches | Tracking |
-|:---:|:---:|:---:|
-| *(screenshot)* | *(screenshot)* | *(screenshot)* |
+|      Home      |  Find Matches  |    Tracking    |
+| :------------: | :------------: | :------------: |
+| _(screenshot)_ | _(screenshot)_ | _(screenshot)_ |
 
 ---
 
 ## Team
 
-| Name |
-|---|
-| Armielyn Obinguar |
-| Chantal Louise Flor |
+| Name                  |
+| --------------------- |
+| Armielyn Obinguar     |
+| Chantal Louise Flor   |
 | Mitzi Reese Arrogante |
-| Ryan Keneth Tavera |
+| Ryan Keneth Tavera    |
 
 ---
 

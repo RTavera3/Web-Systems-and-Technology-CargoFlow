@@ -14,15 +14,16 @@ export default function Hero() {
             Greater <span>opportunities.</span>
           </h1>
           <p className="hero-description">
-            Big possibilities don’t need a full truck. Find, book, and share cargo
-            space with people going your way.
+            Big possibilities don’t need a full truck. Find, book, and share
+            cargo space with people going your way.
           </p>
           <div className="hero-actions">
             <a className="button" href="#quick-search">
               Find cargo space <Icon name="arrow" size={18} />
             </a>
             <a className="button button-secondary" href="#how-it-works">
-              <Icon name="play" size={16} fill="currentColor" /> See how it works
+              <Icon name="play" size={16} fill="currentColor" /> See how it
+              works
             </a>
           </div>
           <div className="hero-note">

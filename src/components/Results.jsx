@@ -52,11 +52,12 @@ export default function Results({ results, resultsRef, onHide }) {
       <div className="results-heading">
         <div>
           <h2 id="results-title">
-            {results.length} matching {results.length === 1 ? 'route' : 'routes'}
+            {results.length} matching{' '}
+            {results.length === 1 ? 'route' : 'routes'}
           </h2>
           <p>
-            Sample listings only. Prices are illustrative starting rates, not live
-            quotes.
+            Sample listings only. Prices are illustrative starting rates, not
+            live quotes.
           </p>
         </div>
         <button className="text-link" onClick={onHide}>
