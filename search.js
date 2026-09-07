@@ -1,13 +1,10 @@
-export const cities = [
-  'Manila',
-  'Batangas',
-  'Baguio',
-  'Cebu',
-  'Davao',
-  'Pampanga',
-];
+/* Mock route data and search filtering. Loaded as a classic script so it
+   works from file:// as well as a static server. Exposes `cities`,
+   `routes`, and `findRoutes` as globals for app.js and search.test.js. */
 
-export const routes = [
+const cities = ['Manila', 'Batangas', 'Baguio', 'Cebu', 'Davao', 'Pampanga'];
+
+const routes = [
   {
     id: 1,
     from: 'Manila',
@@ -65,13 +62,13 @@ export const routes = [
   },
 ];
 
-export function findRoutes({ from = '', to = '', weight = '' } = {}) {
+function findRoutes({ from = '', to = '', weight = '' } = {}) {
   const minimumCapacity = Number(weight);
   if (!Number.isFinite(minimumCapacity) || minimumCapacity < 0) return [];
   return routes.filter(
     (route) =>
       (!from || route.from === from) &&
       (!to || route.to === to) &&
-      route.capacity >= minimumCapacity,
+      route.capacity >= minimumCapacity
   );
 }

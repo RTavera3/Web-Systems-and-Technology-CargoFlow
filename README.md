@@ -6,7 +6,6 @@
 
 **A browser-based cargo-sharing platform for the Philippines** — connecting SMEs, online sellers, manufacturers, independent shippers, and local carriers by matching partial shipments with unused truck capacity.
 
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
@@ -53,24 +52,20 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 
 ---
 
-## Tech Stack (Frontend)
+## Tech Stack
 
 <div align="center">
 
-|      Technology       |                                                       Logo                                                       | Purpose                                               |
-| :-------------------: | :--------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------- |
-|       **React**       |       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="48" />       | Component-based UI library for building the interface |
-| **JavaScript (ES6+)** |  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="48" />  | Core programming language powering app logic          |
-|       **HTML5**       |       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" width="48" />       | Markup and page structure                             |
-|       **CSS3**        |        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="48" />        | Styling, layout, and responsive design                |
-|   **React Router**    | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/reactrouter/reactrouter-original.svg" width="48" /> | Client-side routing between pages                     |
-|       **Vite**        |      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vitejs/vitejs-original.svg" width="48" />      | Fast development server and build tool                |
-|        **npm**        |    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/npm/npm-original-wordmark.svg" width="48" />     | Package management                                    |
-|   **Git & GitHub**    |      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="48" />      | Version control and collaboration                     |
+|      Technology       |                                                      Logo                                                      | Purpose                                     |
+| :-------------------: | :----------------------------------------------------------------------------------------------------------: | :------------------------------------------ |
+|       **HTML5**       |      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" width="48" />      | Markup and page structure (`index.html`)    |
+|       **CSS3**        |       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="48" />       | Styling, layout, and responsive design      |
+| **JavaScript (ES6+)** | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="48" /> | Icon rendering, mobile nav, and route search |
+|   **Git & GitHub**    |      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="48" />      | Version control and collaboration           |
 
 </div>
 
-> **Note:** This project focuses on the **frontend only**. Data is handled on the client side (mock data / local state) — no backend server is required to run it.
+> **Note:** No framework, no build step, and no backend. Plain HTML, CSS, and JavaScript. Route data is mock data in `search.js` and all filtering runs in the browser.
 
 ---
 
@@ -78,46 +73,41 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v22 LTS recommended; Vite 6 supports Node 18, 20, and 22+)
-- npm (comes with Node.js)
+- A modern web browser. That's it — no Node.js, no install step.
 
-### Installation
+### Run it
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/armielynobinguar/Web-Systems-and-Technology-CargoFlow.git
-
-# 2. Go to the project folder
 cd Web-Systems-and-Technology-CargoFlow
-git switch landingpage
-
-# 3. Install dependencies
-npm install
-
-# 4. Start the development server
-npm run dev
 ```
 
-Then open the local URL printed by Vite (normally **http://localhost:5173**).
+Then either:
 
-### Landing page
+- **Open `index.html` directly** in your browser, or
+- Serve the folder with any static server for a cleaner URL, e.g.
+  `python3 -m http.server` (then visit **http://localhost:8000**) or the
+  VS Code "Live Server" extension.
 
-The `landingpage` branch implements the Home page with React, JavaScript, CSS, and Vite. It includes responsive navigation, a platform overview, a three-step guide, and an interactive quick search with origin, destination, and optional weight filters. Popular-route shortcuts, location swapping, input validation, and empty results are supported.
+### About the page
+
+`index.html` is the Home page: responsive navigation, a platform overview, a
+three-step guide, and an interactive quick search with origin, destination, and
+optional weight filters. Popular-route shortcuts, location swapping, input
+validation, and empty results are supported. `app.js` renders the icons, drives
+the mobile menu, and runs the search; `search.js` holds the mock route data.
 
 The design follows the supplied CargoFlow brand board: deep blue (`#0B3D91`), sky blue (`#3882F6`), flow orange (`#FF7A00`), sand (`#F4F1EA`), and charcoal (`#1F2937`). The logo is an SVG recreation inspired by the reference; the truck illustration is original local SVG artwork, not an extracted image from the board.
 
-**Prototype scope:** route listings, schedules, capacities, and starting prices are mock data in `src/search.js`. Search runs entirely in the browser; booking, accounts, live tracking, and messaging are not implemented. React Router is planned for future pages; this single-page implementation uses section anchors. No API keys or backend are needed.
+**Prototype scope:** route listings, schedules, capacities, and starting prices are mock data in `search.js`. Search runs entirely in the browser; booking, accounts, live tracking, and messaging are not implemented. Navigation uses in-page section anchors. No API keys or backend are needed.
 
 Fonts (DM Sans and Manrope) load from Google Fonts, which receives normal browser request metadata. System sans-serif fallbacks are used when offline; all artwork is local.
 
-```bash
-npm run build         # Create production assets in dist/
-npm run preview       # Preview the production build locally
-npm test              # Run the Vitest suite (route search + search UI)
-npm run test:watch    # Run tests in watch mode
-npm run lint          # Lint with ESLint
-npm run format        # Format the codebase with Prettier
-```
+### Tests
+
+Open **`tests.html`** in a browser. It runs the route-search assertions
+against `search.js` and prints a pass/fail list on the page (and to the
+console).
 
 ---
 
@@ -125,26 +115,14 @@ npm run format        # Format the codebase with Prettier
 
 ```
 Web-Systems-and-Technology-CargoFlow/
-├── .github/workflows/ci.yml  # Lint, test, and build on every push/PR
-├── public/
-│   ├── cargo-journey.svg     # Local branded truck illustration
-│   └── favicon.svg           # CargoFlow-inspired icon
-├── src/
-│   ├── components/           # Header, Hero, SearchPanel, Results, Footer, ...
-│   ├── test/setup.js         # Vitest + Testing Library setup
-│   ├── App.jsx               # Page composition and search state
-│   ├── App.test.jsx          # Search UI tests (React Testing Library)
-│   ├── main.jsx              # React entry point
-│   ├── search.js             # Mock routes and search filtering
-│   ├── search.test.js        # Route-search unit tests
-│   └── styles.css            # Brand styles and responsive layouts
-├── .nvmrc                    # Node version (22)
-├── eslint.config.js
-├── .prettierrc.json
-├── index.html
-├── package.json
-├── package-lock.json
-└── vite.config.js            # Vite + Vitest config
+├── index.html          # The page: all markup
+├── styles.css          # Brand styles and responsive layouts
+├── app.js              # Icons, mobile nav, and the route search
+├── search.js           # Mock route data and the findRoutes filter
+├── tests.html          # Opens in a browser to run the tests
+├── search.test.js      # Route-search assertions (run by tests.html)
+├── cargo-journey.svg   # Local branded truck illustration
+└── favicon.svg         # CargoFlow-inspired icon
 ```
 
 ---
