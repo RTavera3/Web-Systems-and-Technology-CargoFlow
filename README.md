@@ -78,17 +78,18 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v18 or later recommended)
+- [Node.js](https://nodejs.org/) (v22 LTS recommended; Vite 6 supports Node 18, 20, and 22+)
 - npm (comes with Node.js)
 
 ### Installation
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/cargoflow.git
+git clone https://github.com/armielynobinguar/Web-Systems-and-Technology-CargoFlow.git
 
 # 2. Go to the project folder
-cd cargoflow
+cd Web-Systems-and-Technology-CargoFlow
+git switch landingpage
 
 # 3. Install dependencies
 npm install
@@ -97,34 +98,42 @@ npm install
 npm run dev
 ```
 
-Then open **http://localhost:5173** in your browser.
+Then open the local URL printed by Vite (normally **http://localhost:5173**).
+
+### Landing page
+
+The `landingpage` branch implements the Home page with React, JavaScript, CSS, and Vite. It includes responsive navigation, a platform overview, a three-step guide, and an interactive quick search with origin, destination, and optional weight filters. Popular-route shortcuts, location swapping, input validation, and empty results are supported.
+
+The design follows the supplied CargoFlow brand board: deep blue (`#0B3D91`), sky blue (`#3882F6`), flow orange (`#FF7A00`), sand (`#F4F1EA`), and charcoal (`#1F2937`). The logo is an SVG recreation inspired by the reference; the truck illustration is original local SVG artwork, not an extracted image from the board.
+
+**Prototype scope:** route listings, schedules, capacities, and starting prices are mock data in `src/search.js`. Search runs entirely in the browser; booking, accounts, live tracking, and messaging are not implemented. React Router is planned for future pages; this single-page implementation uses section anchors. No API keys or backend are needed.
+
+Fonts (DM Sans and Manrope) load from Google Fonts, which receives normal browser request metadata. System sans-serif fallbacks are used when offline; all artwork is local.
+
+```bash
+npm run build    # Create production assets in dist/
+npm run preview  # Preview the production build locally
+npm test         # Run the route-search unit tests
+```
 
 ---
 
 ## Project Structure
 
 ```
-cargoflow/
-├── public/                 # Static assets (icons, images)
+Web-Systems-and-Technology-CargoFlow/
+├── public/
+│   ├── cargo-journey.svg   # Local branded truck illustration
+│   └── favicon.svg        # CargoFlow-inspired icon
 ├── src/
-│   ├── assets/             # Logos, illustrations, images
-│   ├── components/         # Reusable UI components
-│   │   ├── Navbar.jsx
-│   │   ├── ShipmentCard.jsx
-│   │   ├── MatchList.jsx
-│   │   └── ChatBox.jsx
-│   ├── pages/              # Page-level components
-│   │   ├── Home.jsx
-│   │   ├── FindMatches.jsx
-│   │   ├── BookCargo.jsx
-│   │   ├── TrackShipment.jsx
-│   │   └── Messages.jsx
-│   ├── data/               # Mock data (routes, carriers, shipments)
-│   ├── styles/             # CSS files
-│   ├── App.jsx             # Root component & routes
-│   └── main.jsx            # Entry point
+│   ├── App.jsx            # Homepage, navigation, search, and results
+│   ├── main.jsx           # React entry point
+│   ├── search.js          # Mock routes and search filtering
+│   ├── search.test.js     # Node.js search unit tests
+│   └── styles.css         # Brand styles and responsive layouts
 ├── index.html
 ├── package.json
+├── package-lock.json
 └── vite.config.js
 ```
 

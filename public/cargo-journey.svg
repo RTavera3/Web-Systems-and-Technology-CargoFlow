@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="720" viewBox="0 0 900 720" role="img" aria-labelledby="title desc">
+  <title id="title">CargoFlow — across the islands</title>
+  <desc id="desc">A white CargoFlow freight truck follows a winding mountain road through tropical Philippine highlands. Layered navy peaks, palms and warm sunset light frame its orange and navy livery.</desc>
+  <defs>
+    <linearGradient id="sky" x2="0.3" y2="1"><stop stop-color="#e7d8c1"/><stop offset=".55" stop-color="#f3dfbd"/><stop offset="1" stop-color="#efb781"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#ffdc9b" stop-opacity=".9"/><stop offset="1" stop-color="#ffcf8d" stop-opacity="0"/></radialGradient>
+    <linearGradient id="sun" x2="0" y2="1"><stop stop-color="#ffd08b"/><stop offset="1" stop-color="#ed8b50"/></linearGradient>
+    <linearGradient id="far" x2="0" y2="1"><stop stop-color="#73868a"/><stop offset="1" stop-color="#a2a7a0"/></linearGradient>
+    <linearGradient id="mountain" x2=".8" y2="1"><stop stop-color="#345360"/><stop offset="1" stop-color="#172e41"/></linearGradient>
+    <linearGradient id="near" x2=".7" y2="1"><stop stop-color="#24444a"/><stop offset="1" stop-color="#112c3c"/></linearGradient>
+    <linearGradient id="road" x1=".3" y1="0" x2=".6" y2="1"><stop stop-color="#82837a"/><stop offset=".45" stop-color="#58616a"/><stop offset="1" stop-color="#253849"/></linearGradient>
+    <linearGradient id="trailer" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#fffdf4"/><stop offset=".5" stop-color="#f3f3ec"/><stop offset="1" stop-color="#c6d1d0"/></linearGradient>
+    <linearGradient id="cab" x2=".75" y2="1"><stop stop-color="#fffaf0"/><stop offset=".45" stop-color="#edf0e9"/><stop offset="1" stop-color="#b2c4c8"/></linearGradient>
+    <linearGradient id="front" x2="1" y2=".7"><stop stop-color="#f6f6ec"/><stop offset="1" stop-color="#a8bdc4"/></linearGradient>
+    <linearGradient id="glass" x2=".7" y2="1"><stop stop-color="#102d42"/><stop offset=".55" stop-color="#345563"/><stop offset="1" stop-color="#6a8589"/></linearGradient>
+    <linearGradient id="orange" x2="1" y2="1"><stop stop-color="#ffb267"/><stop offset="1" stop-color="#e7753e"/></linearGradient>
+    <radialGradient id="tire"><stop stop-color="#3e4c54"/><stop offset=".63" stop-color="#152432"/><stop offset="1" stop-color="#0b1a27"/></radialGradient>
+    <radialGradient id="rim"><stop stop-color="#d2dcda"/><stop offset=".4" stop-color="#718590"/><stop offset=".65" stop-color="#c2cfce"/><stop offset="1" stop-color="#536772"/></radialGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="9"/></filter>
+    <clipPath id="frame"><rect width="900" height="720" rx="32"/></clipPath>
+    <g id="wheel"><ellipse rx="23" ry="34" fill="url(#tire)"/><ellipse rx="17" ry="27" fill="none" stroke="#41505a" stroke-width="1.5"/><ellipse rx="11.5" ry="20" fill="url(#rim)"/><ellipse rx="5" ry="9" fill="#344957"/><path d="M0-16V-11M0 11V16M-8-8L-5-5M5 5L8 8M8-8L5-5M-5 5L-8 8" stroke="#edf0e7" stroke-width="2"/></g>
+    <g id="palm" fill="#284a48"><path d="M-3 0Q5-57 0-113L5-113Q13-58 5 0Z"/><path d="M3-111Q-23-144-52-117Q-24-129 3-107Q-29-125-62-94Q-25-110 3-105Q-17-103-32-68Q-12-91 4-105Q17-142 45-134Q21-128 5-106Q40-134 63-108Q35-117 7-104Q39-110 49-77Q30-97 6-103Q7-131-7-145Q-2-123 3-111Z"/></g>
+  </defs>
+  <g clip-path="url(#frame)">
+    <path fill="url(#sky)" d="M0 0H900V720H0Z"/>
+    <ellipse cx="663" cy="191" rx="269" ry="237" fill="url(#glow)"/>
+    <circle cx="663" cy="188" r="64" fill="url(#sun)"/>
+    <g fill="none" stroke="#fff6e4" stroke-linecap="round" opacity=".44"><path d="M62 114H225M103 126H269" stroke-width="3"/><path d="M717 89H829M761 100H858" stroke-width="2"/><path d="M440 185H547" stroke-width="2"/></g>
+    <path d="M0 314L57 277 94 290 158 218 181 232 226 169 263 221 296 238 333 289 380 253 412 278 469 237 507 267 559 218 597 251 638 226 694 264 737 232 779 268 832 227 900 275V485H0Z" fill="url(#far)"/>
+    <path d="M123 283L226 169 263 221 245 212 228 192 213 236 187 247 171 273Z" fill="#d8c6a6" opacity=".24"/>
+    <path d="M0 374L72 340 127 359 184 327 243 357 294 318 344 340 398 305 442 343 489 299 538 341 586 287 630 318 678 282 728 322 785 287 835 318 900 292V506H0Z" fill="#60777a"/>
+    <path d="M0 289L51 264 94 215 121 245 149 270 178 333 220 354 251 397 302 413 351 400 406 425 453 430 494 413 535 429 591 387 631 390 681 345 724 359 782 312 824 323 861 291 900 315V574H0Z" fill="url(#mountain)"/>
+    <path d="M0 319L51 285 94 215 88 274 116 290 142 343 176 362 202 400 145 370 113 338 76 330 42 359Z" fill="#496762" opacity=".5"/>
+    <path d="M621 424L681 345 724 359 782 312 754 363 726 379 710 404 674 412Z" fill="#718275" opacity=".25"/>
+    <path d="M0 440Q83 397 157 438T303 454Q357 454 403 434Q449 413 498 430Q559 449 615 429Q735 386 900 421V720H0Z" fill="#49645a"/>
+    <path d="M0 485Q98 443 203 485T395 472Q446 448 479 448Q388 467 351 500Q286 542 182 548T0 596Z" fill="#6c7e64"/>
+    <g fill="none" stroke="#b5af83" opacity=".25" stroke-width="2"><path d="M14 494Q119 466 212 502T365 489"/><path d="M0 511Q105 481 199 519T340 509"/><path d="M0 531Q113 495 189 535"/></g>
+    <!-- The road narrows into a switchback beneath the distant ridge. -->
+    <path d="M457 431C537 434 554 454 490 473C416 495 332 497 326 520C314 556 582 544 683 576C788 609 839 678 920 720H92C136 662 266 617 376 592C467 571 484 570 413 556C316 538 263 531 290 507C324 478 447 482 488 458C505 448 487 439 457 435Z" fill="#c6b797"/>
+    <path d="M457 433C522 438 541 453 483 471C408 494 322 495 311 519C293 556 565 548 667 583C760 615 811 677 887 720H123C170 664 283 623 390 598C493 574 507 566 419 550C332 534 279 530 301 509C333 482 451 481 494 458C512 448 488 438 457 435Z" fill="url(#road)"/>
+    <path d="M501 453C494 471 389 487 349 503C286 532 444 542 502 565C581 596 357 626 267 720" fill="none" stroke="#eed7a7" stroke-width="4" stroke-dasharray="39 29"/>
+    <path d="M134 718C185 664 282 629 391 603" fill="none" stroke="#ece1c5" stroke-width="3" opacity=".7"/>
+    <path d="M666 590Q787 641 869 720" fill="none" stroke="#eee1c4" stroke-width="4" opacity=".7"/>
+    <path d="M0 583Q99 550 180 562Q268 571 299 590Q174 628 99 720H0Z" fill="url(#near)"/>
+    <path d="M703 472Q809 419 900 451V720Q830 630 735 596Q711 549 703 472Z" fill="url(#near)"/>
+    <g fill="#52715c" opacity=".65"><path d="M746 520l14-40 5 29 16-22-7 36Z"/><path d="M795 565l-1-34 11 20 18-34-7 40Z"/><path d="M45 629l-5-41 18 30 13-48 3 47 22-24-12 37Z"/><path d="M133 595l9-26 5 18 14-16-5 24Z"/></g>
+    <use href="#palm" transform="translate(82 468) rotate(-9) scale(1.04)"/>
+    <use href="#palm" transform="translate(126 476) rotate(9) scale(.72)"/>
+    <use href="#palm" transform="translate(840 466) rotate(8) scale(.94)"/>
+    <use href="#palm" transform="translate(884 477) rotate(15) scale(.68)"/>
+    <g fill="none" stroke="#304956" stroke-width="2" stroke-linecap="round"><path d="M473 158q8-8 16 0q8-8 16 0"/><path d="M523 136q5-5 10 0q5-5 10 0"/><path d="M424 182q5-5 10 0q5-5 10 0"/></g>
+    <!-- Truck: a three-quarter view with a long, sunlit trailer flank. -->
+    <ellipse cx="543" cy="608" rx="223" ry="32" fill="#081e2b" opacity=".4" filter="url(#blur)" transform="rotate(9 543 608)"/>
+    <path d="M337 510L610 550 730 541 746 586 683 610 351 552Z" fill="#142c3c"/>
+    <path d="M357 541L593 580 595 591 355 550Z" fill="#61747a"/>
+    <use href="#wheel" transform="translate(382 550) rotate(-8)"/>
+    <use href="#wheel" transform="translate(430 559) rotate(-8)"/>
+    <use href="#wheel" transform="translate(636 585) rotate(-8)"/>
+    <use href="#wheel" transform="translate(715 576) rotate(-8) scale(.87)"/>
+    <path d="M316 335L566 372 566 553 320 512Q314 511 314 504V343Q314 337 316 335Z" fill="url(#trailer)"/>
+    <path d="M316 335L368 311 618 346 566 372Z" fill="#fff9e8"/>
+    <path d="M566 372L618 346V520L566 553Z" fill="#8fa7ae"/>
+    <path d="M324 342L559 377V540L324 504Z" fill="none" stroke="#d1d8d3" stroke-width="2"/>
+    <path d="M316 335L566 372 618 346" fill="none" stroke="#fffdf2" stroke-width="3"/>
+    <path d="M322 493L560 529V540L322 505Z" fill="#203c50"/>
+    <path d="M322 489L560 525V530L322 494Z" fill="url(#orange)"/>
+    <g fill="#819398"><circle cx="325" cy="354" r="1.3"/><circle cx="325" cy="478" r="1.3"/><circle cx="554" cy="385" r="1.3"/><circle cx="554" cy="515" r="1.3"/></g>
+    <g transform="matrix(1 .151 0 1 347 393)">
+      <path d="M0 10L19 0H43L32 12H22L12 18V31L22 37H34L22 49 0 36Z" fill="#19384c"/>
+      <path d="M26 17H49L38 29H15Z" fill="url(#orange)"/>
+      <text x="58" y="32" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="700" letter-spacing="-.9" fill="#19384c">Cargo<tspan fill="#e88345">Flow</tspan></text>
+      <path d="M59 43H179" stroke="#9eaeaa" stroke-width="1"/>
+    </g>
+    <path d="M334 518L349 520V525L334 523ZM474 539L490 542V547L474 544ZM539 549L553 551V556L539 554Z" fill="#ffae65"/>
+    <path d="M565 423L585 391Q589 385 599 387L650 395 698 430 724 490 743 512 746 580 683 610 667 597 654 551 611 554 601 580 567 572Z" fill="url(#cab)"/>
+    <path d="M585 391L623 369Q631 366 640 370L682 383 711 411 698 430 650 395 599 387Z" fill="#fff8e7"/>
+    <path d="M650 395L698 430 711 411 682 383Z" fill="#dce4df"/>
+    <path d="M698 430L724 490 743 512 746 580 683 610 681 531 662 470 650 395Z" fill="url(#front)"/>
+    <path d="M590 410L631 417 651 467 586 457Z" fill="url(#glass)" stroke="#71878d" stroke-width="3"/>
+    <path d="M662 424L691 444 710 489 676 479Z" fill="url(#glass)" stroke="#536f7c" stroke-width="3"/>
+    <path d="M595 413L609 415 591 451 588 450Z" fill="#b5d0cd" opacity=".36"/>
+    <path d="M666 431L688 447 693 458 672 448Z" fill="#d2e0d3" opacity=".26"/>
+    <path d="M624 419L643 465" fill="none" stroke="#182f40" stroke-width="3"/>
+    <path d="M588 469L651 479 667 528 668 544 616 537 605 560 583 557Z" fill="none" stroke="#9fB3b7" stroke-width="1.5"/>
+    <path d="M596 482L610 484" stroke="#294454" stroke-width="4" stroke-linecap="round"/>
+    <path d="M574 504L658 517 662 529 574 515Z" fill="url(#orange)"/>
+    <path d="M574 515L662 529 664 534 574 520Z" fill="#1b3a4e"/>
+    <path d="M677 501L722 510 734 524 682 517Z" fill="#e8eee6"/>
+    <path d="M687 533L735 528 737 560 689 573Z" fill="#183345"/>
+    <g stroke="#637b86" stroke-width="2"><path d="M692 541L731 535M693 549L732 542M693 557L732 550M694 565L732 557"/></g>
+    <path d="M710 541L720 539 715 548 705 550Z" fill="#ee9556"/>
+    <path d="M682 579L745 565 746 580 684 601Z" fill="#718a95"/>
+    <path d="M686 579L701 576 701 584 687 588ZM728 568L742 565 742 573 729 577Z" fill="#fff2c9"/>
+    <path d="M686 591L744 575" fill="none" stroke="#d2ddd8" stroke-width="2"/>
+    <path d="M706 587L724 582V588L706 594Z" fill="#dce3d9"/>
+    <path d="M615 554Q621 535 639 539Q658 543 663 574L670 589 658 593Q653 560 639 556Q626 552 623 579L608 577Z" fill="#294451"/>
+    <use href="#wheel" transform="translate(640 583) rotate(-8)"/>
+    <path d="M575 565L602 569 599 579 575 575Z" fill="#607a85"/>
+    <path d="M578 565L600 569M577 570L598 574" stroke="#dae2dc" stroke-width="2"/>
+    <path d="M654 453L670 450 674 473" fill="none" stroke="#243e4e" stroke-width="4"/>
+    <rect x="664" y="448" width="11" height="25" rx="4" fill="#19384b" transform="rotate(-15 664 448)"/>
+    <path d="M580 438L571 439V458" fill="none" stroke="#2c4858" stroke-width="3"/>
+    <rect x="566" y="444" width="10" height="23" rx="3" fill="#233e50"/>
+    <path d="M610 390L619 392M639 397L648 399M670 409L677 414" stroke="#ffb366" stroke-width="4" stroke-linecap="round"/>
+    <path d="M593 394L647 403" stroke="#fffdf2" stroke-width="2" opacity=".8"/>
+    <!-- Quiet foreground foliage frames the road without obscuring the vehicle. -->
+    <path d="M0 689Q33 654 71 661Q52 665 37 679Q78 659 111 681Q72 676 50 697Q89 683 115 709L86 720H0Z" fill="#173d40"/>
+    <path d="M900 628Q863 594 837 609Q862 612 877 638Q842 617 817 638Q849 636 874 665Q836 651 821 674Q853 668 880 695L886 720H900Z" fill="#183b40"/>
+    <g fill="#d4b17b" opacity=".5"><ellipse cx="185" cy="610" rx="3" ry="1.5"/><ellipse cx="220" cy="596" rx="2" ry="1"/><ellipse cx="802" cy="658" rx="4" ry="2"/></g>
+  </g>
+</svg>
