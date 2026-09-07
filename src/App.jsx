@@ -70,7 +70,7 @@ export default function App() {
           <a href="#quick-search">Find cargo space</a>
           <a href="#how-it-works">How it works</a>
           <a href="#why-cargoflow">Why CargoFlow</a>
-          <a className="button button-small" href="#quick-search">Let’s get moving <Icon name="arrow" size={16} /></a>
+          <a className="button button-small" href="#quick-search">Let’s get moving <Icon name="arrow" size={18} /></a>
         </nav>
       </div>
     </header>
@@ -82,7 +82,7 @@ export default function App() {
             <div className="eyebrow"><span className="status-dot" /> SHARED ROUTES. BRIGHTER FUTURES.</div>
             <h1>Same routes.<br />Greater <span>opportunities.</span></h1>
             <p className="hero-description">Big possibilities don’t need a full truck. Find, book, and share cargo space with people going your way.</p>
-            <div className="hero-actions"><a className="button" href="#quick-search">Find cargo space <Icon name="arrow" size={20} /></a><a className="text-link" href="#how-it-works">See how it works <span className="play-icon"><Icon name="play" size={12} /></span></a></div>
+            <div className="hero-actions"><a className="button" href="#quick-search">Find cargo space <Icon name="arrow" size={18} /></a><a className="button button-secondary" href="#how-it-works"><Icon name="play" size={16} fill="currentColor" /> See how it works</a></div>
             <div className="hero-note"><span className="note-icon"><Icon name="shield" size={20} /></span> Built for local businesses. Made for the Philippines.</div>
           </div>
           <div className="hero-visual">
@@ -103,7 +103,7 @@ export default function App() {
               <button className="swap-button" type="button" aria-label="Swap pickup and destination" onClick={() => { setFrom(to); setTo(from); }}><Icon name="swap" size={20} /></button>
               <label className="field"><span>Drop-off location</span><div><Icon name="pin" size={20} /><select value={to} onChange={event => setTo(event.target.value)} aria-label="Drop-off location"><option value="">Any destination</option>{cities.map(city => <option key={city}>{city}</option>)}</select></div></label>
               <label className="field weight-field"><span>Cargo weight</span><div><Icon name="box" size={20} /><input type="number" min="1" max="50000" step="1" placeholder="Optional" value={weight} onChange={event => setWeight(event.target.value)} /><span className="unit">kg</span></div></label>
-              <button type="submit" className="button search-button"><Icon name="search" size={20} /> Find matches</button>
+              <button type="submit" className="button search-button"><Icon name="search" size={18} /> Find matches</button>
             </div>
             {error && <p className="form-error" role="alert">{error}</p>}
           </form>
@@ -124,7 +124,7 @@ export default function App() {
 
       <section className="why-section" id="why-cargoflow"><div className="container why-grid"><div className="shared-visual" aria-hidden="true"><span className="section-kicker">A BETTER WAY FORWARD</span><div className="box-composition"><div className="parcel parcel-back"><Icon name="box" size={40} strokeWidth={1.5} /><span>YOUR NEXT<br />BIG ORDER.</span></div><div className="parcel parcel-front"><svg viewBox="0 0 56 56"><path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#173d70" /><path d="m37 3 14 5v14l-14-5M23 28l24-10v15L23 43Z" fill="#ff7a00" /></svg><strong>Cargo<span>Flow</span></strong><small>SHARE SPACE. MOVE MORE.</small><div className="parcel-line" /></div><div className="parcel-sticker"><Icon name="leaf" size={20} /> Better together.</div></div><p>Small shipments.<br /><strong>Big possibilities.</strong></p></div><div className="why-copy"><span className="section-kicker">WHY CARGOFLOW?</span><h2>Good for your business.<br /><span>Better for the road.</span></h2><p>There’s opportunity in every empty space. We bring shippers and local carriers together to make deliveries more practical, more connected, and less wasteful.</p><ul><li><span><Icon name="check" size={16} /></span><div><strong>Share the ride, not the full cost</strong><p>Move your goods without paying for a whole truck.</p></div></li><li><span><Icon name="check" size={16} /></span><div><strong>Turn empty space into opportunity</strong><p>Help local carriers make the most of every trip.</p></div></li><li><span><Icon name="check" size={16} /></span><div><strong>Keep local businesses moving</strong><p>Built with Filipino sellers, SMEs, and communities in mind.</p></div></li></ul><a className="text-link" href="#quick-search">Find your next shared route <Icon name="arrow" size={20} /></a></div></div></section>
 
-      <section className="container cta-section"><div className="cta"><div><span className="section-kicker">SAME DIRECTION. SHARED AMBITION.</span><h2>Let’s move more.<br /><span>Together.</span></h2><p>Your next opportunity might be going your way.</p></div><a href="#quick-search" className="button">Find your match <Icon name="arrow" size={21} /></a><div className="cta-road" aria-hidden="true" /></div></section>
+      <section className="container cta-section"><div className="cta"><div><span className="section-kicker">SAME DIRECTION. SHARED AMBITION.</span><h2>Let’s move more.<br /><span>Together.</span></h2><p>Your next opportunity might be going your way.</p></div><a href="#quick-search" className="button">Find your match <Icon name="arrow" size={18} /></a><div className="cta-road" aria-hidden="true" /></div></section>
     </main>
 
     <footer className="footer"><div className="container footer-main"><div><Logo /><p>Connecting people. Cargo. Possibilities.</p></div><nav aria-label="Footer navigation"><a href="#quick-search">Find cargo space</a><a href="#how-it-works">How it works</a><a href="#why-cargoflow">About CargoFlow</a></nav><div className="footer-tagline">SHARE SPACE.<br />MOVE MORE.<span>Made for the Philippines.</span></div></div><div className="container footer-bottom"><span>© {new Date().getFullYear()} CargoFlow. A student-built frontend prototype.</span><span>Shared routes. Brighter futures.</span></div></footer>
