@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CargoFlow - Track Shipment</title>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="index.html">
+                <img src="resources/cargoflow.logo.png" alt="CargoFlow Logo" height="32">
+                <span>CargoFlow</span>
+            </a>
+
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="find-matches.html">Find Matches</a></li>
+                <li><a href="track.html">Track</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+
+            <div>
+                <button type="button">Shipper</button>
+                <button type="button">Carrier</button>
+                <button type="button" aria-label="User Profile">User</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h1>Track Your Shipment</h1>
+            <p>Enter your tracking code to get real-time route updates.</p>
+
+            <form action="#" method="GET">
+                <label for="tracking-id">Tracking Number</label>
+                <input type="text" id="tracking-id" name="tracking-id" placeholder="e.g. CF-10293847" required>
+                <button type="submit">Track</button>
+            </form>
+        </section>
+
+        <section>
+            <div>
+                <h2>Status for ID: <span>Transaction ID</span></h2>
+                <p><strong>Route:</strong> Location to Location</p>
+                <p><strong>Estimated Delivery:</strong> Date</p>
+            </div>
+
+            <ol>
+                <li>
+                    <h3>Booking Confirmed</h3>
+                    <p>Information</p>
+                </li>
+                <li>
+                    <h3>Cargo Picked Up</h3>
+                    <p>Information</p>
+                </li>
+                <li>
+                    <h3>In Transit</h3>
+                    <p>Time (Location)</p>
+                </li>
+                <li>
+                    <h3>Out for Delivery</h3>
+                    <p>Pending</p>
+                </li>
+                <li>
+                    <h3>Delivered</h3>
+                    <p>Pending</p>
+                </li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; CargoFlow. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
