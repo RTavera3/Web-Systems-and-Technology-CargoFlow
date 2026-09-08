@@ -3,235 +3,84 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0B3D91" />
-    <meta
-      name="description"
-      content="CargoFlow — Share the Road. Share the Cost. A browser-based cargo-sharing platform for the Philippines that matches partial shipments with unused truck capacity."
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap"
-    />
+    <title>CargoFlow</title>
     <link rel="stylesheet" href="styles.css" />
-    <title>CargoFlow — Share the Road. Share the Cost.</title>
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to content</a>
-
-    <header class="site-header">
-      <div class="container header-inner">
-        <a class="brand" href="#top" aria-label="CargoFlow home">
-          <svg viewBox="0 0 56 56" width="34" height="34" aria-hidden="true">
-            <path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#0B3D91" />
-            <path
-              d="m37 3 14 5v14l-14-5ZM23 28l15-6-3-5 16 5-7 15-1-6-20 9Z"
-              fill="#FF7A00"
-            />
-            <path d="m23 44 17-7v12l-17 6Z" fill="#0B3D91" />
-          </svg>
-          <span>Cargo<span class="orange">Flow</span></span>
-        </a>
-        <nav class="nav" aria-label="Main navigation">
-          <a href="#problem">The problem</a>
-          <a href="#how">How it works</a>
-          <a href="#features">Features</a>
-          <a href="#users">Who it's for</a>
-          <a href="#project">Project</a>
-        </nav>
-      </div>
+    <header>
+      <h1>CargoFlow</h1>
+      <p class="tag">Share the Road. Share the Cost.</p>
+      <nav>
+        <a href="#about">About</a>
+        <a href="#how">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#users">Who it's for</a>
+        <a href="#project">Project</a>
+      </nav>
     </header>
 
-    <main id="main">
-      <!-- Hero -->
-      <section class="hero" id="top">
-        <div class="container hero-inner">
-          <p class="eyebrow">Shared routes. Brighter futures.</p>
-          <h1>Same routes.<br />Greater <span>opportunities.</span></h1>
-          <p class="lead">
-            Big possibilities don't need a full truck. CargoFlow fills unused
-            cargo space by matching shipments that are already headed the same
-            way &mdash; built for local businesses, made for the Philippines.
-          </p>
-          <p class="tagline">Share the Road. Share the Cost.</p>
-          <p class="note">
-            A student frontend prototype for
-            <strong>MO-IT161 &mdash; Web Systems and Technology</strong>. This
-            page is HTML and CSS only.
-          </p>
-        </div>
-      </section>
-
-      <!-- Problem / Solution -->
-      <section class="section container" id="problem">
-        <span class="kicker">The problem</span>
-        <h2>Expensive shipping. Empty trucks.</h2>
-        <div class="two-col">
-          <p>
-            Shipping in the Philippines is costly for small businesses that can't
-            fill an entire truck. At the same time, carriers regularly run routes
-            with unused cargo space. There is no easy, local, low-friction way to
-            connect the two.
-          </p>
-          <p>
-            Instead of booking a whole truck, CargoFlow matches multiple
-            compatible shipments travelling the same route, so shippers pay for
-            the space they need and carriers earn from capacity they'd otherwise
-            waste.
-          </p>
-        </div>
-        <ul class="match-grid">
-          <li><strong>Route</strong><span>Shipments headed the same direction</span></li>
-          <li><strong>Cargo size</strong><span>Fits the space still available</span></li>
-          <li><strong>Vehicle capacity</strong><span>Matched to the carrier's truck</span></li>
-          <li><strong>Schedule</strong><span>Aligned pickup and drop-off windows</span></li>
-        </ul>
-      </section>
-
-      <!-- How it works -->
-      <section class="section alt" id="how">
-        <div class="container">
-          <span class="kicker">How it works</span>
-          <h2>Your cargo. A shared journey.</h2>
-          <ol class="steps">
-            <li>
-              <span class="step-no">01</span>
-              <h3>Find your match</h3>
-              <p>
-                Tell CargoFlow where your cargo is going and see carriers headed
-                the same way.
-              </p>
-            </li>
-            <li>
-              <span class="step-no">02</span>
-              <h3>Share the space</h3>
-              <p>
-                Choose the space you need, not an entire truck, and split the
-                cost of the trip.
-              </p>
-            </li>
-            <li>
-              <span class="step-no">03</span>
-              <h3>Move together</h3>
-              <p>
-                Coordinate with your carrier and get your goods moving to their
-                next destination.
-              </p>
-            </li>
-          </ol>
-        </div>
-      </section>
-
-      <!-- Features -->
-      <section class="section container" id="features">
-        <span class="kicker">Features</span>
-        <h2>What CargoFlow does</h2>
-        <div class="cards">
-          <article class="card">
-            <h3>Smart matching</h3>
-            <p>Find compatible shipments and carriers travelling the same route.</p>
-          </article>
-          <article class="card">
-            <h3>Cost sharing</h3>
-            <p>Split transport costs among the shippers sharing one truck.</p>
-          </article>
-          <article class="card">
-            <h3>Cargo booking</h3>
-            <p>Reserve available cargo space in a few clicks.</p>
-          </article>
-          <article class="card">
-            <h3>Shipment tracking</h3>
-            <p>Monitor status from pickup to delivery.</p>
-          </article>
-          <article class="card">
-            <h3>Direct messaging</h3>
-            <p>Communicate with carriers inside the platform.</p>
-          </article>
-          <article class="card">
-            <h3>Capacity utilization</h3>
-            <p>Help carriers earn more by filling empty truck space.</p>
-          </article>
-        </div>
-        <p class="scope-note">
-          <strong>Prototype scope:</strong> route listings, schedules, and prices
-          are illustrative. Booking, accounts, live tracking, and messaging are
-          planned, not built. No backend, no API keys.
+    <main>
+      <section id="about">
+        <h2>About</h2>
+        <p>
+          CargoFlow is a cargo-sharing platform for the Philippines. It matches
+          shipments that are too small to fill a whole truck with carriers that
+          have unused space on the same route.
+        </p>
+        <p>
+          Shippers pay for the space they need. Carriers earn from space they
+          would otherwise waste.
         </p>
       </section>
 
-      <!-- Users -->
-      <section class="section alt" id="users">
-        <div class="container">
-          <span class="kicker">Who it's for</span>
-          <h2>Built with local businesses in mind</h2>
-          <div class="user-grid">
-            <div><strong>SMEs</strong><span>Partial-load shipments, moved affordably</span></div>
-            <div><strong>Online sellers</strong><span>E-commerce orders to customers</span></div>
-            <div><strong>Manufacturers</strong><span>Goods moving between locations</span></div>
-            <div><strong>Independent shippers</strong><span>Occasional, one-off cargo</span></div>
-            <div><strong>Local carriers</strong><span>Extra income from empty space</span></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Project details -->
-      <section class="section container" id="project">
-        <span class="kicker">The project</span>
-        <h2>Specs at a glance</h2>
-
-        <h3 class="sub">Tech stack</h3>
-        <ul class="plain">
-          <li><strong>HTML5</strong> &mdash; semantic markup, section-anchor navigation</li>
-          <li><strong>CSS3</strong> &mdash; custom properties, flexbox &amp; grid, responsive media queries</li>
-          <li><strong>JavaScript (ES6+)</strong> &mdash; on the app branch: icon rendering, mobile nav, route search</li>
-          <li><strong>Git &amp; GitHub</strong> &mdash; version control and collaboration</li>
-        </ul>
-        <p class="muted">
-          No framework, no build step, no backend. This <code>landing-page</code>
-          branch is intentionally HTML and CSS only.
-        </p>
-
-        <h3 class="sub">Planned pages</h3>
-        <ol class="plain">
-          <li><strong>Home</strong> &mdash; overview and quick search</li>
-          <li><strong>Find Matches</strong> &mdash; browse by route, size, and schedule</li>
-          <li><strong>Book Cargo Space</strong> &mdash; reserve space, shared-cost breakdown</li>
-          <li><strong>Track Shipment</strong> &mdash; status and timeline</li>
-          <li><strong>Messages</strong> &mdash; chat directly with carriers</li>
+      <section id="how">
+        <h2>How it works</h2>
+        <ol>
+          <li>Enter where your cargo is going.</li>
+          <li>See carriers heading the same way and pick the space you need.</li>
+          <li>Coordinate with the carrier and share the cost of the trip.</li>
         </ol>
+      </section>
 
-        <h3 class="sub">Brand</h3>
-        <ul class="swatches" aria-label="Brand colours">
-          <li><span class="sw" style="background:#0B3D91"></span>Deep blue #0B3D91</li>
-          <li><span class="sw" style="background:#3882F6"></span>Sky blue #3882F6</li>
-          <li><span class="sw" style="background:#FF7A00"></span>Flow orange #FF7A00</li>
-          <li><span class="sw" style="background:#F4F1EA;outline:1px solid #ddd"></span>Sand #F4F1EA</li>
-          <li><span class="sw" style="background:#1F2937"></span>Charcoal #1F2937</li>
+      <section id="features">
+        <h2>Features</h2>
+        <ul>
+          <li>Smart matching by route, cargo size, capacity, and schedule</li>
+          <li>Cost sharing between shippers on the same truck</li>
+          <li>Cargo booking</li>
+          <li>Shipment tracking</li>
+          <li>Direct messaging with carriers</li>
         </ul>
+        <p class="note">
+          Prototype: route data is sample data, and the booking, tracking, and
+          messaging pages are planned, not built.
+        </p>
+      </section>
 
-        <h3 class="sub">Team</h3>
-        <ul class="plain team">
-          <li>Armielyn Obinguar</li>
-          <li>Chantal Louise Flor</li>
-          <li>Mitzi Reese Arrogante</li>
-          <li>Ryan Keneth Tavera</li>
+      <section id="users">
+        <h2>Who it's for</h2>
+        <ul>
+          <li>Small and medium businesses</li>
+          <li>Online sellers</li>
+          <li>Manufacturers</li>
+          <li>Independent shippers</li>
+          <li>Local carriers</li>
         </ul>
+      </section>
 
-        <h3 class="sub">Course</h3>
-        <p class="muted">
-          MO-IT161 &mdash; Web Systems and Technology &middot; BS Information
-          Technology &middot; Section A3101 &middot; Mapúa Malayan Digital College
-          (MMDC) &middot; Term 1, SY 2026&ndash;2027
+      <section id="project">
+        <h2>Project</h2>
+        <p><strong>Course:</strong> MO-IT161 &ndash; Web Systems and Technology</p>
+        <p><strong>Built with:</strong> HTML, CSS, and JavaScript. No framework, no backend.</p>
+        <p>
+          <strong>Team:</strong> Armielyn Obinguar, Chantal Louise Flor,
+          Mitzi Reese Arrogante, Ryan Keneth Tavera
         </p>
       </section>
     </main>
 
-    <footer class="footer">
-      <div class="container footer-inner">
-        <span>Share space. Move more.</span>
-        <span>&copy; CargoFlow &mdash; a student-built frontend prototype. Made in the Philippines.</span>
-      </div>
+    <footer>
+      <p>CargoFlow &mdash; a student project. Made in the Philippines.</p>
     </footer>
   </body>
 </html>
