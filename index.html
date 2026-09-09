@@ -8,79 +8,209 @@
   </head>
   <body>
     <header>
-      <h1>CargoFlow</h1>
+      <div class="brand">
+        <svg viewBox="0 0 56 56" width="40" height="40" aria-hidden="true">
+          <path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#0B3D91" />
+          <path
+            d="m37 3 14 5v14l-14-5ZM23 28l15-6-3-5 16 5-7 15-1-6-20 9Z"
+            fill="#FF7A00"
+          />
+          <path d="m23 44 17-7v12l-17 6Z" fill="#0B3D91" />
+        </svg>
+        <span>Cargo<b>Flow</b></span>
+      </div>
       <p class="tag">Share the Road. Share the Cost.</p>
       <nav>
+        <a href="#search">Find cargo space</a>
+        <a href="#book">Book cargo space</a>
         <a href="#about">About</a>
-        <a href="#how">How it works</a>
-        <a href="#features">Features</a>
-        <a href="#users">Who it's for</a>
-        <a href="#project">Project</a>
       </nav>
     </header>
 
     <main>
-      <section id="about">
-        <h2>About</h2>
+      <section class="hero">
+        <h1>Find and share cargo space across the Philippines</h1>
         <p>
-          CargoFlow is a cargo-sharing platform for the Philippines. It matches
-          shipments that are too small to fill a whole truck with carriers that
-          have unused space on the same route.
-        </p>
-        <p>
-          Shippers pay for the space they need. Carriers earn from space they
-          would otherwise waste.
+          Don't pay for a whole truck. Search for carriers going your way and
+          book only the space you need.
         </p>
       </section>
 
-      <section id="how">
-        <h2>How it works</h2>
-        <ol>
-          <li>Enter where your cargo is going.</li>
-          <li>See carriers heading the same way and pick the space you need.</li>
-          <li>Coordinate with the carrier and share the cost of the trip.</li>
-        </ol>
-      </section>
+      <!-- SEARCH -->
+      <section id="search" class="panel">
+        <h2>Find cargo space</h2>
+        <form action="#book" method="get">
+          <div class="row">
+            <label>
+              Pickup location
+              <select name="from">
+                <option value="">Any</option>
+                <option>Manila</option>
+                <option>Batangas</option>
+                <option>Baguio</option>
+                <option>Cebu</option>
+                <option>Davao</option>
+                <option>Pampanga</option>
+              </select>
+            </label>
+            <label>
+              Drop-off location
+              <select name="to">
+                <option value="">Any</option>
+                <option>Manila</option>
+                <option>Batangas</option>
+                <option>Baguio</option>
+                <option>Cebu</option>
+                <option>Davao</option>
+                <option>Pampanga</option>
+              </select>
+            </label>
+            <label>
+              Cargo weight (kg)
+              <input type="number" name="weight" min="1" max="50000" placeholder="Optional" />
+            </label>
+          </div>
+          <button type="submit">Search routes</button>
+        </form>
 
-      <section id="features">
-        <h2>Features</h2>
-        <ul>
-          <li>Smart matching by route, cargo size, capacity, and schedule</li>
-          <li>Cost sharing between shippers on the same truck</li>
-          <li>Cargo booking</li>
-          <li>Shipment tracking</li>
-          <li>Direct messaging with carriers</li>
-        </ul>
-        <p class="note">
-          Prototype: route data is sample data, and the booking, tracking, and
-          messaging pages are planned, not built.
+        <p class="hint">
+          Popular: Manila &rarr; Batangas &nbsp;·&nbsp; Manila &rarr; Baguio
+          &nbsp;·&nbsp; Cebu &rarr; Davao
+        </p>
+
+        <h3>Available routes (sample)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Route</th>
+              <th>Carrier</th>
+              <th>Vehicle</th>
+              <th>Space left</th>
+              <th>Schedule</th>
+              <th>Starting price</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Manila &rarr; Batangas</td>
+              <td>Southbound Logistics</td>
+              <td>Closed van</td>
+              <td>800 kg</td>
+              <td>Weekdays</td>
+              <td>&#8369;850</td>
+              <td><a class="book-link" href="#book">Book</a></td>
+            </tr>
+            <tr>
+              <td>Manila &rarr; Baguio</td>
+              <td>Northline Transport</td>
+              <td>6-wheel truck</td>
+              <td>1,500 kg</td>
+              <td>Daily</td>
+              <td>&#8369;1,450</td>
+              <td><a class="book-link" href="#book">Book</a></td>
+            </tr>
+            <tr>
+              <td>Cebu &rarr; Davao</td>
+              <td>Island Link Cargo</td>
+              <td>RoRo cargo truck</td>
+              <td>2,000 kg</td>
+              <td>Mon, Wed, Fri</td>
+              <td>&#8369;2,200</td>
+              <td><a class="book-link" href="#book">Book</a></td>
+            </tr>
+            <tr>
+              <td>Manila &rarr; Pampanga</td>
+              <td>Central Luzon Express</td>
+              <td>Closed van</td>
+              <td>500 kg</td>
+              <td>Daily</td>
+              <td>&#8369;650</td>
+              <td><a class="book-link" href="#book">Book</a></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="hint">
+          Sample listings only. Prices are illustrative starting rates.
         </p>
       </section>
 
-      <section id="users">
-        <h2>Who it's for</h2>
-        <ul>
-          <li>Small and medium businesses</li>
-          <li>Online sellers</li>
-          <li>Manufacturers</li>
-          <li>Independent shippers</li>
-          <li>Local carriers</li>
-        </ul>
+      <!-- BOOKING -->
+      <section id="book" class="panel">
+        <h2>Book cargo space</h2>
+        <form action="#" method="post">
+          <div class="row">
+            <label>
+              Route
+              <select name="route">
+                <option>Manila &rarr; Batangas — Southbound Logistics</option>
+                <option>Manila &rarr; Baguio — Northline Transport</option>
+                <option>Cebu &rarr; Davao — Island Link Cargo</option>
+                <option>Manila &rarr; Pampanga — Central Luzon Express</option>
+              </select>
+            </label>
+            <label>
+              Pickup date
+              <input type="date" name="date" />
+            </label>
+            <label>
+              Cargo weight (kg)
+              <input type="number" name="weight" min="1" max="50000" />
+            </label>
+          </div>
+
+          <label>
+            Cargo description
+            <textarea
+              name="description"
+              rows="2"
+              placeholder="e.g. 5 boxes of packaged goods"
+            ></textarea>
+          </label>
+
+          <div class="row">
+            <label>
+              Sender name
+              <input type="text" name="sender" />
+            </label>
+            <label>
+              Contact number
+              <input type="tel" name="contact" placeholder="09XX XXX XXXX" />
+            </label>
+            <label>
+              Drop-off address
+              <input type="text" name="dropoff" />
+            </label>
+          </div>
+
+          <button type="submit">Request booking</button>
+          <p class="hint">
+            Prototype form — submitting does not create a real booking yet.
+          </p>
+        </form>
       </section>
 
-      <section id="project">
-        <h2>Project</h2>
-        <p><strong>Course:</strong> MO-IT161 &ndash; Web Systems and Technology</p>
-        <p><strong>Built with:</strong> HTML, CSS, and JavaScript. No framework, no backend.</p>
+      <!-- ABOUT -->
+      <section id="about" class="panel">
+        <h2>About CargoFlow</h2>
         <p>
-          <strong>Team:</strong> Armielyn Obinguar, Chantal Louise Flor,
-          Mitzi Reese Arrogante, Ryan Keneth Tavera
+          Shipping in the Philippines is expensive for small businesses that
+          can't fill an entire truck, while carriers often drive routes with
+          empty space. CargoFlow matches compatible shipments on the same route
+          so shippers share the cost and carriers earn from unused capacity.
+        </p>
+        <p>
+          Built for MO-IT161 &ndash; Web Systems and Technology. This page is
+          HTML and CSS only.
         </p>
       </section>
     </main>
 
     <footer>
-      <p>CargoFlow &mdash; a student project. Made in the Philippines.</p>
+      <p>
+        Share space. Move more. &nbsp;·&nbsp; CargoFlow &mdash; a student
+        project. Made in the Philippines.
+      </p>
     </footer>
   </body>
 </html>
