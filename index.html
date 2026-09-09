@@ -23,6 +23,8 @@
       <nav>
         <a href="#search">Find cargo space</a>
         <a href="#book">Book cargo space</a>
+        <a href="#carriers">For carriers</a>
+        <a href="#who">Who it's for</a>
         <a href="#about">About</a>
       </nav>
     </header>
@@ -188,6 +190,92 @@
             Prototype form — submitting does not create a real booking yet.
           </p>
         </form>
+      </section>
+
+      <!-- FOR CARRIERS -->
+      <section id="carriers" class="panel">
+        <h2>For carriers — list your available space</h2>
+        <p>
+          Driving a route with room to spare? Post your unused capacity and let
+          shippers going the same way share the trip.
+        </p>
+        <form action="#" method="post">
+          <div class="row">
+            <label>
+              Pickup location
+              <select name="from">
+                <option>Manila</option>
+                <option>Batangas</option>
+                <option>Baguio</option>
+                <option>Cebu</option>
+                <option>Davao</option>
+                <option>Pampanga</option>
+              </select>
+            </label>
+            <label>
+              Drop-off location
+              <select name="to">
+                <option>Manila</option>
+                <option>Batangas</option>
+                <option>Baguio</option>
+                <option>Cebu</option>
+                <option>Davao</option>
+                <option>Pampanga</option>
+              </select>
+            </label>
+            <label>
+              Vehicle type
+              <select name="vehicle">
+                <option>Closed van</option>
+                <option>6-wheel truck</option>
+                <option>10-wheel truck</option>
+                <option>RoRo cargo truck</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="row">
+            <label>
+              Available capacity (kg)
+              <input type="number" name="capacity" min="1" max="50000" />
+            </label>
+            <label>
+              Schedule
+              <input type="text" name="schedule" placeholder="e.g. Weekdays, or Mon/Wed/Fri" />
+            </label>
+            <label>
+              Starting price (&#8369;)
+              <input type="number" name="price" min="0" />
+            </label>
+          </div>
+
+          <div class="row">
+            <label>
+              Carrier / company name
+              <input type="text" name="carrier" />
+            </label>
+            <label>
+              Contact number
+              <input type="tel" name="contact" placeholder="09XX XXX XXXX" />
+            </label>
+          </div>
+
+          <button type="submit">Post available space</button>
+          <p class="hint">
+            Prototype form — submitting does not create a real listing yet.
+          </p>
+        </form>
+      </section>
+
+      <!-- WHO IT'S FOR -->
+      <section id="who" class="panel">
+        <h2>Who it's for</h2>
+        <ul class="who">
+          <li><b>SMEs</b> — small and medium businesses with partial-load shipments</li>
+          <li><b>Online sellers</b> — e-commerce merchants shipping orders to customers</li>
+          <li><b>Manufacturers</b> — businesses moving goods between locations</li>
+          <li><b>Local carriers</b> — truck owners and operators with unused capacity</li>
+        </ul>
       </section>
 
       <!-- ABOUT -->

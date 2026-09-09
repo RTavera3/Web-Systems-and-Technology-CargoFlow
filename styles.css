@@ -170,6 +170,21 @@ tr:nth-child(even) td {
 }
 
 /* Footer */
+/* Who it's for */
+ul.who {
+  margin: 0;
+  padding-left: 20px;
+}
+
+ul.who li {
+  margin-bottom: 6px;
+}
+
+ul.who b {
+  color: #0b3d91;
+}
+
+/* Footer */
 footer {
   margin-top: 32px;
   border-top: 1px solid #ccc;
