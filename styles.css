@@ -291,64 +291,94 @@ button:hover {
   margin: 8px 0 0;
 }
 
-/* How booking works — step cards */
-ol.steps {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  counter-reset: step;
+/* After you book */
+.after-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
 }
 
-ol.steps li {
-  counter-increment: step;
+.after-card {
   border: 1px solid #ddd;
   border-top: 3px solid #0b3d91;
-  padding: 14px 16px 16px;
+  padding: 16px 18px 18px;
 }
 
-ol.steps li::before {
-  content: counter(step);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  margin-bottom: 8px;
-  background: #0b3d91;
-  color: #fff;
+.after-card h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.match-name {
+  margin: 0 0 12px;
   font-weight: bold;
+}
+
+.match-dl {
+  margin: 0 0 14px;
+}
+
+.match-dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
   font-size: 14px;
 }
 
-ol.steps b {
-  display: block;
-  color: #0b3d91;
-  margin-bottom: 2px;
+.match-dl dt {
+  color: #666;
 }
 
-/* Who it's for — cards */
-ul.who {
-  list-style: none;
+.match-dl dd {
   margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 16px;
+  text-align: right;
 }
 
-ul.who li {
-  border: 1px solid #ddd;
-  border-left: 3px solid #ff7a00;
-  padding: 14px 16px;
+table.price {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-bottom: 10px;
 }
 
-ul.who b {
-  display: block;
+table.price td {
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+table.price td:last-child {
+  text-align: right;
+}
+
+table.price tr.total td {
+  border-bottom: none;
+  border-top: 2px solid #0b3d91;
+  padding-top: 8px;
+  font-weight: bold;
+  font-size: 16px;
   color: #0b3d91;
-  margin-bottom: 2px;
+}
+
+.ref {
+  margin: 0 0 12px;
+  padding: 8px 10px;
+  background: #f4f1ea;
+  font-size: 14px;
+}
+
+ol.next {
+  margin: 0;
+  padding-left: 20px;
+}
+
+ol.next li {
+  margin-bottom: 8px;
+}
+
+ol.next b {
+  color: #0b3d91;
 }
 
 /* About */
