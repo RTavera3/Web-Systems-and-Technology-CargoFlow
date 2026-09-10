@@ -22,12 +22,12 @@
       <p class="tag">Share the Road. Share the Cost.</p>
       <nav>
         <a href="#book">Book cargo space</a>
-        <a href="#after">After you book</a>
+        <a href="#audience">Who it's for</a>
         <a href="#about">About</a>
       </nav>
     </header>
 
-    <section class="hero">
+    <section class="hero" id="book">
       <div class="hero-inner">
         <div class="hero-copy">
           <h1>Book cargo space going your way</h1>
@@ -107,126 +107,40 @@
     </section>
 
     <main>
-      <!-- BOOKING -->
-      <section id="book" class="panel">
-        <h2>Complete your booking</h2>
-        <p class="lead">
-          Start from the search bar above, then add the pick-up and delivery
-          details here. Your carrier and price are assigned automatically.
-        </p>
-        <form action="#" method="post">
-          <div class="row">
-            <label>
-              Cargo type
-              <select name="type">
-                <option value="">Select</option>
-                <option>General goods</option>
-                <option>Fragile</option>
-                <option>Perishable</option>
-                <option>Bulk / sacks</option>
-                <option>Appliances / furniture</option>
-              </select>
-            </label>
-            <label>
-              Number of items / packages
-              <input type="number" name="items" min="1" placeholder="e.g. 5" />
-            </label>
-            <label>
-              Declared value (&#8369;)
-              <input type="number" name="value" min="0" placeholder="Optional" />
-            </label>
-          </div>
-
-          <label>
-            Cargo description
-            <textarea
-              name="description"
-              rows="2"
-              placeholder="e.g. 5 boxes of packaged goods"
-            ></textarea>
-          </label>
-
-          <div class="row">
-            <label>
-              Sender name
-              <input type="text" name="sender" />
-            </label>
-            <label>
-              Contact number
-              <input type="tel" name="contact" placeholder="09XX XXX XXXX" />
-            </label>
-            <label>
-              Drop-off address
-              <input type="text" name="dropoff" />
-            </label>
-          </div>
-
-          <button type="submit">Get matched &amp; see price</button>
-          <p class="hint">
-            Your carrier is matched automatically and your price is calculated
-            from the route, distance, and cargo weight you enter. Prototype form
-            &mdash; submitting does not create a real booking yet.
-          </p>
-        </form>
-      </section>
-
-      <!-- AFTER YOU BOOK -->
-      <section id="after" class="panel">
-        <h2>After you book</h2>
-        <p class="lead">
-          A preview of what you get once you submit the form. This page is a
-          prototype, so the figures below are an example.
-        </p>
-        <div class="after-grid">
-          <div class="after-card">
-            <h3>Your match &amp; price</h3>
-            <p class="match-name">
-              Southbound Logistics &middot; closed van (shared)
+      <!-- WHO IT'S FOR -->
+      <section id="audience" class="band">
+        <div class="band-inner">
+          <div class="band-copy">
+            <h2>Built for businesses that ship less than a truckload</h2>
+            <p>
+              CargoFlow is for Philippine businesses that move goods regularly
+              but can't fill &mdash; or don't want to pay for &mdash; a whole
+              truck.
             </p>
-            <dl class="match-dl">
-              <div><dt>Route</dt><dd>Manila &rarr; Batangas</dd></div>
-              <div><dt>Pick-up window</dt><dd>Mon 15 Sep, 8:00&ndash;11:00 AM</dd></div>
-              <div><dt>Space reserved</dt><dd>250 kg</dd></div>
-            </dl>
-            <table class="price">
-              <tbody>
-                <tr><td>Base fee</td><td>&#8369;150</td></tr>
-                <tr><td>Distance &middot; 110 km</td><td>&#8369;240</td></tr>
-                <tr><td>Weight &middot; 250 kg</td><td>&#8369;410</td></tr>
-                <tr><td>Handling</td><td>&#8369;50</td></tr>
-                <tr class="total"><td>Total</td><td>&#8369;850</td></tr>
-              </tbody>
-            </table>
-            <p class="hint">
-              A whole truck on this route is &#8369;4,500+. You pay only for
-              your share of the space.
-            </p>
+            <ul class="band-points">
+              <li>SMEs with partial-load shipments</li>
+              <li>Online sellers fulfilling customer orders</li>
+              <li>Manufacturers moving stock between sites</li>
+              <li>Distributors restocking provincial outlets</li>
+            </ul>
           </div>
 
-          <div class="after-card">
-            <h3>What happens next</h3>
-            <p class="ref">Booking reference <b>CF-2K9F4A</b></p>
-            <ol class="next">
-              <li>
-                <b>Carrier contacts you</b> within 2 hours to confirm the
-                pick-up address and time.
-              </li>
-              <li>
-                <b>Label your packages</b> with the reference number and the
-                drop-off address.
-              </li>
-              <li>
-                <b>Pick-up</b> during your window &mdash; hand over the cargo
-                and get a receipt.
-              </li>
-              <li>
-                <b>Pay on pick-up</b> &mdash; &#8369;850 in cash or e-wallet.
-                Nothing is charged before then.
-              </li>
-              <li>
-                <b>Track by SMS</b> until the cargo is delivered.
-              </li>
-            </ol>
+          <div class="band-visual">
+            <p class="bv-title">One trip, shared four ways</p>
+            <ul class="bv-list">
+              <li><span class="bv-dot bv-a"></span>SME &mdash; 8 boxes</li>
+              <li><span class="bv-dot bv-b"></span>Online seller &mdash; 20 parcels</li>
+              <li><span class="bv-dot bv-you"></span>Your load &mdash; 250 kg</li>
+              <li><span class="bv-dot bv-d"></span>Manufacturer &mdash; 5 crates</li>
+            </ul>
+            <div class="bv-bar" aria-hidden="true">
+              <span class="bv-seg bv-a"></span>
+              <span class="bv-seg bv-b"></span>
+              <span class="bv-seg bv-you"></span>
+              <span class="bv-seg bv-d"></span>
+              <span class="bv-seg bv-open"></span>
+            </div>
+            <p class="bv-note">You pay only for your share of the truck.</p>
           </div>
         </div>
       </section>

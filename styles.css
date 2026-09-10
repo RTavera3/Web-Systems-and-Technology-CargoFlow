@@ -291,94 +291,117 @@ button:hover {
   margin: 8px 0 0;
 }
 
-/* After you book */
-.after-grid {
+/* Who it's for — blue band */
+.band {
+  background: #0b3d91;
+  color: #fff;
+  padding: clamp(24px, 3.5vw, 40px);
+  margin-bottom: 24px;
+}
+
+.band-inner {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: 1fr minmax(280px, 400px);
+  gap: 36px;
+  align-items: center;
 }
 
-.after-card {
-  border: 1px solid #ddd;
-  border-top: 3px solid #0b3d91;
-  padding: 16px 18px 18px;
-}
-
-.after-card h3 {
-  margin: 0 0 10px;
-  font-size: 16px;
-}
-
-.match-name {
+.band h2 {
+  color: #fff;
+  font-size: clamp(21px, 2.6vw, 28px);
   margin: 0 0 12px;
-  font-weight: bold;
 }
 
-.match-dl {
-  margin: 0 0 14px;
+.band p {
+  margin: 0 0 16px;
+  color: rgba(255, 255, 255, 0.92);
 }
 
-.match-dl div {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 5px 0;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
-}
-
-.match-dl dt {
-  color: #666;
-}
-
-.match-dl dd {
+.band-points {
+  list-style: none;
   margin: 0;
-  text-align: right;
+  padding: 0;
 }
 
-table.price {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-
-table.price td {
-  padding: 6px 0;
-  border-bottom: 1px solid #eee;
-}
-
-table.price td:last-child {
-  text-align: right;
-}
-
-table.price tr.total td {
-  border-bottom: none;
-  border-top: 2px solid #0b3d91;
-  padding-top: 8px;
-  font-weight: bold;
-  font-size: 16px;
-  color: #0b3d91;
-}
-
-.ref {
-  margin: 0 0 12px;
-  padding: 8px 10px;
-  background: #f4f1ea;
-  font-size: 14px;
-}
-
-ol.next {
-  margin: 0;
-  padding-left: 20px;
-}
-
-ol.next li {
+.band-points li {
+  position: relative;
+  padding-left: 24px;
   margin-bottom: 8px;
 }
 
-ol.next b {
+.band-points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 11px;
+  height: 11px;
+  background: #ff7a00;
+}
+
+.band-visual {
+  background: #fff;
+  color: #333;
+  border-top: 4px solid #ff7a00;
+  padding: 20px 22px;
+}
+
+.bv-title {
+  margin: 0 0 12px;
+  font-weight: bold;
   color: #0b3d91;
+}
+
+.bv-list {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  font-size: 14px;
+}
+
+.bv-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.bv-dot {
+  width: 12px;
+  height: 12px;
+  flex: none;
+}
+
+.bv-a { background: #3882f6; }
+.bv-b { background: #ff7a00; }
+.bv-you { background: #0b3d91; }
+.bv-d { background: #9ab8ec; }
+.bv-open { background: #e2e6ec; }
+
+.bv-bar {
+  display: flex;
+  height: 22px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.bv-bar .bv-a { flex: 3; }
+.bv-bar .bv-b { flex: 4; }
+.bv-bar .bv-you { flex: 2; }
+.bv-bar .bv-d { flex: 2; }
+.bv-bar .bv-open { flex: 1; }
+
+.bv-note {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}
+
+@media (max-width: 720px) {
+  .band-inner {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
 }
 
 /* About */
