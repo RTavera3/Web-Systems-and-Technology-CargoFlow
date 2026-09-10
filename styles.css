@@ -1,22 +1,52 @@
-/* CargoFlow landing page — simple HTML/CSS.
-   Brand colours from the logo: deep blue #0B3D91, flow orange #FF7A00,
-   sand #F4F1EA. */
+/* CargoFlow — simple HTML/CSS landing page.
+   Colours: deep blue #0B3D91, orange #FF7A00, sand #F4F1EA. */
+
+:root {
+  --pad: clamp(16px, 5vw, 48px);
+  --maxw: 1180px;
+}
+
+* {
+  box-sizing: border-box;
+}
 
 body {
   font-family: Arial, Helvetica, sans-serif;
-  color: #222;
+  color: #333;
   line-height: 1.6;
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 20px;
+  margin: 0;
+  padding: 0;
   background: #fff;
+  overflow-x: hidden;
+}
+
+main {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 28px var(--pad) 8px;
+}
+
+h1,
+h2,
+h3 {
+  color: #0b3d91;
+  margin: 0 0 10px;
+}
+
+a {
+  color: #0b3d91;
 }
 
 /* Header */
 header {
-  border-bottom: 3px solid #0b3d91;
-  padding-bottom: 12px;
-  margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 14px var(--pad);
+  border-bottom: 1px solid #ddd;
 }
 
 .brand {
@@ -26,7 +56,7 @@ header {
 }
 
 .brand span {
-  font-size: 26px;
+  font-size: 22px;
   font-weight: bold;
   color: #0b3d91;
 }
@@ -36,15 +66,21 @@ header {
 }
 
 .tag {
-  color: #ff7a00;
+  margin: 0;
+  font-size: 12px;
   font-weight: bold;
-  margin: 4px 0 10px;
+  color: #ff7a00;
+}
+
+nav {
+  margin-left: auto;
 }
 
 nav a {
-  margin-right: 14px;
-  color: #0b3d91;
+  margin-left: 14px;
+  color: #333;
   text-decoration: none;
+  font-size: 14px;
 }
 
 nav a:hover {
@@ -53,38 +89,134 @@ nav a:hover {
 
 /* Hero */
 .hero {
-  background: #f4f1ea;
-  border-left: 4px solid #ff7a00;
-  padding: 16px 20px;
-  margin-bottom: 24px;
+  background: #0b3d91;
+  color: #fff;
+}
+
+.hero-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 40px var(--pad) 44px;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 44px;
+  align-items: center;
 }
 
 .hero h1 {
-  color: #0b3d91;
-  margin: 0 0 8px;
-  font-size: 24px;
+  color: #fff;
+  font-size: clamp(26px, 3.2vw, 36px);
+  margin: 0 0 12px;
 }
 
 .hero p {
+  margin: 0 0 18px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.hero-points {
+  list-style: none;
   margin: 0;
+  padding: 0;
+}
+
+.hero-points li {
+  position: relative;
+  padding-left: 26px;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.hero-points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 12px;
+  height: 12px;
+  background: #ff7a00;
+}
+
+/* Quote card */
+.quote {
+  background: #fff;
+  color: #333;
+  border-top: 4px solid #ff7a00;
+  padding: 22px;
+}
+
+.quote h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.quote-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+}
+
+.quote label {
+  margin: 0;
+}
+
+.quote-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 16px 0 4px;
+}
+
+.quote-opts label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.quote-opts input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.quote button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  font-size: 15px;
+}
+
+@media (max-width: 860px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
 }
 
 /* Sections */
 .panel {
   border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 18px 20px;
+  padding: 20px;
   margin-bottom: 24px;
 }
 
-h2 {
-  color: #0b3d91;
-  margin-top: 0;
+.panel h2 {
+  font-size: 20px;
+  margin-bottom: 14px;
 }
 
-h3 {
-  color: #0b3d91;
-  margin-bottom: 8px;
+.lead {
+  margin: -6px 0 18px;
+  max-width: 70ch;
+  color: #555;
+}
+
+.panel h3 {
+  font-size: 15px;
+  margin: 18px 0 8px;
 }
 
 /* Forms */
@@ -92,17 +224,24 @@ form label {
   display: block;
   font-size: 14px;
   font-weight: bold;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 20px;
+  margin-bottom: 14px;
 }
 
 .row label {
-  flex: 1 1 200px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 700px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
 }
 
 input,
@@ -110,99 +249,184 @@ select,
 textarea {
   display: block;
   width: 100%;
-  padding: 8px;
-  margin-top: 4px;
-  border: 1px solid #bbb;
-  border-radius: 4px;
+  min-width: 0;
+  height: 38px;
+  padding: 8px 10px;
+  margin-top: 5px;
+  border: 1px solid #999;
   font: inherit;
   font-weight: normal;
+  background: #fff;
+}
+
+textarea {
+  height: auto;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid #0b3d91;
+  outline-offset: -1px;
 }
 
 button {
-  background: #ff7a00;
+  background: #0b3d91;
   color: #fff;
   border: none;
-  border-radius: 4px;
-  padding: 10px 20px;
-  font-size: 15px;
+  padding: 10px 22px;
+  font-size: 14px;
   font-weight: bold;
   cursor: pointer;
   margin-top: 6px;
 }
 
 button:hover {
-  background: #e06e00;
+  background: #082c69;
 }
 
 .hint {
+  font-size: 12px;
+  color: #666;
+  margin: 8px 0 0;
+}
+
+/* Who it's for — blue band */
+.band {
+  background: #0b3d91;
+  color: #fff;
+  padding: clamp(24px, 3.5vw, 40px);
+  margin-bottom: 24px;
+}
+
+.band-inner {
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 400px);
+  gap: 36px;
+  align-items: center;
+}
+
+.band h2 {
+  color: #fff;
+  font-size: clamp(21px, 2.6vw, 28px);
+  margin: 0 0 12px;
+}
+
+.band p {
+  margin: 0 0 16px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.band-points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.band-points li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 8px;
+}
+
+.band-points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 11px;
+  height: 11px;
+  background: #ff7a00;
+}
+
+.band-visual {
+  background: #fff;
+  color: #333;
+  border-top: 4px solid #ff7a00;
+  padding: 20px 22px;
+}
+
+.bv-title {
+  margin: 0 0 12px;
+  font-weight: bold;
+  color: #0b3d91;
+}
+
+.bv-list {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  font-size: 14px;
+}
+
+.bv-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.bv-dot {
+  width: 12px;
+  height: 12px;
+  flex: none;
+}
+
+.bv-a { background: #3882f6; }
+.bv-b { background: #ff7a00; }
+.bv-you { background: #0b3d91; }
+.bv-d { background: #9ab8ec; }
+.bv-open { background: #e2e6ec; }
+
+.bv-bar {
+  display: flex;
+  height: 22px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.bv-bar .bv-a { flex: 3; }
+.bv-bar .bv-b { flex: 4; }
+.bv-bar .bv-you { flex: 2; }
+.bv-bar .bv-d { flex: 2; }
+.bv-bar .bv-open { flex: 1; }
+
+.bv-note {
+  margin: 0;
   font-size: 13px;
   color: #666;
 }
 
-/* Table */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 8px;
-  font-size: 14px;
+@media (max-width: 720px) {
+  .band-inner {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
 }
 
-th,
-td {
-  border: 1px solid #ddd;
-  padding: 8px 10px;
-  text-align: left;
+/* About */
+#about {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 8px 32px;
+  align-items: start;
 }
 
-th {
-  background: #0b3d91;
-  color: #fff;
+#about h2 {
+  grid-column: 1 / -1;
 }
 
-tr:nth-child(even) td {
-  background: #f7f7f7;
-}
-
-.book-link {
-  color: #ff7a00;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-/* How booking works */
-ol.steps {
+#about p {
   margin: 0;
-  padding-left: 20px;
-}
-
-ol.steps li {
-  margin-bottom: 10px;
-}
-
-ol.steps b {
-  color: #0b3d91;
-}
-
-/* Who it's for */
-ul.who {
-  margin: 0;
-  padding-left: 20px;
-}
-
-ul.who li {
-  margin-bottom: 6px;
-}
-
-ul.who b {
-  color: #0b3d91;
 }
 
 /* Footer */
 footer {
-  margin-top: 32px;
   border-top: 1px solid #ccc;
-  padding-top: 12px;
-  font-size: 14px;
-  color: #555;
+  margin: 8px auto 0;
+  max-width: var(--maxw);
+  padding: 16px var(--pad) 28px;
+  font-size: 12px;
+  color: #666;
   text-align: center;
 }
