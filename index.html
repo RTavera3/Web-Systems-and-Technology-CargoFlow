@@ -30,25 +30,27 @@
 
     <section class="hero">
       <div class="hero-inner">
-        <h1>Book cargo space going your way</h1>
-        <p>
-          Don't pay for a whole truck. Tell us your route and load &mdash; we
-          match a carrier already driving that way and price it by the space
-          you use.
-        </p>
+        <div class="hero-copy">
+          <h1>Book cargo space going your way</h1>
+          <p>
+            Don't pay for a whole truck. Tell us your route and load &mdash; we
+            match a carrier already driving that way and price it by the space
+            you use.
+          </p>
+          <ul class="hero-points">
+            <li>Pay only for the space your cargo takes</li>
+            <li>Carrier matched automatically to your route</li>
+            <li>Price based on distance and weight, not a flat truck fee</li>
+          </ul>
+        </div>
 
-        <form class="searchbar" action="#book" method="get">
-          <div class="field">
-            <span class="ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" />
-              </svg>
-            </span>
+        <form class="quote" action="#book" method="get">
+          <h2>Get a price</h2>
+          <div class="quote-grid">
             <label>
-              Pick-up location
+              Pick-up city
               <select name="from">
-                <option value="">Select city</option>
+                <option value="">Select</option>
                 <option>Manila</option>
                 <option>Batangas</option>
                 <option>Baguio</option>
@@ -57,21 +59,10 @@
                 <option>Pampanga</option>
               </select>
             </label>
-          </div>
-
-          <div class="field">
-            <span class="ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11Z" />
-                <circle cx="12" cy="10" r="2.5" />
-              </svg>
-            </span>
             <label>
-              Drop-off location
+              Drop-off city
               <select name="to">
-                <option value="">Select city</option>
+                <option value="">Select</option>
                 <option>Manila</option>
                 <option>Batangas</option>
                 <option>Baguio</option>
@@ -80,59 +71,39 @@
                 <option>Pampanga</option>
               </select>
             </label>
-          </div>
-
-          <div class="field">
-            <span class="ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <rect x="3" y="5" width="18" height="16" rx="2" />
-                <path d="M3 10h18M8 3v4M16 3v4" />
-              </svg>
-            </span>
             <label>
               Pick-up date
               <input type="date" name="date" />
             </label>
-          </div>
-
-          <div class="field">
-            <span class="ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
-              </svg>
-            </span>
             <label>
               Pick-up time
               <input type="time" name="time" />
             </label>
-          </div>
-
-          <div class="field">
-            <span class="ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="m3 8 9-5 9 5-9 5-9-5Z" /><path d="m3 8 9 5v8L3 16V8Z" />
-                <path d="m21 8-9 5v8l9-5V8Z" />
-              </svg>
-            </span>
             <label>
               Cargo weight (kg)
               <input type="number" name="weight" min="1" max="50000"
                 placeholder="e.g. 250" />
             </label>
+            <label>
+              Cargo type
+              <select name="type">
+                <option value="">Select</option>
+                <option>General goods</option>
+                <option>Fragile</option>
+                <option>Perishable</option>
+                <option>Bulk / sacks</option>
+                <option>Appliances / furniture</option>
+              </select>
+            </label>
           </div>
 
-          <button type="submit">Search</button>
-        </form>
+          <div class="quote-opts">
+            <label><input type="checkbox" name="fragile" /> Handle with care</label>
+            <label><input type="checkbox" name="loading" /> Need help loading</label>
+          </div>
 
-        <div class="hero-opts">
-          <label><input type="checkbox" name="fragile" /> Fragile or perishable cargo</label>
-          <label><input type="checkbox" name="loading" /> I need help loading</label>
-          <label><input type="checkbox" name="different" /> Different pick-up and drop-off contact</label>
-        </div>
+          <button type="submit">Get matched &amp; see price</button>
+        </form>
       </div>
     </section>
 
@@ -231,9 +202,9 @@
       <section id="who" class="panel">
         <h2>Who it's for</h2>
         <ul class="who">
-          <li><b>SMEs</b> — small and medium businesses with partial-load shipments</li>
-          <li><b>Online sellers</b> — e-commerce merchants shipping orders to customers</li>
-          <li><b>Manufacturers</b> — businesses moving goods between locations</li>
+          <li><b>SMEs</b>Small and medium businesses with partial-load shipments</li>
+          <li><b>Online sellers</b>E-commerce merchants shipping orders to customers</li>
+          <li><b>Manufacturers</b>Businesses moving goods between locations</li>
         </ul>
       </section>
 

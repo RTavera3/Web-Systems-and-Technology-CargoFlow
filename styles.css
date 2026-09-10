@@ -2,7 +2,8 @@
    Colours: deep blue #0B3D91, orange #FF7A00, sand #F4F1EA. */
 
 :root {
-  --pad: clamp(16px, 5vw, 72px);
+  --pad: clamp(16px, 5vw, 48px);
+  --maxw: 1180px;
 }
 
 * {
@@ -20,7 +21,9 @@ body {
 }
 
 main {
-  padding: 28px var(--pad) 0;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 28px var(--pad) 8px;
 }
 
 h1,
@@ -40,6 +43,8 @@ header {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 16px;
+  max-width: var(--maxw);
+  margin: 0 auto;
   padding: 14px var(--pad);
   border-bottom: 1px solid #ddd;
 }
@@ -89,127 +94,105 @@ nav a:hover {
 }
 
 .hero-inner {
-  padding: 30px var(--pad) 34px;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 40px var(--pad) 44px;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 44px;
+  align-items: center;
 }
 
 .hero h1 {
   color: #fff;
-  font-size: clamp(24px, 3vw, 32px);
-  margin: 0 0 8px;
+  font-size: clamp(26px, 3.2vw, 36px);
+  margin: 0 0 12px;
 }
 
 .hero p {
+  margin: 0 0 18px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.hero-points {
+  list-style: none;
   margin: 0;
-  max-width: 62ch;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-/* Search bar */
-.searchbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-  background: #fff;
-  border: 3px solid #ff7a00;
-  border-radius: 6px;
-  margin-top: 20px;
-}
-
-.searchbar .field {
-  flex: 1 1 200px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  padding: 8px 14px;
-  border-right: 1px solid #e2e2e2;
-}
-
-.searchbar .field:last-of-type {
-  border-right: none;
-}
-
-.searchbar .ico {
-  flex: none;
-  display: flex;
-  color: #0b3d91;
-}
-
-.searchbar label {
-  flex: 1;
-  min-width: 0;
-  display: block;
-  margin: 0;
-  font-size: 11px;
-  font-weight: bold;
-  color: #1a1a1a;
-}
-
-.searchbar input,
-.searchbar select {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  height: auto;
-  margin: 2px 0 0;
   padding: 0;
-  border: none;
-  background: transparent;
-  font-size: 15px;
-  font-weight: bold;
-  color: #1a1a1a;
 }
 
-.searchbar input:focus,
-.searchbar select:focus {
-  outline: none;
+.hero-points li {
+  position: relative;
+  padding-left: 26px;
+  margin-bottom: 8px;
+  color: #fff;
 }
 
-.searchbar button {
-  flex: none;
+.hero-points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 12px;
+  height: 12px;
+  background: #ff7a00;
+}
+
+/* Quote card */
+.quote {
+  background: #fff;
+  color: #333;
+  border-top: 4px solid #ff7a00;
+  padding: 22px;
+}
+
+.quote h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.quote-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+}
+
+.quote label {
   margin: 0;
-  padding: 0 34px;
-  font-size: 16px;
-  border-radius: 0;
 }
 
-.hero-opts {
+.quote-opts {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 24px;
-  margin-top: 14px;
+  gap: 8px 20px;
+  margin: 16px 0 4px;
 }
 
-.hero-opts label {
+.quote-opts label {
   display: flex;
   align-items: center;
   gap: 8px;
   margin: 0;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: normal;
-  color: #fff;
 }
 
-.hero-opts input {
+.quote-opts input {
   width: 16px;
   height: 16px;
-  min-width: 0;
   margin: 0;
-  padding: 0;
-  border: none;
 }
 
-@media (max-width: 780px) {
-  .searchbar {
-    flex-direction: column;
-  }
-  .searchbar .field {
-    flex: 1 1 auto;
-    border-right: none;
-    border-bottom: 1px solid #e2e2e2;
-  }
-  .searchbar button {
-    padding: 12px;
+.quote button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  font-size: 15px;
+}
+
+@media (max-width: 860px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
   }
 }
 
@@ -308,33 +291,87 @@ button:hover {
   margin: 8px 0 0;
 }
 
-/* Lists */
-ol.steps,
-ul.who {
+/* How booking works — step cards */
+ol.steps {
+  list-style: none;
   margin: 0;
-  padding-left: 22px;
+  padding: 0;
+  counter-reset: step;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
 }
 
-ol.steps li,
-ul.who li {
+ol.steps li {
+  counter-increment: step;
+  border: 1px solid #ddd;
+  border-top: 3px solid #0b3d91;
+  padding: 14px 16px 16px;
+}
+
+ol.steps li::before {
+  content: counter(step);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
   margin-bottom: 8px;
+  background: #0b3d91;
+  color: #fff;
+  font-weight: bold;
+  font-size: 14px;
 }
 
-ol.steps b,
-ul.who b {
+ol.steps b {
+  display: block;
   color: #0b3d91;
+  margin-bottom: 2px;
+}
+
+/* Who it's for — cards */
+ul.who {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+ul.who li {
+  border: 1px solid #ddd;
+  border-left: 3px solid #ff7a00;
+  padding: 14px 16px;
+}
+
+ul.who b {
+  display: block;
+  color: #0b3d91;
+  margin-bottom: 2px;
 }
 
 /* About */
+#about {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 8px 32px;
+  align-items: start;
+}
+
+#about h2 {
+  grid-column: 1 / -1;
+}
+
 #about p {
-  margin: 0 0 10px;
-  max-width: 95ch;
+  margin: 0;
 }
 
 /* Footer */
 footer {
   border-top: 1px solid #ccc;
-  margin-top: 8px;
+  margin: 8px auto 0;
+  max-width: var(--maxw);
   padding: 16px var(--pad) 28px;
   font-size: 12px;
   color: #666;
