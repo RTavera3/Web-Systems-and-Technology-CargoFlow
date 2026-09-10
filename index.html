@@ -22,8 +22,8 @@
       <p class="tag">Share the Road. Share the Cost.</p>
       <nav>
         <a href="#search">Find cargo space</a>
+        <a href="#how">How booking works</a>
         <a href="#book">Book cargo space</a>
-        <a href="#carriers">For carriers</a>
         <a href="#who">Who it's for</a>
         <a href="#about">About</a>
       </nav>
@@ -33,8 +33,8 @@
       <section class="hero">
         <h1>Find and share cargo space across the Philippines</h1>
         <p>
-          Don't pay for a whole truck. Search for carriers going your way and
-          book only the space you need.
+          Don't pay for a whole truck. Search routes going your way and book
+          only the space you need.
         </p>
       </section>
 
@@ -137,6 +137,33 @@
         </p>
       </section>
 
+      <!-- HOW BOOKING WORKS -->
+      <section id="how" class="panel">
+        <h2>How booking works</h2>
+        <ol class="steps">
+          <li>
+            <b>Search a route.</b> Enter your pickup and drop-off locations to
+            see carriers already driving that way with space to spare.
+          </li>
+          <li>
+            <b>Pick an available route.</b> Compare space left, schedule, and
+            starting price, then choose the one that fits your shipment.
+          </li>
+          <li>
+            <b>Fill in your booking details.</b> Add your pickup date, cargo
+            weight and description, and your contact and drop-off address.
+          </li>
+          <li>
+            <b>Send the booking request.</b> The route operator reviews your
+            request and confirms the price and pickup.
+          </li>
+          <li>
+            <b>Hand over your cargo.</b> Drop off or meet the truck on the
+            pickup date and pay only for the space you used.
+          </li>
+        </ol>
+      </section>
+
       <!-- BOOKING -->
       <section id="book" class="panel">
         <h2>Book cargo space</h2>
@@ -192,81 +219,6 @@
         </form>
       </section>
 
-      <!-- FOR CARRIERS -->
-      <section id="carriers" class="panel">
-        <h2>For carriers — list your available space</h2>
-        <p>
-          Driving a route with room to spare? Post your unused capacity and let
-          shippers going the same way share the trip.
-        </p>
-        <form action="#" method="post">
-          <div class="row">
-            <label>
-              Pickup location
-              <select name="from">
-                <option>Manila</option>
-                <option>Batangas</option>
-                <option>Baguio</option>
-                <option>Cebu</option>
-                <option>Davao</option>
-                <option>Pampanga</option>
-              </select>
-            </label>
-            <label>
-              Drop-off location
-              <select name="to">
-                <option>Manila</option>
-                <option>Batangas</option>
-                <option>Baguio</option>
-                <option>Cebu</option>
-                <option>Davao</option>
-                <option>Pampanga</option>
-              </select>
-            </label>
-            <label>
-              Vehicle type
-              <select name="vehicle">
-                <option>Closed van</option>
-                <option>6-wheel truck</option>
-                <option>10-wheel truck</option>
-                <option>RoRo cargo truck</option>
-              </select>
-            </label>
-          </div>
-
-          <div class="row">
-            <label>
-              Available capacity (kg)
-              <input type="number" name="capacity" min="1" max="50000" />
-            </label>
-            <label>
-              Schedule
-              <input type="text" name="schedule" placeholder="e.g. Weekdays, or Mon/Wed/Fri" />
-            </label>
-            <label>
-              Starting price (&#8369;)
-              <input type="number" name="price" min="0" />
-            </label>
-          </div>
-
-          <div class="row">
-            <label>
-              Carrier / company name
-              <input type="text" name="carrier" />
-            </label>
-            <label>
-              Contact number
-              <input type="tel" name="contact" placeholder="09XX XXX XXXX" />
-            </label>
-          </div>
-
-          <button type="submit">Post available space</button>
-          <p class="hint">
-            Prototype form — submitting does not create a real listing yet.
-          </p>
-        </form>
-      </section>
-
       <!-- WHO IT'S FOR -->
       <section id="who" class="panel">
         <h2>Who it's for</h2>
@@ -274,7 +226,6 @@
           <li><b>SMEs</b> — small and medium businesses with partial-load shipments</li>
           <li><b>Online sellers</b> — e-commerce merchants shipping orders to customers</li>
           <li><b>Manufacturers</b> — businesses moving goods between locations</li>
-          <li><b>Local carriers</b> — truck owners and operators with unused capacity</li>
         </ul>
       </section>
 
@@ -283,9 +234,9 @@
         <h2>About CargoFlow</h2>
         <p>
           Shipping in the Philippines is expensive for small businesses that
-          can't fill an entire truck, while carriers often drive routes with
-          empty space. CargoFlow matches compatible shipments on the same route
-          so shippers share the cost and carriers earn from unused capacity.
+          can't fill an entire truck. CargoFlow lets you search routes that are
+          already running and book just the space your shipment needs, so you
+          share the trip and the cost instead of paying for the whole vehicle.
         </p>
         <p>
           Built for MO-IT161 &ndash; Web Systems and Technology. This page is
