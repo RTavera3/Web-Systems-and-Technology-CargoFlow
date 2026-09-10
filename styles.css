@@ -169,7 +169,20 @@ tr:nth-child(even) td {
   text-decoration: none;
 }
 
-/* Footer */
+/* How booking works */
+ol.steps {
+  margin: 0;
+  padding-left: 20px;
+}
+
+ol.steps li {
+  margin-bottom: 10px;
+}
+
+ol.steps b {
+  color: #0b3d91;
+}
+
 /* Who it's for */
 ul.who {
   margin: 0;
