@@ -21,7 +21,6 @@
       </div>
       <p class="tag">Share the Road. Share the Cost.</p>
       <nav>
-        <a href="#search">Find cargo space</a>
         <a href="#how">How booking works</a>
         <a href="#book">Book cargo space</a>
         <a href="#who">Who it's for</a>
@@ -29,24 +28,27 @@
       </nav>
     </header>
 
-    <main>
-      <section class="hero">
-        <h1>Find and share cargo space across the Philippines</h1>
+    <section class="hero">
+      <div class="hero-inner">
+        <h1>Book cargo space going your way</h1>
         <p>
-          Don't pay for a whole truck. Search routes going your way and book
-          only the space you need.
+          Don't pay for a whole truck. Tell us your route and load &mdash; we
+          match a carrier already driving that way and price it by the space
+          you use.
         </p>
-      </section>
 
-      <!-- SEARCH -->
-      <section id="search" class="panel">
-        <h2>Find cargo space</h2>
-        <form action="#book" method="get">
-          <div class="row">
+        <form class="searchbar" action="#book" method="get">
+          <div class="field">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" />
+              </svg>
+            </span>
             <label>
-              Pickup location
+              Pick-up location
               <select name="from">
-                <option value="">Any</option>
+                <option value="">Select city</option>
                 <option>Manila</option>
                 <option>Batangas</option>
                 <option>Baguio</option>
@@ -55,10 +57,21 @@
                 <option>Pampanga</option>
               </select>
             </label>
+          </div>
+
+          <div class="field">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11Z" />
+                <circle cx="12" cy="10" r="2.5" />
+              </svg>
+            </span>
             <label>
               Drop-off location
               <select name="to">
-                <option value="">Any</option>
+                <option value="">Select city</option>
                 <option>Manila</option>
                 <option>Batangas</option>
                 <option>Baguio</option>
@@ -67,124 +80,117 @@
                 <option>Pampanga</option>
               </select>
             </label>
+          </div>
+
+          <div class="field">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <rect x="3" y="5" width="18" height="16" rx="2" />
+                <path d="M3 10h18M8 3v4M16 3v4" />
+              </svg>
+            </span>
             <label>
-              Cargo weight (kg)
-              <input type="number" name="weight" min="1" max="50000" placeholder="Optional" />
+              Pick-up date
+              <input type="date" name="date" />
             </label>
           </div>
-          <button type="submit">Search routes</button>
+
+          <div class="field">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
+              </svg>
+            </span>
+            <label>
+              Pick-up time
+              <input type="time" name="time" />
+            </label>
+          </div>
+
+          <div class="field">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="m3 8 9-5 9 5-9 5-9-5Z" /><path d="m3 8 9 5v8L3 16V8Z" />
+                <path d="m21 8-9 5v8l9-5V8Z" />
+              </svg>
+            </span>
+            <label>
+              Cargo weight (kg)
+              <input type="number" name="weight" min="1" max="50000"
+                placeholder="e.g. 250" />
+            </label>
+          </div>
+
+          <button type="submit">Search</button>
         </form>
 
-        <p class="hint">
-          Popular: Manila &rarr; Batangas &nbsp;·&nbsp; Manila &rarr; Baguio
-          &nbsp;·&nbsp; Cebu &rarr; Davao
-        </p>
+        <div class="hero-opts">
+          <label><input type="checkbox" name="fragile" /> Fragile or perishable cargo</label>
+          <label><input type="checkbox" name="loading" /> I need help loading</label>
+          <label><input type="checkbox" name="different" /> Different pick-up and drop-off contact</label>
+        </div>
+      </div>
+    </section>
 
-        <h3>Available routes (sample)</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Route</th>
-              <th>Carrier</th>
-              <th>Vehicle</th>
-              <th>Space left</th>
-              <th>Schedule</th>
-              <th>Starting price</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Manila &rarr; Batangas</td>
-              <td>Southbound Logistics</td>
-              <td>Closed van</td>
-              <td>800 kg</td>
-              <td>Weekdays</td>
-              <td>&#8369;850</td>
-              <td><a class="book-link" href="#book">Book</a></td>
-            </tr>
-            <tr>
-              <td>Manila &rarr; Baguio</td>
-              <td>Northline Transport</td>
-              <td>6-wheel truck</td>
-              <td>1,500 kg</td>
-              <td>Daily</td>
-              <td>&#8369;1,450</td>
-              <td><a class="book-link" href="#book">Book</a></td>
-            </tr>
-            <tr>
-              <td>Cebu &rarr; Davao</td>
-              <td>Island Link Cargo</td>
-              <td>RoRo cargo truck</td>
-              <td>2,000 kg</td>
-              <td>Mon, Wed, Fri</td>
-              <td>&#8369;2,200</td>
-              <td><a class="book-link" href="#book">Book</a></td>
-            </tr>
-            <tr>
-              <td>Manila &rarr; Pampanga</td>
-              <td>Central Luzon Express</td>
-              <td>Closed van</td>
-              <td>500 kg</td>
-              <td>Daily</td>
-              <td>&#8369;650</td>
-              <td><a class="book-link" href="#book">Book</a></td>
-            </tr>
-          </tbody>
-        </table>
-        <p class="hint">
-          Sample listings only. Prices are illustrative starting rates.
-        </p>
-      </section>
-
+    <main>
       <!-- HOW BOOKING WORKS -->
       <section id="how" class="panel">
         <h2>How booking works</h2>
         <ol class="steps">
           <li>
-            <b>Search a route.</b> Enter your pickup and drop-off locations to
-            see carriers already driving that way with space to spare.
+            <b>Enter your shipment details.</b> Pickup and drop-off locations,
+            pickup date, cargo weight, and what you're sending.
           </li>
           <li>
-            <b>Pick an available route.</b> Compare space left, schedule, and
-            starting price, then choose the one that fits your shipment.
+            <b>Get matched automatically.</b> CargoFlow assigns a carrier
+            already running that route with room for your load.
           </li>
           <li>
-            <b>Fill in your booking details.</b> Add your pickup date, cargo
-            weight and description, and your contact and drop-off address.
+            <b>See your price.</b> Calculated from the route distance and the
+            space your cargo takes up &mdash; no whole-truck fee.
           </li>
           <li>
-            <b>Send the booking request.</b> The route operator reviews your
-            request and confirms the price and pickup.
+            <b>Confirm your booking.</b> Review the match and price, then send
+            the request.
           </li>
           <li>
-            <b>Hand over your cargo.</b> Drop off or meet the truck on the
-            pickup date and pay only for the space you used.
+            <b>Hand over your cargo.</b> Meet the truck on the pickup date and
+            pay only for your space.
           </li>
         </ol>
       </section>
 
       <!-- BOOKING -->
       <section id="book" class="panel">
-        <h2>Book cargo space</h2>
+        <h2>Complete your booking</h2>
+        <p class="lead">
+          Start from the search bar above, then add the pick-up and delivery
+          details here. Your carrier and price are assigned automatically.
+        </p>
         <form action="#" method="post">
           <div class="row">
             <label>
-              Route
-              <select name="route">
-                <option>Manila &rarr; Batangas — Southbound Logistics</option>
-                <option>Manila &rarr; Baguio — Northline Transport</option>
-                <option>Cebu &rarr; Davao — Island Link Cargo</option>
-                <option>Manila &rarr; Pampanga — Central Luzon Express</option>
+              Cargo type
+              <select name="type">
+                <option value="">Select</option>
+                <option>General goods</option>
+                <option>Fragile</option>
+                <option>Perishable</option>
+                <option>Bulk / sacks</option>
+                <option>Appliances / furniture</option>
               </select>
             </label>
             <label>
-              Pickup date
-              <input type="date" name="date" />
+              Number of items / packages
+              <input type="number" name="items" min="1" placeholder="e.g. 5" />
             </label>
             <label>
-              Cargo weight (kg)
-              <input type="number" name="weight" min="1" max="50000" />
+              Declared value (&#8369;)
+              <input type="number" name="value" min="0" placeholder="Optional" />
             </label>
           </div>
 
@@ -212,9 +218,11 @@
             </label>
           </div>
 
-          <button type="submit">Request booking</button>
+          <button type="submit">Get matched &amp; see price</button>
           <p class="hint">
-            Prototype form — submitting does not create a real booking yet.
+            Your carrier is matched automatically and your price is calculated
+            from the route, distance, and cargo weight you enter. Prototype form
+            &mdash; submitting does not create a real booking yet.
           </p>
         </form>
       </section>
@@ -234,9 +242,10 @@
         <h2>About CargoFlow</h2>
         <p>
           Shipping in the Philippines is expensive for small businesses that
-          can't fill an entire truck. CargoFlow lets you search routes that are
-          already running and book just the space your shipment needs, so you
-          share the trip and the cost instead of paying for the whole vehicle.
+          can't fill an entire truck. CargoFlow matches your shipment to a
+          carrier already running that route and prices it by the space your
+          cargo uses, so you share the trip and the cost instead of paying for
+          the whole vehicle.
         </p>
         <p>
           Built for MO-IT161 &ndash; Web Systems and Technology. This page is
