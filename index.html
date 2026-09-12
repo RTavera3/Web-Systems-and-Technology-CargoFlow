@@ -80,8 +80,13 @@
             </label>
             <label>
               Cargo weight (kg)
-              <input type="number" name="weight" min="1" max="50000"
-                placeholder="e.g. 250" />
+              <input
+                type="number"
+                name="weight"
+                min="1"
+                max="50000"
+                placeholder="e.g. 250"
+              />
             </label>
             <label>
               Cargo type
@@ -97,8 +102,12 @@
           </div>
 
           <div class="quote-opts">
-            <label><input type="checkbox" name="fragile" /> Handle with care</label>
-            <label><input type="checkbox" name="loading" /> Need help loading</label>
+            <label
+              ><input type="checkbox" name="fragile" /> Handle with care</label
+            >
+            <label
+              ><input type="checkbox" name="loading" /> Need help loading</label
+            >
           </div>
 
           <button type="submit">Get matched &amp; see price</button>
@@ -106,6 +115,79 @@
       </div>
     </section>
 
+    <!-- RATE CALCULATOR SECTION -->
+    <section id="calculator" class="panel">
+      <h2>Rate Calculator</h2>
+      <p>Calculate your estimated cargo cost based on weight and route.</p>
+
+      <form class="quote">
+        <div class="quote-grid">
+          <label>
+            Pick-up city
+            <select name="from">
+              <option value="">Select</option>
+              <option>Manila</option>
+              <option>Batangas</option>
+              <option>Baguio</option>
+              <option>Cebu</option>
+              <option>Davao</option>
+              <option>Pampanga</option>
+            </select>
+          </label>
+
+          <label>
+            Drop-off city
+            <select name="to">
+              <option value="">Select</option>
+              <option>Manila</option>
+              <option>Batangas</option>
+              <option>Baguio</option>
+              <option>Cebu</option>
+              <option>Davao</option>
+              <option>Pampanga</option>
+            </select>
+          </label>
+
+          <label>
+            Cargo weight (kg)
+            <input type="number" name="weight" placeholder="e.g. 250" />
+          </label>
+
+          <label>
+            Cargo type
+            <select name="type">
+              <option value="">Select</option>
+              <option>General goods</option>
+              <option>Fragile</option>
+              <option>Perishable</option>
+              <option>Bulk / sacks</option>
+              <option>Appliances / furniture</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="quote-opts">
+          <label
+            ><input type="checkbox" name="express" /> Priority shipping</label
+          >
+          <label
+            ><input type="checkbox" name="insurance" /> Add insurance</label
+          >
+        </div>
+
+        <button type="button">Calculate price</button>
+      </form>
+
+      <div class="calc-result">
+        <h3>Estimated Breakdown</h3>
+        <p>Standard rate: ₱8,500.00</p>
+        <p>Shared space discount: -₱5,100.00</p>
+        <p>Handling fee: ₱350.00</p>
+        <hr />
+        <p><strong>Total Estimate: ₱3,750.00</strong></p>
+      </div>
+    </section>
+    
     <main>
       <!-- WHO IT'S FOR -->
       <section id="audience" class="band">
@@ -129,9 +211,16 @@
             <p class="bv-title">One trip, shared four ways</p>
             <ul class="bv-list">
               <li><span class="bv-dot bv-a"></span>SME &mdash; 8 boxes</li>
-              <li><span class="bv-dot bv-b"></span>Online seller &mdash; 20 parcels</li>
-              <li><span class="bv-dot bv-you"></span>Your load &mdash; 250 kg</li>
-              <li><span class="bv-dot bv-d"></span>Manufacturer &mdash; 5 crates</li>
+              <li>
+                <span class="bv-dot bv-b"></span>Online seller &mdash; 20
+                parcels
+              </li>
+              <li>
+                <span class="bv-dot bv-you"></span>Your load &mdash; 250 kg
+              </li>
+              <li>
+                <span class="bv-dot bv-d"></span>Manufacturer &mdash; 5 crates
+              </li>
             </ul>
             <div class="bv-bar" aria-hidden="true">
               <span class="bv-seg bv-a"></span>
