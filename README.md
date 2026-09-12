@@ -130,9 +130,9 @@ Web-Systems-and-Technology-CargoFlow/
 ## Core Pages
 
 1. **Home** — platform overview and quick search
-2. **Find Matches** — browse shipments/carriers filtered by route, size, and schedule
-3. **Book Cargo Space** — reserve space and view shared cost breakdown
-4. **Track Shipment** — see shipment status and timeline
+2. **Book Cargo Space** — reserve space and view shared cost breakdown
+3. **Track Shipment** — see shipment status and timeline
+4. **Shipment History** - for viewing active and past bookings. 
 5. **Messages** — chat directly with carriers
 
 ---
@@ -141,7 +141,7 @@ Web-Systems-and-Technology-CargoFlow/
 
 > _Add screenshots of the running app here._
 
-|      Home      |  Find Matches  |    Tracking    |
+|      Home      |  Book Cargo    |    Tracking    | 
 | :------------: | :------------: | :------------: |
 | _(screenshot)_ | _(screenshot)_ | _(screenshot)_ |
 
@@ -157,6 +157,10 @@ Web-Systems-and-Technology-CargoFlow/
 | Ryan Keneth Tavera    |
 
 ---
+
+## Links
+[Application Development Worksheet](https://docs.google.com/spreadsheets/d/1dY_Oe7DcTmbCF5gs7h_8In5pB499XdTnBrwlWs6sxXw/edit?usp=sharing)
+[Project Plan](https://docs.google.com/spreadsheets/d/138MnAb0N5k0tvgI0hg_GSXMYZVBpTThv79Nch-e4GCY/edit?usp=sharing)
 
 ## Course Information
 
