@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CargoFlow - Messages</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="logo">
+      <img src="./resources/cargoflow.logo.png" alt="CargoFlow Logo" class="logo-img">
+    </div>
+    
+    <nav class="nav-links">
+      <a href="#">Home</a>
+      <a href="#">Book Cargo Space</a>
+      <a href="#">Track Shipment</a>
+      <a href="#" class="active">Messages</a>
+    </nav>
+    
+    <div class="user-profile">
+      <div class="avatar-header">JR</div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="container">
+    
+    <!-- Page Header -->
+    <div class="page-title">
+      <h1>Messages</h1>
+      <p>Direct communication with your carriers</p>
+    </div>
+
+    <!-- Chat Application Box -->
+    <div class="chat-app">
+
+      <!-- Left Sidebar: Conversations List -->
+      <aside class="sidebar">
+        
+        <!-- Search Bar -->
+        <div class="search-box">
+          <input type="text" placeholder="Search conversations...">
+        </div>
+
+        <!-- Conversations List (Only 1 item left) -->
+        <div class="conversation-list">
+          
+          <div class="conversation-item active">
+            <div class="avatar bg-navy">C</div>
+            <div class="conversation-info">
+              <div class="item-header">
+                <strong>Carrier Name</strong>
+                <span class="badge bg-orange">Number</span>
+              </div>
+              <span class="location-tag bg-light-blue">Location to End Location</span>
+              <p class="preview-text">Message preview goes here...</p>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+
+      <!-- Right Main Area: Chat Room -->
+      <section class="chat-area">
+        
+        <!-- Chat Header -->
+        <div class="chat-header">
+          <div class="chat-user">
+            <div class="avatar bg-navy">C</div>
+            <div>
+              <h3>Reyes Freight Corp.</h3>
+              <small class="text-muted">Location to End Location</small>
+            </div>
+          </div>
+          <div class="chat-actions">
+            <span>Icon</span>
+            <span>⋮</span>
+          </div>
+        </div>
+
+        <!-- Booking Info Box -->
+        <div class="booking-card">
+          <span class="truck-icon">Icon</span>
+          <div>
+            <strong>Tracking Number</strong>
+            <p>Location to End Location • Date</p>
+          </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="messages-container">
+          
+          <!-- Received Message -->
+          <div class="message incoming">
+            <div class="avatar bg-navy message-avatar">R</div>
+            <div class="message-content">
+              <p>Message</p>
+              <span class="time">Date · Time</span>
+            </div>
+          </div>
+
+          <!-- Sent Message -->
+          <div class="message outgoing">
+            <div class="message-content">
+              <p>Message</p>
+              <span class="time">Date · Time</span>
+            </div>
+          </div>
+
+          <!-- Received Message -->
+          <div class="message incoming">
+            <div class="avatar bg-navy message-avatar">R</div>
+            <div class="message-content">
+              <p>Message</p>
+              <span class="time">Date · Time</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Input Box -->
+        <div class="chat-input-area">
+          <button class="icon-btn" type="button">Icon</button>
+          <input type="text" placeholder="Type a message...">
+          <button class="send-btn" type="button">➤</button>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+</body>
+</html>
