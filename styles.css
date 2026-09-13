@@ -114,6 +114,30 @@ nav a:hover {
   color: rgba(255, 255, 255, 0.92);
 }
 
+.hero-actions {
+  margin: 0 0 18px;
+}
+
+.primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ff7a00;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 12px 22px;
+  box-shadow: 0 6px 18px rgba(255, 122, 0, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.primary-btn:hover {
+  background: #e96d00;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(255, 122, 0, 0.32);
+}
+
 .hero-points {
   list-style: none;
   margin: 0;
