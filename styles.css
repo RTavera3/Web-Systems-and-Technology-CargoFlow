@@ -523,6 +523,52 @@ button:hover {
   font-weight: bold;
 }
 
+.reasons-section {
+  background: #fff;
+}
+
+.reasons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.reason-card {
+  background: #f9f8f6;
+  border: 1px solid #dedede;
+  padding: 18px 16px;
+  min-height: 180px;
+}
+
+.reason-card h3 {
+  margin: 12px 0 8px;
+  font-size: 18px;
+}
+
+.reason-card p {
+  margin: 0;
+  color: #4b4b4b;
+}
+
+.icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  background: #0b3d91;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.guarantee-card {
+  border-color: #ffcfab;
+  background: #fff8f3;
+}
+
 @media (max-width: 760px) {
   .contact-grid {
     grid-template-columns: 1fr;
