@@ -123,7 +123,7 @@
       <h2>Rate Calculator</h2>
       <p>Calculate your estimated cargo cost based on weight and route.</p>
 
-      <form class="quote">
+      <form class="quote" id="calc-form">
         <div class="quote-grid">
           <label>
             Pick-up city
@@ -153,7 +153,7 @@
 
           <label>
             Cargo weight (kg)
-            <input type="number" name="weight" placeholder="e.g. 250" />
+            <input type="number" name="weight" id="calc-weight" min="1" placeholder="e.g. 250" />
           </label>
 
           <label>
@@ -171,23 +171,25 @@
 
         <div class="quote-opts">
           <label
-            ><input type="checkbox" name="express" /> Priority shipping</label
+            ><input type="checkbox" name="express" id="calc-express" /> Priority shipping</label
           >
           <label
-            ><input type="checkbox" name="insurance" /> Add insurance</label
+            ><input type="checkbox" name="insurance" id="calc-insurance" /> Add insurance</label
           >
         </div>
 
-        <button type="button">Calculate price</button>
+        <button type="button" id="calc-submit">Calculate price</button>
       </form>
 
       <div class="calc-result">
         <h3>Estimated Breakdown</h3>
-        <p>Standard rate: ₱8,500.00</p>
-        <p>Shared space discount: -₱5,100.00</p>
-        <p>Handling fee: ₱350.00</p>
+        <p>Standard rate: <span id="calc-standard">&mdash;</span></p>
+        <p>Shared space discount: <span id="calc-discount">&mdash;</span></p>
+        <p>Handling fee: <span id="calc-handling">&mdash;</span></p>
+        <p>Add-ons: <span id="calc-addons">&mdash;</span></p>
         <hr />
-        <p><strong>Total Estimate: ₱3,750.00</strong></p>
+        <p><strong>Total Estimate: <span id="calc-total">&mdash;</span></strong></p>
+        <p class="hint" id="calc-hint">Enter a cargo weight and press "Calculate price".</p>
       </div>
     </section>
     
@@ -260,5 +262,54 @@
         project. Made in the Philippines.
       </p>
     </footer>
+
+    <script>
+      // Basic, non-persisted estimate for the Rate Calculator prototype.
+      // Route/city are not yet priced individually — see the .note above
+      // the section for the same "prototype" caveat as the rest of the site.
+      (function () {
+        const RATE_PER_KG = 30; // PHP per kg, standalone truck rate
+        const SHARED_SPACE_DISCOUNT = 0.4; // 40% off for sharing space with other shippers
+        const HANDLING_FEE = 350; // flat PHP handling fee
+        const PRIORITY_SURCHARGE = 500; // flat PHP for "Priority shipping"
+        const INSURANCE_SURCHARGE = 250; // flat PHP for "Add insurance"
+
+        function peso(amount) {
+          return "₱" + amount.toLocaleString("en-PH", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+        }
+
+        function calculate() {
+          const weightInput = document.getElementById("calc-weight");
+          const weight = parseFloat(weightInput.value);
+          const hint = document.getElementById("calc-hint");
+
+          if (!weight || weight <= 0) {
+            hint.textContent = "Enter a cargo weight greater than 0 to see an estimate.";
+            return;
+          }
+
+          const standard = weight * RATE_PER_KG;
+          const discount = standard * SHARED_SPACE_DISCOUNT;
+
+          let addons = 0;
+          if (document.getElementById("calc-express").checked) addons += PRIORITY_SURCHARGE;
+          if (document.getElementById("calc-insurance").checked) addons += INSURANCE_SURCHARGE;
+
+          const total = standard - discount + HANDLING_FEE + addons;
+
+          document.getElementById("calc-standard").textContent = peso(standard);
+          document.getElementById("calc-discount").textContent = "-" + peso(discount);
+          document.getElementById("calc-handling").textContent = peso(HANDLING_FEE);
+          document.getElementById("calc-addons").textContent = addons ? peso(addons) : peso(0);
+          document.getElementById("calc-total").textContent = peso(total);
+          hint.textContent = "Estimate based on weight only — route pricing is not yet built.";
+        }
+
+        document.getElementById("calc-submit").addEventListener("click", calculate);
+      })();
+    </script>
   </body>
 </html>
