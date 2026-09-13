@@ -454,3 +454,210 @@ footer {
   color: #666;
   text-align: center;
 }
+
+/* ===================================================
+   Track Shipment page additions
+   Uses existing palette: deep blue #0b3d91, orange #ff7a00
+   =================================================== */
+
+/* Compact hero variant (no two-column quote card, just a search bar) */
+.track-hero-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 40px var(--pad) 44px;
+  text-align: center;
+}
+
+.track-hero-inner h1 {
+  color: #fff;
+  font-size: clamp(26px, 3.2vw, 36px);
+  margin: 0 0 12px;
+}
+
+.track-hero-inner p {
+  margin: 0 auto 22px;
+  max-width: 60ch;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.track-search {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.track-search input {
+  margin-top: 0;
+  background: #fff;
+}
+
+.track-search button {
+  margin-top: 0;
+  white-space: nowrap;
+  background: #fff;
+  color: #0b3d91;
+}
+
+.track-search button:hover {
+  background: #f4f1ea
+}
+
+/* Visually hide label but keep it for screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* Shipment summary */
+.summary-label {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #666;
+  margin: 0 0 4px;
+}
+
+.summary-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: #0b3d91;
+  margin: 0;
+}
+
+/* Status badge */
+.badge {
+  display: inline-block;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.badge-transit {
+  background: #ff7a00;
+}
+
+.badge-delivered {
+  background: #3b82f6;
+}
+
+.badge-placed {
+  background: #0b3d91;
+}
+
+/* Timeline */
+.timeline {
+  display: flex;
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+}
+
+.step {
+  position: relative;
+  flex: 1;
+  text-align: center;
+  padding-top: 26px;
+}
+
+.step::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  left: -50%;
+  width: 100%;
+  height: 3px;
+  background: #ddd;
+  z-index: 0;
+}
+
+.step:first-child::before {
+  content: none;
+}
+
+.step-dot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #ddd;
+  z-index: 1;
+}
+
+.step-label {
+  font-size: 13px;
+  font-weight: bold;
+  margin: 4px 0 2px;
+  color: #333;
+}
+
+.step-time {
+  font-size: 11px;
+  color: #666;
+  margin: 0;
+}
+
+/* Completed steps */
+.step.is-done::before {
+  background: #0b3d91;
+}
+
+.step.is-done .step-dot {
+  background: #0b3d91;
+  border-color: #0b3d91;
+}
+
+/* Current step */
+.step.is-current .step-dot {
+  background: #ff7a00;
+  border-color: #ff7a00;
+}
+
+.step.is-current .step-label {
+  color: #ff7a00;
+}
+
+/* Upcoming steps keep the default gray styling above */
+
+@media (max-width: 700px) {
+  .timeline {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .step {
+    text-align: left;
+    padding-top: 0;
+    padding-left: 34px;
+  }
+
+  .step::before {
+    top: -20px;
+    left: 9px;
+    width: 3px;
+    height: 20px;
+  }
+
+  .step-dot {
+    top: 0;
+    left: 0;
+    transform: none;
+  }
+
+  .track-search {
+    flex-direction: column;
+  }
+}
