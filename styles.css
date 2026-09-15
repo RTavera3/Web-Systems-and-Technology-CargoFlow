@@ -1,0 +1,663 @@
+/* CargoFlow — simple HTML/CSS landing page.
+   Colours: deep blue #0B3D91, orange #FF7A00, sand #F4F1EA. */
+
+:root {
+  --pad: clamp(16px, 5vw, 48px);
+  --maxw: 1180px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  overflow-x: hidden;
+}
+
+main {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 28px var(--pad) 8px;
+}
+
+h1,
+h2,
+h3 {
+  color: #0b3d91;
+  margin: 0 0 10px;
+}
+
+a {
+  color: #0b3d91;
+}
+
+/* Header */
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 14px var(--pad);
+  border-bottom: 1px solid #ddd;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand span {
+  font-size: 22px;
+  font-weight: bold;
+  color: #0b3d91;
+}
+
+.brand b {
+  color: #ff7a00;
+}
+
+.tag {
+  margin: 0;
+  font-size: 12px;
+  font-weight: bold;
+  color: #ff7a00;
+}
+
+nav {
+  margin-left: auto;
+}
+
+nav a {
+  margin-left: 14px;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* Hero */
+.hero {
+  background: #0b3d91;
+  color: #fff;
+}
+
+.hero-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 40px var(--pad) 44px;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 44px;
+  align-items: center;
+}
+
+.hero h1 {
+  color: #fff;
+  font-size: clamp(26px, 3.2vw, 36px);
+  margin: 0 0 12px;
+}
+
+.hero p {
+  margin: 0 0 18px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.hero-actions {
+  margin: 0 0 18px;
+}
+
+.primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ff7a00;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 12px 22px;
+  box-shadow: 0 6px 18px rgba(255, 122, 0, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.primary-btn:hover {
+  background: #e96d00;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(255, 122, 0, 0.32);
+}
+
+.hero-points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hero-points li {
+  position: relative;
+  padding-left: 26px;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.hero-points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 12px;
+  height: 12px;
+  background: #ff7a00;
+}
+
+/* Quote card */
+.quote {
+  background: #fff;
+  color: #333;
+  border-top: 4px solid #ff7a00;
+  padding: 22px;
+}
+
+.quote h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.quote-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+}
+
+.quote label {
+  margin: 0;
+}
+
+.quote-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 16px 0 4px;
+}
+
+.quote-opts label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.quote-opts input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.quote button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  font-size: 15px;
+}
+
+@media (max-width: 860px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
+/* Sections */
+.panel {
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.panel h2 {
+  font-size: 20px;
+  margin-bottom: 14px;
+}
+
+.lead {
+  margin: -6px 0 18px;
+  max-width: 70ch;
+  color: #555;
+}
+
+.panel h3 {
+  font-size: 15px;
+  margin: 18px 0 8px;
+}
+
+/* Forms */
+form label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 14px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 20px;
+  margin-bottom: 14px;
+}
+
+.row label {
+  margin-bottom: 0;
+}
+
+@media (max-width: 700px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}
+
+input,
+select,
+textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 38px;
+  padding: 8px 10px;
+  margin-top: 5px;
+  border: 1px solid #999;
+  font: inherit;
+  font-weight: normal;
+  background: #fff;
+}
+
+textarea {
+  height: auto;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid #0b3d91;
+  outline-offset: -1px;
+}
+
+button {
+  background: #0b3d91;
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+button:hover {
+  background: #082c69;
+}
+
+.hint {
+  font-size: 12px;
+  color: #666;
+  margin: 8px 0 0;
+}
+
+/* Who it's for — blue band */
+.band {
+  background: #0b3d91;
+  color: #fff;
+  padding: clamp(24px, 3.5vw, 40px);
+  margin-bottom: 24px;
+}
+
+.band-inner {
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 400px);
+  gap: 36px;
+  align-items: center;
+}
+
+.band h2 {
+  color: #fff;
+  font-size: clamp(21px, 2.6vw, 28px);
+  margin: 0 0 12px;
+}
+
+.band p {
+  margin: 0 0 16px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.band-points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.band-points li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 8px;
+}
+
+.band-points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 11px;
+  height: 11px;
+  background: #ff7a00;
+}
+
+.band-visual {
+  background: #fff;
+  color: #333;
+  border-top: 4px solid #ff7a00;
+  padding: 20px 22px;
+}
+
+.bv-title {
+  margin: 0 0 12px;
+  font-weight: bold;
+  color: #0b3d91;
+}
+
+.bv-list {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  font-size: 14px;
+}
+
+.bv-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.bv-dot {
+  width: 12px;
+  height: 12px;
+  flex: none;
+}
+
+.bv-a { background: #3882f6; }
+.bv-b { background: #ff7a00; }
+.bv-you { background: #0b3d91; }
+.bv-d { background: #9ab8ec; }
+.bv-open { background: #e2e6ec; }
+
+.bv-bar {
+  display: flex;
+  height: 22px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.bv-bar .bv-a { flex: 3; }
+.bv-bar .bv-b { flex: 4; }
+.bv-bar .bv-you { flex: 2; }
+.bv-bar .bv-d { flex: 2; }
+.bv-bar .bv-open { flex: 1; }
+
+.bv-note {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}
+
+@media (max-width: 720px) {
+  .band-inner {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* About */
+#about {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 8px 32px;
+  align-items: start;
+}
+
+#about h2 {
+  grid-column: 1 / -1;
+}
+
+#about p {
+  margin: 0;
+}
+
+/* Footer */
+footer {
+  border-top: 1px solid #ccc;
+  margin: 8px auto 0;
+  max-width: var(--maxw);
+  padding: 16px var(--pad) 28px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+}
+
+/* ===================================================
+   Track Shipment page additions
+   Uses existing palette: deep blue #0b3d91, orange #ff7a00
+   =================================================== */
+
+/* Compact hero variant (no two-column quote card, just a search bar) */
+.track-hero-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 40px var(--pad) 44px;
+  text-align: center;
+}
+
+.track-hero-inner h1 {
+  color: #fff;
+  font-size: clamp(26px, 3.2vw, 36px);
+  margin: 0 0 12px;
+}
+
+.track-hero-inner p {
+  margin: 0 auto 22px;
+  max-width: 60ch;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.track-search {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.track-search input {
+  margin-top: 0;
+  background: #fff;
+}
+
+.track-search button {
+  margin-top: 0;
+  white-space: nowrap;
+  background: #fff;
+  color: #0b3d91;
+}
+
+.track-search button:hover {
+  background: #f4f1ea
+}
+
+/* Visually hide label but keep it for screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* Shipment summary */
+.summary-label {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #666;
+  margin: 0 0 4px;
+}
+
+.summary-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: #0b3d91;
+  margin: 0;
+}
+
+/* Status badge */
+.badge {
+  display: inline-block;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.badge-transit {
+  background: #ff7a00;
+}
+
+.badge-delivered {
+  background: #3b82f6;
+}
+
+.badge-placed {
+  background: #0b3d91;
+}
+
+/* Timeline */
+.timeline {
+  display: flex;
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+}
+
+.step {
+  position: relative;
+  flex: 1;
+  text-align: center;
+  padding-top: 26px;
+}
+
+.step::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  left: -50%;
+  width: 100%;
+  height: 3px;
+  background: #ddd;
+  z-index: 0;
+}
+
+.step:first-child::before {
+  content: none;
+}
+
+.step-dot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #ddd;
+  z-index: 1;
+}
+
+.step-label {
+  font-size: 13px;
+  font-weight: bold;
+  margin: 4px 0 2px;
+  color: #333;
+}
+
+.step-time {
+  font-size: 11px;
+  color: #666;
+  margin: 0;
+}
+
+/* Completed steps */
+.step.is-done::before {
+  background: #0b3d91;
+}
+
+.step.is-done .step-dot {
+  background: #0b3d91;
+  border-color: #0b3d91;
+}
+
+/* Current step */
+.step.is-current .step-dot {
+  background: #ff7a00;
+  border-color: #ff7a00;
+}
+
+.step.is-current .step-label {
+  color: #ff7a00;
+}
+
+/* Upcoming steps keep the default gray styling above */
+
+@media (max-width: 700px) {
+  .timeline {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .step {
+    text-align: left;
+    padding-top: 0;
+    padding-left: 34px;
+  }
+
+  .step::before {
+    top: -20px;
+    left: 9px;
+    width: 3px;
+    height: 20px;
+  }
+
+  .step-dot {
+    top: 0;
+    left: 0;
+    transform: none;
+  }
+
+  .track-search {
+    flex-direction: column;
+  }
+}
