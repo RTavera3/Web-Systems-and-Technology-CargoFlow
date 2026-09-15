@@ -352,8 +352,20 @@
     </footer>
 
     <script>
+      const pickupDate = document.querySelector('input[name="date"]');
       const contactForm = document.getElementById('contactForm');
       const successMessage = document.getElementById('successMessage');
+
+      if (pickupDate) {
+        const today = new Date();
+        const localDate = new Date(
+          today.getTime() - today.getTimezoneOffset() * 60000,
+        )
+          .toISOString()
+          .split('T')[0];
+        pickupDate.min = localDate;
+        pickupDate.value = localDate;
+      }
 
       if (contactForm && successMessage) {
         contactForm.addEventListener('submit', function (event) {
