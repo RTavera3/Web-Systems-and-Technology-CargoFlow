@@ -1,129 +1,52 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CargoFlow</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <header>
-      <div class="brand">
-        <svg viewBox="0 0 56 56" width="40" height="40" aria-hidden="true">
-          <path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#0B3D91" />
-          <path
-            d="m37 3 14 5v14l-14-5ZM23 28l15-6-3-5 16 5-7 15-1-6-20 9Z"
-            fill="#FF7A00"
-          />
-          <path d="m23 44 17-7v12l-17 6Z" fill="#0B3D91" />
-        </svg>
-        <span>Cargo<b>Flow</b></span>
-      </div>
-      <p class="tag">Share the Road. Share the Cost.</p>
-      <nav>
-        <a href="#book">Book cargo space</a>
-        <a href="#audience">Who it's for</a>
-        <a href="#about">About</a>
-      </nav>
-    </header>
 
-    <section class="hero" id="book">
-      <div class="hero-inner">
-        <div class="hero-copy">
-          <h1>Book cargo space going your way</h1>
-          <p>
-            Don't pay for a whole truck. Tell us your route and load &mdash; we
-            match a carrier already driving that way and price it by the space
-            you use.
-          </p>
-          <div class="hero-actions">
-            <a href="#calculator" class="primary-btn">Book Cargo Space</a>
-          </div>
-          <ul class="hero-points">
-            <li>Pay only for the space your cargo takes</li>
-            <li>Carrier matched automatically to your route</li>
-            <li>Price based on distance and weight, not a flat truck fee</li>
-          </ul>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CargoFlow</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 56 56" width="40" height="40" aria-hidden="true">
+        <path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#0B3D91" />
+        <path d="m37 3 14 5v14l-14-5ZM23 28l15-6-3-5 16 5-7 15-1-6-20 9Z" fill="#FF7A00" />
+        <path d="m23 44 17-7v12l-17 6Z" fill="#0B3D91" />
+      </svg>
+      <span>Cargo<b>Flow</b></span>
+    </div>
+    <p class="tag">Share the Road. Share the Cost.</p>
+    <nav>
+      <a href="#book">Book cargo space</a>
+      <a href="#audience">Who it's for</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
+
+  <section class="hero" id="book">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <h1>Book cargo space going your way</h1>
+        <p>
+          Don't pay for a whole truck. Tell us your route and load &mdash; we
+          match a carrier already driving that way and price it by the space
+          you use.
+        </p>
+        <div class="hero-actions">
+          <a href="#calculator" class="primary-btn">Book Cargo Space</a>
         </div>
-
-        <form class="quote" action="#book" method="get">
-          <h2>Get a price</h2>
-          <div class="quote-grid">
-            <label>
-              Pick-up city
-              <select name="from">
-                <option value="">Select</option>
-                <option>Manila</option>
-                <option>Batangas</option>
-                <option>Baguio</option>
-                <option>Cebu</option>
-                <option>Davao</option>
-                <option>Pampanga</option>
-              </select>
-            </label>
-            <label>
-              Drop-off city
-              <select name="to">
-                <option value="">Select</option>
-                <option>Manila</option>
-                <option>Batangas</option>
-                <option>Baguio</option>
-                <option>Cebu</option>
-                <option>Davao</option>
-                <option>Pampanga</option>
-              </select>
-            </label>
-            <label>
-              Pick-up date
-              <input type="date" name="date" />
-            </label>
-            <label>
-              Pick-up time
-              <input type="time" name="time" />
-            </label>
-            <label>
-              Cargo weight (kg)
-              <input
-                type="number"
-                name="weight"
-                min="1"
-                max="50000"
-                placeholder="e.g. 250"
-              />
-            </label>
-            <label>
-              Cargo type
-              <select name="type">
-                <option value="">Select</option>
-                <option>General goods</option>
-                <option>Fragile</option>
-                <option>Perishable</option>
-                <option>Bulk / sacks</option>
-                <option>Appliances / furniture</option>
-              </select>
-            </label>
-          </div>
-
-          <div class="quote-opts">
-            <label
-              ><input type="checkbox" name="fragile" /> Handle with care</label
-            >
-            <label
-              ><input type="checkbox" name="loading" /> Need help loading</label
-            >
-          </div>
-
-          <button type="submit">Get matched &amp; see price</button>
-        </form>
+        <ul class="hero-points">
+          <li>Pay only for the space your cargo takes</li>
+          <li>Carrier matched automatically to your route</li>
+          <li>Price based on distance and weight, not a flat truck fee</li>
+        </ul>
       </div>
-    </section>
 
-    <!-- RATE CALCULATOR SECTION -->
-    <section id="calculator" class="panel">
-      <h2>Rate Calculator</h2>
-      <p>Calculate your estimated cargo cost based on weight and route.</p>
-
-      <form class="quote" id="calc-form">
+      <form class="quote" action="#book" method="get">
+        <h2>Get a price</h2>
         <div class="quote-grid">
           <label>
             Pick-up city
@@ -137,7 +60,6 @@
               <option>Pampanga</option>
             </select>
           </label>
-
           <label>
             Drop-off city
             <select name="to">
@@ -150,12 +72,18 @@
               <option>Pampanga</option>
             </select>
           </label>
-
+          <label>
+            Pick-up date
+            <input type="date" name="date" />
+          </label>
+          <label>
+            Pick-up time
+            <input type="time" name="time" />
+          </label>
           <label>
             Cargo weight (kg)
-            <input type="number" name="weight" id="calc-weight" min="1" placeholder="e.g. 250" />
+            <input type="number" name="weight" min="1" max="50000" placeholder="e.g. 250" />
           </label>
-
           <label>
             Cargo type
             <select name="type">
@@ -170,146 +98,223 @@
         </div>
 
         <div class="quote-opts">
-          <label
-            ><input type="checkbox" name="express" id="calc-express" /> Priority shipping</label
-          >
-          <label
-            ><input type="checkbox" name="insurance" id="calc-insurance" /> Add insurance</label
-          >
+          <label><input type="checkbox" name="fragile" /> Handle with care</label>
+          <label><input type="checkbox" name="loading" /> Need help loading</label>
         </div>
 
-        <button type="button" id="calc-submit">Calculate price</button>
+        <button type="submit">Get matched &amp; see price</button>
       </form>
+    </div>
+  </section>
 
-      <div class="calc-result">
-        <h3>Estimated Breakdown</h3>
-        <p>Standard rate: <span id="calc-standard">&mdash;</span></p>
-        <p>Shared space discount: <span id="calc-discount">&mdash;</span></p>
-        <p>Handling fee: <span id="calc-handling">&mdash;</span></p>
-        <p>Add-ons: <span id="calc-addons">&mdash;</span></p>
-        <hr />
-        <p><strong>Total Estimate: <span id="calc-total">&mdash;</span></strong></p>
-        <p class="hint" id="calc-hint">Enter a cargo weight and press "Calculate price".</p>
+  <!-- RATE CALCULATOR SECTION -->
+  <section id="calculator" class="panel">
+    <h2>Rate Calculator</h2>
+    <p>Calculate your estimated cargo cost based on weight and route.</p>
+
+    <form class="quote" id="calc-form">
+      <div class="quote-grid">
+        <label>
+          Pick-up city
+          <select name="from">
+            <option value="">Select</option>
+            <option>Manila</option>
+            <option>Batangas</option>
+            <option>Baguio</option>
+            <option>Cebu</option>
+            <option>Davao</option>
+            <option>Pampanga</option>
+          </select>
+        </label>
+
+        <label>
+          Drop-off city
+          <select name="to">
+            <option value="">Select</option>
+            <option>Manila</option>
+            <option>Batangas</option>
+            <option>Baguio</option>
+            <option>Cebu</option>
+            <option>Davao</option>
+            <option>Pampanga</option>
+          </select>
+        </label>
+
+        <label>
+          Cargo weight (kg)
+          <input type="number" name="weight" id="calc-weight" min="1" placeholder="e.g. 250" />
+        </label>
+
+        <label>
+          Cargo type
+          <select name="type">
+            <option value="">Select</option>
+            <option>General goods</option>
+            <option>Fragile</option>
+            <option>Perishable</option>
+            <option>Bulk / sacks</option>
+            <option>Appliances / furniture</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="quote-opts">
+        <label><input type="checkbox" name="express" id="calc-express" /> Priority shipping</label>
+        <label><input type="checkbox" name="insurance" id="calc-insurance" /> Add insurance</label>
+      </div>
+
+      <button type="button" id="calc-submit">Calculate price</button>
+    </form>
+
+    <div class="calc-result">
+      <h3>Estimated Breakdown</h3>
+      <p>Standard rate: <span id="calc-standard">&mdash;</span></p>
+      <p>Shared space discount: <span id="calc-discount">&mdash;</span></p>
+      <p>Handling fee: <span id="calc-handling">&mdash;</span></p>
+      <p>Add-ons: <span id="calc-addons">&mdash;</span></p>
+      <hr />
+      <p><strong>Total Estimate: <span id="calc-total">&mdash;</span></strong></p>
+      <p class="hint" id="calc-hint">Enter a cargo weight and press "Calculate price".</p>
+    </div>
+  </section>
+
+  <!-- MESSAGES: Connect to Carrier Section -->
+  <section>
+    <div>
+      <h2>Connect to your carrier</h2>
+      <p>
+        Directly link up with verified carriers already driving along your route.
+        Save costs by locking in reliable shared truck space instantly.
+      </p>
+
+      <ul>
+        <li>Instant matching with active route carriers</li>
+        <li>Verified and pre-screened local drivers</li>
+        <li>Direct communication and route tracking</li>
+      </ul>
+
+      <button type="button">Connect to your Carrier</button>
+    </div>
+  </section>
+
+  <main>
+    <!-- WHO IT'S FOR -->
+    <section id="audience" class="band">
+      <div class="band-inner">
+        <div class="band-copy">
+          <h2>Built for businesses that ship less than a truckload</h2>
+          <p>
+            CargoFlow is for Philippine businesses that move goods regularly
+            but can't fill &mdash; or don't want to pay for &mdash; a whole
+            truck.
+          </p>
+          <ul class="band-points">
+            <li>SMEs with partial-load shipments</li>
+            <li>Online sellers fulfilling customer orders</li>
+            <li>Manufacturers moving stock between sites</li>
+            <li>Distributors restocking provincial outlets</li>
+          </ul>
+        </div>
+
+        <div class="band-visual">
+          <p class="bv-title">One trip, shared four ways</p>
+          <ul class="bv-list">
+            <li><span class="bv-dot bv-a"></span>SME &mdash; 8 boxes</li>
+            <li>
+              <span class="bv-dot bv-b"></span>Online seller &mdash; 20
+              parcels
+            </li>
+            <li>
+              <span class="bv-dot bv-you"></span>Your load &mdash; 250 kg
+            </li>
+            <li>
+              <span class="bv-dot bv-d"></span>Manufacturer &mdash; 5 crates
+            </li>
+          </ul>
+          <div class="bv-bar" aria-hidden="true">
+            <span class="bv-seg bv-a"></span>
+            <span class="bv-seg bv-b"></span>
+            <span class="bv-seg bv-you"></span>
+            <span class="bv-seg bv-d"></span>
+            <span class="bv-seg bv-open"></span>
+          </div>
+          <p class="bv-note">You pay only for your share of the truck.</p>
+        </div>
       </div>
     </section>
-    
-    <main>
-      <!-- WHO IT'S FOR -->
-      <section id="audience" class="band">
-        <div class="band-inner">
-          <div class="band-copy">
-            <h2>Built for businesses that ship less than a truckload</h2>
-            <p>
-              CargoFlow is for Philippine businesses that move goods regularly
-              but can't fill &mdash; or don't want to pay for &mdash; a whole
-              truck.
-            </p>
-            <ul class="band-points">
-              <li>SMEs with partial-load shipments</li>
-              <li>Online sellers fulfilling customer orders</li>
-              <li>Manufacturers moving stock between sites</li>
-              <li>Distributors restocking provincial outlets</li>
-            </ul>
-          </div>
 
-          <div class="band-visual">
-            <p class="bv-title">One trip, shared four ways</p>
-            <ul class="bv-list">
-              <li><span class="bv-dot bv-a"></span>SME &mdash; 8 boxes</li>
-              <li>
-                <span class="bv-dot bv-b"></span>Online seller &mdash; 20
-                parcels
-              </li>
-              <li>
-                <span class="bv-dot bv-you"></span>Your load &mdash; 250 kg
-              </li>
-              <li>
-                <span class="bv-dot bv-d"></span>Manufacturer &mdash; 5 crates
-              </li>
-            </ul>
-            <div class="bv-bar" aria-hidden="true">
-              <span class="bv-seg bv-a"></span>
-              <span class="bv-seg bv-b"></span>
-              <span class="bv-seg bv-you"></span>
-              <span class="bv-seg bv-d"></span>
-              <span class="bv-seg bv-open"></span>
-            </div>
-            <p class="bv-note">You pay only for your share of the truck.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ABOUT -->
-      <section id="about" class="panel">
-        <h2>About CargoFlow</h2>
-        <p>
-          Shipping in the Philippines is expensive for small businesses that
-          can't fill an entire truck. CargoFlow matches your shipment to a
-          carrier already running that route and prices it by the space your
-          cargo uses, so you share the trip and the cost instead of paying for
-          the whole vehicle.
-        </p>
-        <p>
-          Built for MO-IT161 &ndash; Web Systems and Technology. This page is
-          HTML and CSS only.
-        </p>
-      </section>
-    </main>
-
-    <footer>
+    <!-- ABOUT -->
+    <section id="about" class="panel">
+      <h2>About CargoFlow</h2>
       <p>
-        Share space. Move more. &nbsp;·&nbsp; CargoFlow &mdash; a student
-        project. Made in the Philippines.
+        Shipping in the Philippines is expensive for small businesses that
+        can't fill an entire truck. CargoFlow matches your shipment to a
+        carrier already running that route and prices it by the space your
+        cargo uses, so you share the trip and the cost instead of paying for
+        the whole vehicle.
       </p>
-    </footer>
+      <p>
+        Built for MO-IT161 &ndash; Web Systems and Technology. This page is
+        HTML and CSS only.
+      </p>
+    </section>
+  </main>
 
-    <script>
-      // Basic, non-persisted estimate for the Rate Calculator prototype.
-      // Route/city are not yet priced individually — see the .note above
-      // the section for the same "prototype" caveat as the rest of the site.
-      (function () {
-        const RATE_PER_KG = 30; // PHP per kg, standalone truck rate
-        const SHARED_SPACE_DISCOUNT = 0.4; // 40% off for sharing space with other shippers
-        const HANDLING_FEE = 350; // flat PHP handling fee
-        const PRIORITY_SURCHARGE = 500; // flat PHP for "Priority shipping"
-        const INSURANCE_SURCHARGE = 250; // flat PHP for "Add insurance"
+  <footer>
+    <p>
+      Share space. Move more. &nbsp;·&nbsp; CargoFlow &mdash; a student
+      project. Made in the Philippines.
+    </p>
+  </footer>
 
-        function peso(amount) {
-          return "₱" + amount.toLocaleString("en-PH", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          });
+  <script>
+    // Basic, non-persisted estimate for the Rate Calculator prototype.
+    // Route/city are not yet priced individually — see the .note above
+    // the section for the same "prototype" caveat as the rest of the site.
+    (function () {
+      const RATE_PER_KG = 30; // PHP per kg, standalone truck rate
+      const SHARED_SPACE_DISCOUNT = 0.4; // 40% off for sharing space with other shippers
+      const HANDLING_FEE = 350; // flat PHP handling fee
+      const PRIORITY_SURCHARGE = 500; // flat PHP for "Priority shipping"
+      const INSURANCE_SURCHARGE = 250; // flat PHP for "Add insurance"
+
+      function peso(amount) {
+        return "₱" + amount.toLocaleString("en-PH", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      }
+
+      function calculate() {
+        const weightInput = document.getElementById("calc-weight");
+        const weight = parseFloat(weightInput.value);
+        const hint = document.getElementById("calc-hint");
+
+        if (!weight || weight <= 0) {
+          hint.textContent = "Enter a cargo weight greater than 0 to see an estimate.";
+          return;
         }
 
-        function calculate() {
-          const weightInput = document.getElementById("calc-weight");
-          const weight = parseFloat(weightInput.value);
-          const hint = document.getElementById("calc-hint");
+        const standard = weight * RATE_PER_KG;
+        const discount = standard * SHARED_SPACE_DISCOUNT;
 
-          if (!weight || weight <= 0) {
-            hint.textContent = "Enter a cargo weight greater than 0 to see an estimate.";
-            return;
-          }
+        let addons = 0;
+        if (document.getElementById("calc-express").checked) addons += PRIORITY_SURCHARGE;
+        if (document.getElementById("calc-insurance").checked) addons += INSURANCE_SURCHARGE;
 
-          const standard = weight * RATE_PER_KG;
-          const discount = standard * SHARED_SPACE_DISCOUNT;
+        const total = standard - discount + HANDLING_FEE + addons;
 
-          let addons = 0;
-          if (document.getElementById("calc-express").checked) addons += PRIORITY_SURCHARGE;
-          if (document.getElementById("calc-insurance").checked) addons += INSURANCE_SURCHARGE;
+        document.getElementById("calc-standard").textContent = peso(standard);
+        document.getElementById("calc-discount").textContent = "-" + peso(discount);
+        document.getElementById("calc-handling").textContent = peso(HANDLING_FEE);
+        document.getElementById("calc-addons").textContent = addons ? peso(addons) : peso(0);
+        document.getElementById("calc-total").textContent = peso(total);
+        hint.textContent = "Estimate based on weight only — route pricing is not yet built.";
+      }
 
-          const total = standard - discount + HANDLING_FEE + addons;
+      document.getElementById("calc-submit").addEventListener("click", calculate);
+    })();
+  </script>
+</body>
 
-          document.getElementById("calc-standard").textContent = peso(standard);
-          document.getElementById("calc-discount").textContent = "-" + peso(discount);
-          document.getElementById("calc-handling").textContent = peso(HANDLING_FEE);
-          document.getElementById("calc-addons").textContent = addons ? peso(addons) : peso(0);
-          document.getElementById("calc-total").textContent = peso(total);
-          hint.textContent = "Estimate based on weight only — route pricing is not yet built.";
-        }
-
-        document.getElementById("calc-submit").addEventListener("click", calculate);
-      })();
-    </script>
-  </body>
 </html>
