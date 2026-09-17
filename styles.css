@@ -220,6 +220,42 @@ nav a:hover {
   }
 }
 
+/* Track shipment — same hero card language as Book Cargo Space */
+.track-hero-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 40px var(--pad) 44px;
+  text-align: center;
+}
+
+.track-hero-inner h1 {
+  color: #fff;
+}
+
+.track-hero-inner p {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.track-search {
+  display: flex;
+  gap: 12px;
+  max-width: 420px;
+  margin: 20px auto 0;
+  background: #fff;
+  border-top: 4px solid #ff7a00;
+  padding: 16px;
+}
+
+.track-search input {
+  flex: 1;
+  margin-top: 0;
+}
+
+.track-search button {
+  flex: none;
+  margin-top: 0;
+}
+
 /* Sections */
 .panel {
   border: 1px solid #ddd;
