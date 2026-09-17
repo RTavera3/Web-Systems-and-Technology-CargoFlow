@@ -2,3 +2,7 @@
 const messageInput = document.querySelector('.message-input');
 const sendButton = document.querySelector('.send-btn');
 const messagesContainer = document.querySelector('.messages-container');
+
+function addMessage(text, messageType) {
+  const message = document.createElement('div');
+}
