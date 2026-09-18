@@ -117,7 +117,7 @@
       </div>
     </section>
 
-    <!-- TRACK SHIPMENT (WIP: search bar only, lookup not wired up yet) -->
+    <!-- TRACK SHIPMENT: lookup handled by track.js against a mock dataset -->
     <section class="hero" id="track">
       <div class="track-hero-inner">
         <h1>Track your shipment</h1>
@@ -126,6 +126,7 @@
           <input type="text" name="code" placeholder="e.g. CF-10492" />
           <button type="submit">Track</button>
         </form>
+        <p id="track-result" class="track-result" hidden></p>
       </div>
     </section>
 
@@ -161,7 +162,7 @@
         </p>
         <p>
           Built for MO-IT161 &ndash; Web Systems and Technology. This page is
-          HTML and CSS only.
+          HTML, CSS, and a small amount of JavaScript for shipment tracking.
         </p>
       </section>
     </main>
@@ -173,5 +174,6 @@
       </p>
     </footer>
 
+    <script src="track.js" defer></script>
   </body>
 </html>
