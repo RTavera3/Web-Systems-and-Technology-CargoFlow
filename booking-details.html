@@ -35,6 +35,40 @@
           <p>Enter your contact details so we can arrange your cargo booking.</p>
         </div>
 
+        <div class="booking-summary">
+          <h2>Your Cargo Details</h2>
+          <dl>
+            <div>
+              <dt>Pick-up city</dt>
+              <dd id="summaryFrom">Not provided</dd>
+            </div>
+            <div>
+              <dt>Drop-off city</dt>
+              <dd id="summaryTo">Not provided</dd>
+            </div>
+            <div>
+              <dt>Pick-up date</dt>
+              <dd id="summaryDate">Not provided</dd>
+            </div>
+            <div>
+              <dt>Pick-up time</dt>
+              <dd id="summaryTime">Not provided</dd>
+            </div>
+            <div>
+              <dt>Cargo weight</dt>
+              <dd id="summaryWeight">Not provided</dd>
+            </div>
+            <div>
+              <dt>Cargo type</dt>
+              <dd id="summaryType">Not provided</dd>
+            </div>
+            <div>
+              <dt>Additional requests</dt>
+              <dd id="summaryOptions">None</dd>
+            </div>
+          </dl>
+        </div>
+
         <form class="quote details-form" action="booking-details.html" method="get">
           <label>
             Name
@@ -55,5 +89,29 @@
         project. Made in the Philippines.
       </p>
     </footer>
+
+    <script>
+      const bookingParams = new URLSearchParams(window.location.search);
+      const getBookingValue = (name) => bookingParams.get(name) || 'Not provided';
+      const additionalRequests = [];
+
+      if (bookingParams.has('fragile')) {
+        additionalRequests.push('Handle with care');
+      }
+
+      if (bookingParams.has('loading')) {
+        additionalRequests.push('Need help loading');
+      }
+
+      document.getElementById('summaryFrom').textContent = getBookingValue('from');
+      document.getElementById('summaryTo').textContent = getBookingValue('to');
+      document.getElementById('summaryDate').textContent = getBookingValue('date');
+      document.getElementById('summaryTime').textContent = getBookingValue('time');
+      document.getElementById('summaryWeight').textContent =
+        bookingParams.has('weight') ? `${bookingParams.get('weight')} kg` : 'Not provided';
+      document.getElementById('summaryType').textContent = getBookingValue('type');
+      document.getElementById('summaryOptions').textContent =
+        additionalRequests.length > 0 ? additionalRequests.join(', ') : 'None';
+    </script>
   </body>
 </html>

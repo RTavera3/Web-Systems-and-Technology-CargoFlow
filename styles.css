@@ -467,6 +467,42 @@ button:hover {
   margin: 0;
 }
 
+.booking-summary {
+  background: #f4f1ea;
+  border-left: 4px solid #ff7a00;
+  padding: 18px 20px;
+  margin-bottom: 24px;
+}
+
+.booking-summary h2 {
+  font-size: 18px;
+  margin: 0 0 14px;
+}
+
+.booking-summary dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 24px;
+  margin: 0;
+}
+
+.booking-summary dt {
+  color: #555;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.booking-summary dd {
+  margin: 2px 0 0;
+  color: #333;
+}
+
+@media (max-width: 600px) {
+  .booking-summary dl {
+    grid-template-columns: 1fr;
+  }
+}
+
 .contact-section {
   background: #f4f1ea;
 }
