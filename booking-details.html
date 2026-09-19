@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking Details | CargoFlow</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <a href="index.html#book" class="brand" aria-label="CargoFlow home">
+        <svg viewBox="0 0 56 56" width="40" height="40" aria-hidden="true">
+          <path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#0B3D91" />
+          <path
+            d="m37 3 14 5v14l-14-5ZM23 28l15-6-3-5 16 5-7 15-1-6-20 9Z"
+            fill="#FF7A00"
+          />
+          <path d="m23 44 17-7v12l-17 6Z" fill="#0B3D91" />
+        </svg>
+        <span>Cargo<b>Flow</b></span>
+      </a>
+      <p class="tag">Share the Road. Share the Cost.</p>
+      <nav>
+        <a href="index.html#book">Book cargo space</a>
+        <a href="index.html#audience">Who it's for</a>
+        <a href="index.html#about">About</a>
+        <a href="contact.html">Contact Us</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="panel booking-details-section">
+        <div class="section-heading">
+          <h1>Complete Your Booking</h1>
+          <p>Enter your contact details so we can arrange your cargo booking.</p>
+        </div>
+
+        <form class="quote details-form" action="booking-details.html" method="get">
+          <label>
+            Name
+            <input type="text" name="customerName" placeholder="Your full name" required />
+          </label>
+          <label>
+            Address
+            <textarea name="address" rows="4" placeholder="Your complete address" required></textarea>
+          </label>
+          <button type="submit">Continue</button>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Share space. Move more. &nbsp;·&nbsp; CargoFlow &mdash; a student
+        project. Made in the Philippines.
+      </p>
+    </footer>
+  </body>
+</html>
