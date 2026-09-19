@@ -35,46 +35,112 @@
           <p>Enter your contact details so we can arrange your cargo booking.</p>
         </div>
 
-        <div class="booking-summary" id="bookingSummary" hidden>
-          <h2>Your Cargo Details</h2>
-          <dl>
-            <div>
-              <dt>Pick-up city</dt>
-              <dd id="summaryFrom">Not provided</dd>
-            </div>
-            <div>
-              <dt>Drop-off city</dt>
-              <dd id="summaryTo">Not provided</dd>
-            </div>
-            <div>
-              <dt>Pick-up date</dt>
-              <dd id="summaryDate">Not provided</dd>
-            </div>
-            <div>
-              <dt>Pick-up time</dt>
-              <dd id="summaryTime">Not provided</dd>
-            </div>
-            <div>
-              <dt>Cargo weight</dt>
-              <dd id="summaryWeight">Not provided</dd>
-            </div>
-            <div>
-              <dt>Cargo type</dt>
-              <dd id="summaryType">Not provided</dd>
-            </div>
-            <div>
-              <dt>Additional requests</dt>
-              <dd id="summaryOptions">None</dd>
-            </div>
-          </dl>
-        </div>
-
-        <p class="booking-incomplete" id="bookingIncomplete" hidden>
-          Complete all fields in the Get a price section before continuing to
-          your cargo details. <a href="index.html#book">Return to booking</a>
-        </p>
-
         <form class="quote details-form" action="booking-details.html" method="get">
+          <div class="booking-summary" id="bookingSummary" hidden>
+            <h2>Your Cargo Details</h2>
+            <div class="booking-edit-grid">
+              <label>
+                Pick-up city
+                <select name="from" id="detailFrom" required>
+                  <option value="">Select</option>
+                  <option>Manila</option>
+                  <option>Batangas</option>
+                  <option>Baguio</option>
+                  <option>Cebu</option>
+                  <option>Davao</option>
+                  <option>Pampanga</option>
+                </select>
+              </label>
+              <label>
+                Drop-off city
+                <select name="to" id="detailTo" required>
+                  <option value="">Select</option>
+                  <option>Manila</option>
+                  <option>Batangas</option>
+                  <option>Baguio</option>
+                  <option>Cebu</option>
+                  <option>Davao</option>
+                  <option>Pampanga</option>
+                </select>
+              </label>
+              <label>
+                Pick-up date
+                <input type="date" name="date" id="detailDate" required />
+              </label>
+              <label>
+                Pick-up time
+                <input type="time" name="time" id="detailTime" required />
+              </label>
+              <label>
+                Cargo weight (kg)
+                <input type="number" name="weight" id="detailWeight" min="1" max="50000" required />
+              </label>
+              <label>
+                Cargo type
+                <select name="type" id="detailType" required>
+                  <option value="">Select</option>
+                  <option>General goods</option>
+                  <option>Fragile</option>
+                  <option>Perishable</option>
+                  <option>Bulk / sacks</option>
+                  <option>Appliances / furniture</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="quote-opts">
+              <label><input type="checkbox" name="fragile" id="detailFragile" /> Handle with care</label>
+              <label><input type="checkbox" name="loading" id="detailLoading" /> Need help loading</label>
+            </div>
+          </div>
+
+          <p class="booking-incomplete" id="bookingIncomplete" hidden>
+            Complete all fields in the Get a price section before continuing to
+            your cargo details. <a href="index.html#book">Return to booking</a>
+          </p>
+
+          <div class="address-details-grid">
+            <fieldset>
+              <legend>Complete Pick-up Address</legend>
+              <label>
+                Address
+                <input type="text" name="pickupAddress" placeholder="Street and building" required />
+              </label>
+              <label>
+                City
+                <input type="text" name="pickupCity" placeholder="City" required />
+              </label>
+              <label>
+                Province
+                <input type="text" name="pickupProvince" placeholder="Province" required />
+              </label>
+              <label>
+                Zip code
+                <input type="text" name="pickupZip" inputmode="numeric" placeholder="Zip code" required />
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>Complete Drop-off Address</legend>
+              <label>
+                Address
+                <input type="text" name="dropoffAddress" placeholder="Street and building" required />
+              </label>
+              <label>
+                City
+                <input type="text" name="dropoffCity" placeholder="City" required />
+              </label>
+              <label>
+                Province
+                <input type="text" name="dropoffProvince" placeholder="Province" required />
+              </label>
+              <label>
+                Zip code
+                <input type="text" name="dropoffZip" inputmode="numeric" placeholder="Zip code" required />
+              </label>
+            </fieldset>
+          </div>
+
           <label>
             Name
             <input type="text" name="customerName" placeholder="Your full name" required />
@@ -101,29 +167,36 @@
       const bookingIsComplete = requiredBookingFields.every(
         (field) => bookingParams.get(field),
       );
-      const getBookingValue = (name) => bookingParams.get(name) || 'Not provided';
-      const additionalRequests = [];
 
       document.getElementById('bookingSummary').hidden = !bookingIsComplete;
       document.getElementById('bookingIncomplete').hidden = bookingIsComplete;
 
-      if (bookingParams.has('fragile')) {
-        additionalRequests.push('Handle with care');
-      }
+      const setValue = (id, name) => {
+        const value = bookingParams.get(name);
+        if (value) {
+          document.getElementById(id).value = value;
+        }
+      };
 
-      if (bookingParams.has('loading')) {
-        additionalRequests.push('Need help loading');
-      }
+      setValue('detailFrom', 'from');
+      setValue('detailTo', 'to');
+      setValue('detailDate', 'date');
+      setValue('detailTime', 'time');
+      setValue('detailWeight', 'weight');
+      setValue('detailType', 'type');
+      setValue('pickupAddress', 'pickupAddress');
+      setValue('pickupCity', 'pickupCity');
+      setValue('pickupProvince', 'pickupProvince');
+      setValue('pickupZip', 'pickupZip');
+      setValue('dropoffAddress', 'dropoffAddress');
+      setValue('dropoffCity', 'dropoffCity');
+      setValue('dropoffProvince', 'dropoffProvince');
+      setValue('dropoffZip', 'dropoffZip');
+      setValue('customerName', 'customerName');
+      setValue('address', 'address');
 
-      document.getElementById('summaryFrom').textContent = getBookingValue('from');
-      document.getElementById('summaryTo').textContent = getBookingValue('to');
-      document.getElementById('summaryDate').textContent = getBookingValue('date');
-      document.getElementById('summaryTime').textContent = getBookingValue('time');
-      document.getElementById('summaryWeight').textContent =
-        bookingParams.has('weight') ? `${bookingParams.get('weight')} kg` : 'Not provided';
-      document.getElementById('summaryType').textContent = getBookingValue('type');
-      document.getElementById('summaryOptions').textContent =
-        additionalRequests.length > 0 ? additionalRequests.join(', ') : 'None';
+      document.getElementById('detailFragile').checked = bookingParams.has('fragile');
+      document.getElementById('detailLoading').checked = bookingParams.has('loading');
     </script>
   </body>
 </html>

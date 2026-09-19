@@ -479,22 +479,31 @@ button:hover {
   margin: 0 0 14px;
 }
 
-.booking-summary dl {
+.booking-edit-grid,
+.address-details-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px 24px;
-  margin: 0;
 }
 
-.booking-summary dt {
-  color: #555;
-  font-size: 13px;
+.booking-summary .quote-opts {
+  margin-bottom: 0;
+}
+
+.address-details-grid {
+  margin-bottom: 20px;
+}
+
+fieldset {
+  min-width: 0;
+  border: 1px solid #d8d8d8;
+  padding: 16px;
+}
+
+legend {
+  padding: 0 8px;
+  color: #0b3d91;
   font-weight: bold;
-}
-
-.booking-summary dd {
-  margin: 2px 0 0;
-  color: #333;
 }
 
 .booking-incomplete {
@@ -506,7 +515,8 @@ button:hover {
 }
 
 @media (max-width: 600px) {
-  .booking-summary dl {
+  .booking-edit-grid,
+  .address-details-grid {
     grid-template-columns: 1fr;
   }
 }
