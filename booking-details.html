@@ -108,11 +108,29 @@
               </label>
               <label>
                 City
-                <input type="text" name="pickupCity" placeholder="City" required />
+                <select id="pickupCitySelect" disabled>
+                  <option value="">Select city</option>
+                  <option>Manila</option>
+                  <option>Batangas</option>
+                  <option>Baguio</option>
+                  <option>Cebu</option>
+                  <option>Davao</option>
+                  <option>Pampanga</option>
+                </select>
+                <input type="hidden" name="pickupCity" id="pickupCity" />
               </label>
               <label>
                 Province
-                <input type="text" name="pickupProvince" placeholder="Province" required />
+                <select id="pickupProvinceSelect" disabled required>
+                  <option value="">Select province</option>
+                  <option>Metro Manila</option>
+                  <option>Batangas</option>
+                  <option>Benguet</option>
+                  <option>Cebu</option>
+                  <option>Davao del Sur</option>
+                  <option>Pampanga</option>
+                </select>
+                <input type="hidden" name="pickupProvince" id="pickupProvince" />
               </label>
               <label>
                 Zip code
@@ -128,11 +146,29 @@
               </label>
               <label>
                 City
-                <input type="text" name="dropoffCity" placeholder="City" required />
+                <select id="dropoffCitySelect" disabled>
+                  <option value="">Select city</option>
+                  <option>Manila</option>
+                  <option>Batangas</option>
+                  <option>Baguio</option>
+                  <option>Cebu</option>
+                  <option>Davao</option>
+                  <option>Pampanga</option>
+                </select>
+                <input type="hidden" name="dropoffCity" id="dropoffCity" />
               </label>
               <label>
                 Province
-                <input type="text" name="dropoffProvince" placeholder="Province" required />
+                <select id="dropoffProvinceSelect" disabled required>
+                  <option value="">Select province</option>
+                  <option>Metro Manila</option>
+                  <option>Batangas</option>
+                  <option>Benguet</option>
+                  <option>Cebu</option>
+                  <option>Davao del Sur</option>
+                  <option>Pampanga</option>
+                </select>
+                <input type="hidden" name="dropoffProvince" id="dropoffProvince" />
               </label>
               <label>
                 Zip code
@@ -167,6 +203,14 @@
       const bookingIsComplete = requiredBookingFields.every(
         (field) => bookingParams.get(field),
       );
+      const cityProvinceMap = {
+        Manila: 'Metro Manila',
+        Batangas: 'Batangas',
+        Baguio: 'Benguet',
+        Cebu: 'Cebu',
+        Davao: 'Davao del Sur',
+        Pampanga: 'Pampanga',
+      };
 
       document.getElementById('bookingSummary').hidden = !bookingIsComplete;
       document.getElementById('bookingIncomplete').hidden = bookingIsComplete;
@@ -185,18 +229,41 @@
       setValue('detailWeight', 'weight');
       setValue('detailType', 'type');
       setValue('pickupAddress', 'pickupAddress');
-      setValue('pickupCity', 'pickupCity');
-      setValue('pickupProvince', 'pickupProvince');
       setValue('pickupZip', 'pickupZip');
       setValue('dropoffAddress', 'dropoffAddress');
-      setValue('dropoffCity', 'dropoffCity');
-      setValue('dropoffProvince', 'dropoffProvince');
       setValue('dropoffZip', 'dropoffZip');
       setValue('customerName', 'customerName');
       setValue('address', 'address');
 
       document.getElementById('detailFragile').checked = bookingParams.has('fragile');
       document.getElementById('detailLoading').checked = bookingParams.has('loading');
+
+      const setProvinceFromCity = (cityId, provinceSelectId, provinceInputId) => {
+        const city = document.getElementById(cityId).value;
+        const province = cityProvinceMap[city] || '';
+        document.getElementById(provinceSelectId).value = province;
+        document.getElementById(provinceInputId).value = province;
+      };
+
+      const syncAddressCity = (routeCityId, addressCitySelectId, addressCityInputId) => {
+        const city = document.getElementById(routeCityId).value;
+        document.getElementById(addressCitySelectId).value = city;
+        document.getElementById(addressCityInputId).value = city;
+      };
+
+      document.getElementById('detailFrom').addEventListener('change', () => {
+        syncAddressCity('detailFrom', 'pickupCitySelect', 'pickupCity');
+        setProvinceFromCity('pickupCitySelect', 'pickupProvinceSelect', 'pickupProvince');
+      });
+      document.getElementById('detailTo').addEventListener('change', () => {
+        syncAddressCity('detailTo', 'dropoffCitySelect', 'dropoffCity');
+        setProvinceFromCity('dropoffCitySelect', 'dropoffProvinceSelect', 'dropoffProvince');
+      });
+
+      syncAddressCity('detailFrom', 'pickupCitySelect', 'pickupCity');
+      syncAddressCity('detailTo', 'dropoffCitySelect', 'dropoffCity');
+      setProvinceFromCity('pickupCitySelect', 'pickupProvinceSelect', 'pickupProvince');
+      setProvinceFromCity('dropoffCitySelect', 'dropoffProvinceSelect', 'dropoffProvince');
     </script>
   </body>
 </html>
