@@ -24,6 +24,7 @@
         <a href="#book">Book cargo space</a>
         <a href="#audience">Who it's for</a>
         <a href="#about">About</a>
+        <a href="contact.html">Contact Us</a>
       </nav>
     </header>
 
@@ -38,6 +39,7 @@
           </p>
           <div class="hero-actions">
             <a href="#calculator" class="primary-btn">Book Cargo Space</a>
+            <a href="contact.html" class="secondary-btn">Contact Us</a>
           </div>
           <ul class="hero-points">
             <li>Pay only for the space your cargo takes</li>
@@ -295,53 +297,6 @@
         </div>
       </section>
 
-      <section id="contact" class="panel contact-section">
-        <div class="section-heading">
-          <h2>Email Us</h2>
-          <p>
-            Have questions about pricing, route availability, or booking a
-            shared shipment? Send us a message and we&rsquo;ll get back to you.
-          </p>
-        </div>
-
-        <div class="contact-grid">
-          <form class="contact-form" id="contactForm">
-            <label>
-              Name
-              <input type="text" name="name" placeholder="Your full name" required />
-            </label>
-            <label>
-              Email address
-              <input type="email" name="email" placeholder="you@example.com" required />
-            </label>
-            <label>
-              Message
-              <textarea name="message" rows="5" placeholder="How can we help?" required></textarea>
-            </label>
-            <button type="submit">Send message</button>
-            <p class="form-note">We reply within 24 hours.</p>
-            <p class="success-message" id="successMessage" aria-live="polite" hidden>
-              Thanks! Your inquiry has been sent successfully.
-            </p>
-          </form>
-
-          <aside class="contact-details">
-            <h3>Direct Email</h3>
-            <p>
-              <a href="mailto:support@cargoflow.ph">support@cargoflow.ph</a>
-            </p>
-            <p>
-              Need a faster response? Call
-              <a href="tel:+6325550123">+63 (2) 555-0123</a>.
-            </p>
-            <ul>
-              <li>Route and booking support</li>
-              <li>Shipment and pricing questions</li>
-              <li>Customer support assistance</li>
-            </ul>
-          </aside>
-        </div>
-      </section>
     </main>
 
     <footer>
@@ -353,8 +308,6 @@
 
     <script>
       const pickupDate = document.querySelector('input[name="date"]');
-      const contactForm = document.getElementById('contactForm');
-      const successMessage = document.getElementById('successMessage');
 
       if (pickupDate) {
         const today = new Date();
@@ -365,14 +318,6 @@
           .split('T')[0];
         pickupDate.min = localDate;
         pickupDate.value = localDate;
-      }
-
-      if (contactForm && successMessage) {
-        contactForm.addEventListener('submit', function (event) {
-          event.preventDefault();
-          successMessage.hidden = false;
-          contactForm.reset();
-        });
       }
     </script>
   </body>
