@@ -53,7 +53,7 @@
           <div class="quote-grid">
             <label>
               Pick-up city
-              <select name="from">
+              <select name="from" required>
                 <option value="">Select</option>
                 <option>Manila</option>
                 <option>Batangas</option>
@@ -65,7 +65,7 @@
             </label>
             <label>
               Drop-off city
-              <select name="to">
+              <select name="to" required>
                 <option value="">Select</option>
                 <option>Manila</option>
                 <option>Batangas</option>
@@ -77,11 +77,11 @@
             </label>
             <label>
               Pick-up date
-              <input type="date" name="date" />
+              <input type="date" name="date" required />
             </label>
             <label>
               Pick-up time
-              <input type="time" name="time" />
+              <input type="time" name="time" required />
             </label>
             <label>
               Cargo weight (kg)
@@ -91,11 +91,12 @@
                 min="1"
                 max="50000"
                 placeholder="e.g. 250"
+                required
               />
             </label>
             <label>
               Cargo type
-              <select name="type">
+              <select name="type" required>
                 <option value="">Select</option>
                 <option>General goods</option>
                 <option>Fragile</option>

@@ -497,6 +497,14 @@ button:hover {
   color: #333;
 }
 
+.booking-incomplete {
+  margin: 0 0 24px;
+  padding: 12px 14px;
+  background: #fff4e8;
+  border: 1px solid #ffbf80;
+  color: #7a3f00;
+}
+
 @media (max-width: 600px) {
   .booking-summary dl {
     grid-template-columns: 1fr;

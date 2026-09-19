@@ -35,7 +35,7 @@
           <p>Enter your contact details so we can arrange your cargo booking.</p>
         </div>
 
-        <div class="booking-summary">
+        <div class="booking-summary" id="bookingSummary" hidden>
           <h2>Your Cargo Details</h2>
           <dl>
             <div>
@@ -69,6 +69,11 @@
           </dl>
         </div>
 
+        <p class="booking-incomplete" id="bookingIncomplete" hidden>
+          Complete all fields in the Get a price section before continuing to
+          your cargo details. <a href="index.html#book">Return to booking</a>
+        </p>
+
         <form class="quote details-form" action="booking-details.html" method="get">
           <label>
             Name
@@ -92,8 +97,15 @@
 
     <script>
       const bookingParams = new URLSearchParams(window.location.search);
+      const requiredBookingFields = ['from', 'to', 'date', 'time', 'weight', 'type'];
+      const bookingIsComplete = requiredBookingFields.every(
+        (field) => bookingParams.get(field),
+      );
       const getBookingValue = (name) => bookingParams.get(name) || 'Not provided';
       const additionalRequests = [];
+
+      document.getElementById('bookingSummary').hidden = !bookingIsComplete;
+      document.getElementById('bookingIncomplete').hidden = bookingIsComplete;
 
       if (bookingParams.has('fragile')) {
         additionalRequests.push('Handle with care');
