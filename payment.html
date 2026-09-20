@@ -186,7 +186,9 @@
       setPaymentValue('paymentWeight', 'weight');
       setPaymentValue('paymentPackages', 'packageCount');
       setPaymentValue('paymentType', 'type');
-      setPaymentValue('paymentValue', 'declaredValue');
+      document.getElementById('paymentValue').textContent = paymentParams.has('declaredValue')
+        ? new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(paymentParams.get('declaredValue')))
+        : 'Not provided';
       setPaymentValue('paymentVehicle', 'vehicleType');
       setPaymentValue('paymentSender', 'senderName');
       setPaymentValue('paymentSenderContact', 'senderContact');
