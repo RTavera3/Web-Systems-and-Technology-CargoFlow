@@ -5,12 +5,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CargoFlow - Messages</title>
+  <!-- Adding a Font Awesome Link for the truck icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-  <!-- Navigation Bar -->
+  <!-- Navigation Bar based on the index.html design -->
   <header class="navbar">
     <div class="brand">
       <svg viewBox="0 0 56 56" width="40" height="40" aria-hidden="true">
@@ -57,7 +59,8 @@
         <div class="conversation-list">
 
           <div class="conversation-item active">
-            <div class="avatar bg-navy">C</div>
+            <!-- L is the first letter of the carrier name, LBC Express. -->
+            <div class="avatar bg-navy">L</div>
             <div class="conversation-info">
               <div class="item-header">
                 <strong>LBC Express</strong>
@@ -91,7 +94,8 @@
 
         <!-- Booking Info Box -->
         <div class="booking-card">
-          <span class="truck-icon" aria-hidden="true">▣</span>
+          <!-- Font Awesome Truck Icon -->
+          <i class="fa-solid fa-truck truck-icon"></i>
           <div>
             <strong>Tracking Number: CF-10492</strong>
             <p>Manila to Cebu • 15 Sept 2026</p>
@@ -103,7 +107,7 @@
 
           <!-- Received Message -->
           <div class="message incoming">
-            <div class="avatar bg-navy message-avatar">R</div>
+            <div class="avatar bg-navy message-avatar">L</div>
             <div class="message-content">
               <p>Your cargo is ready for pickup. Please confirm the schedule.</p>
               <span class="time">Today · 9:30 AM</span>
@@ -120,7 +124,7 @@
 
           <!-- Received Message -->
           <div class="message incoming">
-            <div class="avatar bg-navy message-avatar">R</div>
+            <div class="avatar bg-navy message-avatar">L</div>
             <div class="message-content">
               <p>Great. We will keep you updated when the truck departs.</p>
               <span class="time">Today · 9:36 AM</span>
@@ -132,7 +136,7 @@
         <!-- Input Box -->
         <div class="chat-input-area">
           <button class="icon-btn" type="button" aria-label="Add an attachment">＋</button>
-          <!-- JavaScript listens to this input and adds new chat bubbles. -->
+          <!-- JavaScript listens and adds new chat bubbles. -->
           <input class="message-input" type="text" placeholder="Type a message..." aria-label="Message text">
           <button class="send-btn" type="button" aria-label="Send message">➤</button>
         </div>
