@@ -1050,3 +1050,38 @@ footer {
 .send-btn:hover {
   background-color: #e96d00;
 }
+
+/* Make the messages page navbar span the full available width. */
+.navbar {
+  max-width: none;
+}
+
+/* Keep the messages page content aligned with the full-width navbar. */
+.container {
+  max-width: none;
+  margin: 20px 0;
+}
+
+/* Reduce the space below the Messages heading. */
+.page-title h1 {
+  margin-bottom: 2px;
+}
+
+/* Remove extra space above the subtitle. */
+.page-title p {
+  margin-top: 0;
+}
+
+/* Place the carrier avatar beside the carrier name and route. */
+.chat-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Style for the Font Awesome Truck Icon */
+.truck-icon {
+  font-size: 24px;       
+  color: #f26522;      
+  margin-right: 12px;    
+}
