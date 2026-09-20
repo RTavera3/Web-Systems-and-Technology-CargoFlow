@@ -29,4 +29,10 @@ function addMessage(text, messageType) {
     avatar.textContent = 'N';
     message.appendChild(avatar);
   }
+
+  message.appendChild(messageContent);
+  messagesContainer.appendChild(message);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
+
+
