@@ -506,6 +506,23 @@ legend {
   font-weight: bold;
 }
 
+.shipment-details {
+  margin: 0 0 24px;
+}
+
+.vehicle-guidance {
+  margin: -2px 0 16px;
+  padding: 10px 12px;
+  background: #eef4ff;
+  color: #24436f;
+  font-size: 13px;
+}
+
+.vehicle-guidance.vehicle-warning {
+  background: #fff4e8;
+  color: #7a3f00;
+}
+
 .booking-incomplete {
   margin: 0 0 24px;
   padding: 12px 14px;

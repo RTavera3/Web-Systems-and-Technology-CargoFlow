@@ -103,8 +103,16 @@
             <fieldset>
               <legend>Complete Pick-up Address</legend>
               <label>
+                Sender Name
+                <input type="text" name="senderName" id="senderName" placeholder="Sender's full name" required />
+              </label>
+              <label>
+                Sender Contact Number
+                <input type="tel" name="senderContact" id="senderContact" placeholder="Sender's contact number" required />
+              </label>
+              <label>
                 Address
-                <input type="text" name="pickupAddress" placeholder="Street and building" required />
+                <input type="text" name="pickupAddress" id="pickupAddress" placeholder="Street and building" required />
               </label>
               <label>
                 City
@@ -140,6 +148,14 @@
 
             <fieldset>
               <legend>Complete Drop-off Address</legend>
+              <label>
+                Receiver Name
+                <input type="text" name="receiverName" placeholder="Receiver's full name" required />
+              </label>
+              <label>
+                Receiver Contact Number
+                <input type="tel" name="receiverContact" placeholder="Receiver's contact number" required />
+              </label>
               <label>
                 Address
                 <input type="text" name="dropoffAddress" placeholder="Street and building" required />
@@ -177,14 +193,72 @@
             </fieldset>
           </div>
 
-          <label>
-            Name
-            <input type="text" name="customerName" placeholder="Your full name" required />
-          </label>
-          <label>
-            Address
-            <textarea name="address" rows="4" placeholder="Your complete address" required></textarea>
-          </label>
+          <fieldset class="shipment-details">
+            <legend>Shipment Details</legend>
+            <label>
+              Cargo description
+              <textarea name="cargoDescription" id="cargoDescription" rows="3" placeholder="Describe the items being shipped" required></textarea>
+            </label>
+            <div class="booking-edit-grid">
+              <label>
+                Number of packages
+                <input type="number" name="packageCount" id="packageCount" min="1" placeholder="e.g. 10" required />
+              </label>
+              <label>
+                Declared cargo value (PHP)
+                <input type="number" name="declaredValue" id="declaredValue" min="0" step="0.01" placeholder="e.g. 25000" required />
+              </label>
+              <label>
+                Vehicle type
+                <select name="vehicleType" id="vehicleType" required>
+                  <option value="">Select vehicle</option>
+                  <option value="Motorcycle">Motorcycle - up to 20 kg</option>
+                  <option value="Van">Van - up to 500 kg</option>
+                  <option value="Light truck">Light truck - up to 2,000 kg</option>
+                  <option value="6-wheeler truck">6-wheeler truck - up to 5,000 kg</option>
+                  <option value="10-wheeler truck">10-wheeler truck - up to 10,000 kg</option>
+                </select>
+              </label>
+            </div>
+            <p class="vehicle-guidance" id="vehicleGuidance" aria-live="polite">
+              Select a vehicle to see its recommended cargo capacity.
+            </p>
+            <label>
+              Special instructions or notes
+              <textarea name="specialInstructions" id="specialInstructions" rows="4" placeholder="Loading instructions, access details, delivery notes, or other requests"></textarea>
+            </label>
+          </fieldset>
+
+          <fieldset class="account-owner-details">
+            <legend>Account Owner Details</legend>
+            <div class="booking-edit-grid">
+              <label>
+                Name
+                <input type="text" name="customerName" id="customerName" value="Juan Dela Cruz" readonly required />
+              </label>
+              <label>
+                Contact Number
+                <input type="tel" name="customerContact" id="customerContact" value="0999-123-4567" readonly required />
+              </label>
+              <label>
+                Street Address
+                <input type="text" name="customerAddress" value="123 Rizal Street, Barangay 143" readonly required />
+              </label>
+              <label>
+                City
+                <input type="text" name="customerCity" value="Quezon City" readonly required />
+              </label>
+              <label>
+                Province
+                <input type="text" name="customerProvince" value="Metro Manila" readonly required />
+              </label>
+              <label>
+                ZIP Code
+                <input type="text" name="customerZip" value="1100" readonly required />
+              </label>
+            </div>
+          </fieldset>
+
           <button type="submit">Continue</button>
         </form>
       </section>
@@ -228,12 +302,16 @@
       setValue('detailTime', 'time');
       setValue('detailWeight', 'weight');
       setValue('detailType', 'type');
-      setValue('pickupAddress', 'pickupAddress');
+      setValue('cargoDescription', 'cargoDescription');
+      setValue('packageCount', 'packageCount');
+      setValue('declaredValue', 'declaredValue');
+      setValue('vehicleType', 'vehicleType');
+      setValue('specialInstructions', 'specialInstructions');
       setValue('pickupZip', 'pickupZip');
       setValue('dropoffAddress', 'dropoffAddress');
+      setValue('receiverName', 'receiverName');
+      setValue('receiverContact', 'receiverContact');
       setValue('dropoffZip', 'dropoffZip');
-      setValue('customerName', 'customerName');
-      setValue('address', 'address');
 
       document.getElementById('detailFragile').checked = bookingParams.has('fragile');
       document.getElementById('detailLoading').checked = bookingParams.has('loading');
@@ -264,6 +342,40 @@
       syncAddressCity('detailTo', 'dropoffCitySelect', 'dropoffCity');
       setProvinceFromCity('pickupCitySelect', 'pickupProvinceSelect', 'pickupProvince');
       setProvinceFromCity('dropoffCitySelect', 'dropoffProvinceSelect', 'dropoffProvince');
+
+      const vehicleSpecs = {
+        Motorcycle: { maxWeight: 20 },
+        Van: { maxWeight: 500 },
+        'Light truck': { maxWeight: 2000 },
+        '6-wheeler truck': { maxWeight: 5000 },
+        '10-wheeler truck': { maxWeight: 10000 },
+      };
+      const vehicleType = document.getElementById('vehicleType');
+      const vehicleGuidance = document.getElementById('vehicleGuidance');
+      const updateVehicleGuidance = () => {
+        const selectedVehicle = vehicleSpecs[vehicleType.value];
+        if (!selectedVehicle) {
+          vehicleGuidance.textContent = 'Select a vehicle to see its recommended cargo capacity.';
+          return;
+        }
+
+        const weight = Number(document.getElementById('detailWeight').value);
+        const exceedsWeight = weight > selectedVehicle.maxWeight;
+
+        vehicleGuidance.textContent = `Recommended capacity: up to ${selectedVehicle.maxWeight.toLocaleString()} kg.`;
+        if (exceedsWeight) {
+          vehicleGuidance.textContent += ' This vehicle may be too small for the entered cargo. Choose a larger vehicle.';
+          vehicleGuidance.classList.add('vehicle-warning');
+        } else {
+          vehicleGuidance.classList.remove('vehicle-warning');
+        }
+      };
+
+      vehicleType.addEventListener('change', updateVehicleGuidance);
+      ['detailWeight', 'packageCount'].forEach((id) => {
+        document.getElementById(id).addEventListener('input', updateVehicleGuidance);
+      });
+      updateVehicleGuidance();
     </script>
   </body>
 </html>
