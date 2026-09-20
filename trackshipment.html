@@ -1,4 +1,4 @@
-<!doctype html>
+  <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -36,7 +36,7 @@
           delivery timeline.
         </p>
 
-        <form class="track-search" action="#track" method="get">
+        <form class="track-search" id="track-form">
           <label class="sr-only" for="trackingNumber">Tracking number</label>
           <input
             type="text"
@@ -51,34 +51,49 @@
 
     <main>
       <!-- SHIPMENT SUMMARY -->
-      <section class="panel" id="summary">
+      <p class="hint" id="track-not-found" hidden>
+        No shipment found for that tracking number. Try
+        <strong>CF-24810293</strong> for a sample result.
+      </p>
+
+      <section class="panel" id="summary" hidden>
         <h2>Shipment summary</h2>
         <p class="lead">
-          Showing sample results for tracking number
-          <strong>CF-24810293</strong>. Once tracking is connected to real
-          data, this card will update automatically.
+          Showing results for tracking number
+          <strong id="summary-code">CF-24810293</strong>.
         </p>
+
+        <span class="badge badge-transit badge-lg">In Transit</span>
 
         <div class="row">
           <div>
             <p class="summary-label">Tracking ID</p>
-            <p class="summary-value">CF-24810293</p>
+            <p class="summary-value" id="summary-tracking-id">CF-24810293</p>
           </div>
           <div>
-            <p class="summary-label">Route</p>
+            <p class="summary-label">
+              <svg class="summary-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="#0b3d91"/>
+              </svg>
+              Route
+            </p>
             <p class="summary-value">Manila &rarr; Cebu</p>
           </div>
           <div>
-            <p class="summary-label">Estimated delivery</p>
+            <p class="summary-label">
+              <svg class="summary-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 10.41V6h-2v7l5.24 3.15 1-1.63L13 12.41z" fill="#0b3d91"/>
+              </svg>
+              Estimated delivery
+            </p>
             <p class="summary-value">Sept 15, 2026</p>
           </div>
         </div>
 
-        <span class="badge badge-transit">In Transit</span>
       </section>
 
       <!-- TIMELINE -->
-      <section class="panel" id="timeline">
+      <section class="panel" id="timeline" hidden>
         <h2>Delivery timeline</h2>
         <p class="lead">Track each stage of your shipment's journey.</p>
 
@@ -118,5 +133,6 @@
         project. Made in the Philippines.
       </p>
     </footer>
+    <script src="trackshipment.js"></script>
   </body>
 </html>
