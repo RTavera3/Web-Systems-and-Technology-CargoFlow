@@ -1085,3 +1085,36 @@ footer {
   color: #f26522;      
   margin-right: 12px;    
 }
+
+/* Larger badge for emphasis */
+.badge-lg {
+  font-size: 15px;
+  padding: 10px 20px;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+
+/* Icons next to summary labels */
+.summary-icon {
+  width: 14px;
+  height: 14px;
+  vertical-align: -2px;
+  margin-right: 4px;
+}
+
+/* Pulse animation on the current timeline step */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 122, 0, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 122, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 122, 0, 0);
+  }
+}
+
+.step.is-current .step-dot {
+  animation: pulse 1.8s infinite;
+}
