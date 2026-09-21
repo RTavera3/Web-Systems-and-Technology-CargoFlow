@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking Details | CargoFlow</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <a href="index.html#book" class="brand" aria-label="CargoFlow home">
+        <svg viewBox="0 0 56 56" width="40" height="40" aria-hidden="true">
+          <path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#0B3D91" />
+          <path
+            d="m37 3 14 5v14l-14-5ZM23 28l15-6-3-5 16 5-7 15-1-6-20 9Z"
+            fill="#FF7A00"
+          />
+          <path d="m23 44 17-7v12l-17 6Z" fill="#0B3D91" />
+        </svg>
+        <span>Cargo<b>Flow</b></span>
+      </a>
+      <p class="tag">Share the Road. Share the Cost.</p>
+      <nav>
+        <a href="index.html#book">Book cargo space</a>
+        <a href="trackshipment.html">Track shipment</a>
+        <a href="index.html#carrier">Connect to carrier</a>
+        <a href="index.html#about">About</a>
+        <a href="contact.html">Contact Us</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="panel booking-details-section">
+        <div class="section-heading">
+          <h1>Complete Your Booking</h1>
+          <p>Enter your contact details so we can arrange your cargo booking.</p>
+        </div>
+
+        <form class="quote details-form" action="payment.html" method="get">
+          <div class="booking-summary" id="bookingSummary" hidden>
+            <h2>Your Cargo Details</h2>
+            <div class="booking-edit-grid">
+              <label>
+                Pick-up city
+                <select name="from" id="detailFrom" required>
+                  <option value="">Select</option>
+                  <option>Manila</option>
+                  <option>Batangas</option>
+                  <option>Baguio</option>
+                  <option>Cebu</option>
+                  <option>Davao</option>
+                  <option>Pampanga</option>
+                </select>
+              </label>
+              <label>
+                Drop-off city
+                <select name="to" id="detailTo" required>
+                  <option value="">Select</option>
+                  <option>Manila</option>
+                  <option>Batangas</option>
+                  <option>Baguio</option>
+                  <option>Cebu</option>
+                  <option>Davao</option>
+                  <option>Pampanga</option>
+                </select>
+              </label>
+              <label>
+                Pick-up date
+                <input type="date" name="date" id="detailDate" required />
+              </label>
+              <label>
+                Pick-up time
+                <input type="time" name="time" id="detailTime" required />
+              </label>
+              <label>
+                Cargo weight (kg)
+                <input type="number" name="weight" id="detailWeight" min="1" max="50000" required />
+              </label>
+              <label>
+                Cargo type
+                <select name="type" id="detailType" required>
+                  <option value="">Select</option>
+                  <option>General goods</option>
+                  <option>Fragile</option>
+                  <option>Perishable</option>
+                  <option>Bulk / sacks</option>
+                  <option>Appliances / furniture</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="quote-opts">
+              <label><input type="checkbox" name="fragile" id="detailFragile" /> Handle with care</label>
+              <label><input type="checkbox" name="loading" id="detailLoading" /> Need help loading</label>
+            </div>
+          </div>
+
+          <p class="booking-incomplete" id="bookingIncomplete" hidden>
+            Complete all fields in the Get a price section before continuing to
+            your cargo details. <a href="index.html#book">Return to booking</a>
+          </p>
+
+          <div class="address-details-grid">
+            <fieldset>
+              <legend>Complete Pick-up Address</legend>
+              <label>
+                Sender Name
+                <input type="text" name="senderName" id="senderName" placeholder="Sender's full name" required />
+              </label>
+              <label>
+                Sender Contact Number
+                <input type="tel" name="senderContact" id="senderContact" placeholder="Sender's contact number" required />
+              </label>
+              <label>
+                Address
+                <input type="text" name="pickupAddress" id="pickupAddress" placeholder="Street and building" required />
+              </label>
+              <label>
+                City
+                <select id="pickupCitySelect" disabled>
+                  <option value="">Select city</option>
+                  <option>Manila</option>
+                  <option>Batangas</option>
+                  <option>Baguio</option>
+                  <option>Cebu</option>
+                  <option>Davao</option>
+                  <option>Pampanga</option>
+                </select>
+                <input type="hidden" name="pickupCity" id="pickupCity" />
+              </label>
+              <label>
+                Province
+                <select id="pickupProvinceSelect" disabled required>
+                  <option value="">Select province</option>
+                  <option>Metro Manila</option>
+                  <option>Batangas</option>
+                  <option>Benguet</option>
+                  <option>Cebu</option>
+                  <option>Davao del Sur</option>
+                  <option>Pampanga</option>
+                </select>
+                <input type="hidden" name="pickupProvince" id="pickupProvince" />
+              </label>
+              <label>
+                Zip code
+                <input type="text" name="pickupZip" inputmode="numeric" placeholder="Zip code" required />
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>Complete Drop-off Address</legend>
+              <label>
+                Receiver Name
+                <input type="text" name="receiverName" placeholder="Receiver's full name" required />
+              </label>
+              <label>
+                Receiver Contact Number
+                <input type="tel" name="receiverContact" placeholder="Receiver's contact number" required />
+              </label>
+              <label>
+                Address
+                <input type="text" name="dropoffAddress" placeholder="Street and building" required />
+              </label>
+              <label>
+                City
+                <select id="dropoffCitySelect" disabled>
+                  <option value="">Select city</option>
+                  <option>Manila</option>
+                  <option>Batangas</option>
+                  <option>Baguio</option>
+                  <option>Cebu</option>
+                  <option>Davao</option>
+                  <option>Pampanga</option>
+                </select>
+                <input type="hidden" name="dropoffCity" id="dropoffCity" />
+              </label>
+              <label>
+                Province
+                <select id="dropoffProvinceSelect" disabled required>
+                  <option value="">Select province</option>
+                  <option>Metro Manila</option>
+                  <option>Batangas</option>
+                  <option>Benguet</option>
+                  <option>Cebu</option>
+                  <option>Davao del Sur</option>
+                  <option>Pampanga</option>
+                </select>
+                <input type="hidden" name="dropoffProvince" id="dropoffProvince" />
+              </label>
+              <label>
+                Zip code
+                <input type="text" name="dropoffZip" inputmode="numeric" placeholder="Zip code" required />
+              </label>
+            </fieldset>
+          </div>
+
+          <fieldset class="shipment-details">
+            <legend>Shipment Details</legend>
+            <label>
+              Cargo description
+              <textarea name="cargoDescription" id="cargoDescription" rows="3" placeholder="Describe the items being shipped" required></textarea>
+            </label>
+            <div class="booking-edit-grid">
+              <label>
+                Number of packages
+                <input type="number" name="packageCount" id="packageCount" min="1" placeholder="e.g. 10" required />
+              </label>
+              <label>
+                Declared cargo value (PHP)
+                <input type="number" name="declaredValue" id="declaredValue" min="0" step="0.01" placeholder="e.g. 25000" required />
+              </label>
+              <label>
+                Vehicle type
+                <select name="vehicleType" id="vehicleType" required>
+                  <option value="">Select vehicle</option>
+                  <option value="Motorcycle">Motorcycle - up to 20 kg</option>
+                  <option value="Van">Van - up to 500 kg</option>
+                  <option value="Light truck">Light truck - up to 2,000 kg</option>
+                  <option value="6-wheeler truck">6-wheeler truck - up to 5,000 kg</option>
+                  <option value="10-wheeler truck">10-wheeler truck - up to 10,000 kg</option>
+                </select>
+              </label>
+            </div>
+            <p class="vehicle-guidance" id="vehicleGuidance" aria-live="polite">
+              Select a vehicle to see its recommended cargo capacity.
+            </p>
+            <label>
+              Special instructions or notes
+              <textarea name="specialInstructions" id="specialInstructions" rows="4" placeholder="Loading instructions, access details, delivery notes, or other requests"></textarea>
+            </label>
+          </fieldset>
+
+          <fieldset class="account-owner-details">
+            <legend>Account Owner Details</legend>
+            <div class="booking-edit-grid">
+              <label>
+                Name
+                <input type="text" name="customerName" id="customerName" value="Juan Dela Cruz" readonly required />
+              </label>
+              <label>
+                Contact Number
+                <input type="tel" name="customerContact" id="customerContact" value="0999-123-4567" readonly required />
+              </label>
+              <label>
+                Street Address
+                <input type="text" name="customerAddress" value="123 Rizal Street, Barangay 143" readonly required />
+              </label>
+              <label>
+                City
+                <input type="text" name="customerCity" value="Quezon City" readonly required />
+              </label>
+              <label>
+                Province
+                <input type="text" name="customerProvince" value="Metro Manila" readonly required />
+              </label>
+              <label>
+                ZIP Code
+                <input type="text" name="customerZip" value="1100" readonly required />
+              </label>
+            </div>
+          </fieldset>
+
+          <button type="submit">Confirm and Pay</button>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Share space. Move more. &nbsp;·&nbsp; CargoFlow &mdash; a student
+        project. Made in the Philippines.
+      </p>
+    </footer>
+
+    <script>
+      const bookingParams = new URLSearchParams(window.location.search);
+      const requiredBookingFields = ['from', 'to', 'date', 'time', 'weight', 'type'];
+      const bookingIsComplete = requiredBookingFields.every(
+        (field) => bookingParams.get(field),
+      );
+      const cityProvinceMap = {
+        Manila: 'Metro Manila',
+        Batangas: 'Batangas',
+        Baguio: 'Benguet',
+        Cebu: 'Cebu',
+        Davao: 'Davao del Sur',
+        Pampanga: 'Pampanga',
+      };
+
+      document.getElementById('bookingSummary').hidden = !bookingIsComplete;
+      document.getElementById('bookingIncomplete').hidden = bookingIsComplete;
+
+      const setValue = (id, name) => {
+        const value = bookingParams.get(name);
+        if (value) {
+          document.getElementById(id).value = value;
+        }
+      };
+
+      setValue('detailFrom', 'from');
+      setValue('detailTo', 'to');
+      setValue('detailDate', 'date');
+      setValue('detailTime', 'time');
+      setValue('detailWeight', 'weight');
+      setValue('detailType', 'type');
+      setValue('cargoDescription', 'cargoDescription');
+      setValue('packageCount', 'packageCount');
+      setValue('declaredValue', 'declaredValue');
+      setValue('vehicleType', 'vehicleType');
+      setValue('specialInstructions', 'specialInstructions');
+      setValue('pickupZip', 'pickupZip');
+      setValue('dropoffAddress', 'dropoffAddress');
+      setValue('receiverName', 'receiverName');
+      setValue('receiverContact', 'receiverContact');
+      setValue('dropoffZip', 'dropoffZip');
+
+      document.getElementById('detailFragile').checked = bookingParams.has('fragile');
+      document.getElementById('detailLoading').checked = bookingParams.has('loading');
+
+      const setProvinceFromCity = (cityId, provinceSelectId, provinceInputId) => {
+        const city = document.getElementById(cityId).value;
+        const province = cityProvinceMap[city] || '';
+        document.getElementById(provinceSelectId).value = province;
+        document.getElementById(provinceInputId).value = province;
+      };
+
+      const syncAddressCity = (routeCityId, addressCitySelectId, addressCityInputId) => {
+        const city = document.getElementById(routeCityId).value;
+        document.getElementById(addressCitySelectId).value = city;
+        document.getElementById(addressCityInputId).value = city;
+      };
+
+      document.getElementById('detailFrom').addEventListener('change', () => {
+        syncAddressCity('detailFrom', 'pickupCitySelect', 'pickupCity');
+        setProvinceFromCity('pickupCitySelect', 'pickupProvinceSelect', 'pickupProvince');
+      });
+      document.getElementById('detailTo').addEventListener('change', () => {
+        syncAddressCity('detailTo', 'dropoffCitySelect', 'dropoffCity');
+        setProvinceFromCity('dropoffCitySelect', 'dropoffProvinceSelect', 'dropoffProvince');
+      });
+
+      syncAddressCity('detailFrom', 'pickupCitySelect', 'pickupCity');
+      syncAddressCity('detailTo', 'dropoffCitySelect', 'dropoffCity');
+      setProvinceFromCity('pickupCitySelect', 'pickupProvinceSelect', 'pickupProvince');
+      setProvinceFromCity('dropoffCitySelect', 'dropoffProvinceSelect', 'dropoffProvince');
+
+      const vehicleSpecs = {
+        Motorcycle: { maxWeight: 20 },
+        Van: { maxWeight: 500 },
+        'Light truck': { maxWeight: 2000 },
+        '6-wheeler truck': { maxWeight: 5000 },
+        '10-wheeler truck': { maxWeight: 10000 },
+      };
+      const vehicleType = document.getElementById('vehicleType');
+      const vehicleGuidance = document.getElementById('vehicleGuidance');
+      const updateVehicleGuidance = () => {
+        const selectedVehicle = vehicleSpecs[vehicleType.value];
+        if (!selectedVehicle) {
+          vehicleGuidance.textContent = 'Select a vehicle to see its recommended cargo capacity.';
+          return;
+        }
+
+        const weight = Number(document.getElementById('detailWeight').value);
+        const exceedsWeight = weight > selectedVehicle.maxWeight;
+
+        vehicleGuidance.textContent = `Recommended capacity: up to ${selectedVehicle.maxWeight.toLocaleString()} kg.`;
+        if (exceedsWeight) {
+          vehicleGuidance.textContent += ' This vehicle may be too small for the entered cargo. Choose a larger vehicle.';
+          vehicleGuidance.classList.add('vehicle-warning');
+        } else {
+          vehicleGuidance.classList.remove('vehicle-warning');
+        }
+      };
+
+      vehicleType.addEventListener('change', updateVehicleGuidance);
+      ['detailWeight', 'packageCount'].forEach((id) => {
+        document.getElementById(id).addEventListener('input', updateVehicleGuidance);
+      });
+      updateVehicleGuidance();
+    </script>
+  </body>
+</html>

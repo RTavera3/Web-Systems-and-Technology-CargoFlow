@@ -8,7 +8,7 @@
   </head>
   <body>
     <header>
-      <div class="brand">
+      <a href="#book" class="brand" aria-label="CargoFlow home">
         <svg viewBox="0 0 56 56" width="40" height="40" aria-hidden="true">
           <path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#0B3D91" />
           <path
@@ -18,11 +18,14 @@
           <path d="m23 44 17-7v12l-17 6Z" fill="#0B3D91" />
         </svg>
         <span>Cargo<b>Flow</b></span>
-      </div>
+      </a>
       <p class="tag">Share the Road. Share the Cost.</p>
       <nav>
         <a href="#book">Book cargo space</a>
+        <a href="trackshipment.html">Track shipment</a>
+        <a href="#carrier">Connect to carrier</a>
         <a href="#about">About</a>
+        <a href="contact.html">Contact Us</a>
       </nav>
     </header>
 
@@ -37,6 +40,7 @@
           </p>
           <div class="hero-actions">
             <a href="#quote" class="primary-btn">Book Cargo Space</a>
+            <a href="contact.html" class="secondary-btn">Contact Us</a>
           </div>
           <ul class="hero-points">
             <li>Pay only for the space your cargo takes</li>
@@ -45,12 +49,12 @@
           </ul>
         </div>
 
-        <form class="quote" id="quote" action="#book" method="get">
+        <form class="quote" id="quote" action="booking-details.html" method="get">
           <h2>Get a price</h2>
           <div class="quote-grid">
             <label>
               Pick-up city
-              <select name="from">
+              <select name="from" required>
                 <option value="">Select</option>
                 <option>Manila</option>
                 <option>Batangas</option>
@@ -62,7 +66,7 @@
             </label>
             <label>
               Drop-off city
-              <select name="to">
+              <select name="to" required>
                 <option value="">Select</option>
                 <option>Manila</option>
                 <option>Batangas</option>
@@ -74,11 +78,11 @@
             </label>
             <label>
               Pick-up date
-              <input type="date" name="date" />
+              <input type="date" name="date" required />
             </label>
             <label>
               Pick-up time
-              <input type="time" name="time" />
+              <input type="time" name="time" required />
             </label>
             <label>
               Cargo weight (kg)
@@ -88,11 +92,12 @@
                 min="1"
                 max="50000"
                 placeholder="e.g. 250"
+                required
               />
             </label>
             <label>
               Cargo type
-              <select name="type">
+              <select name="type" required>
                 <option value="">Select</option>
                 <option>General goods</option>
                 <option>Fragile</option>
@@ -127,6 +132,10 @@
           <button type="submit">Track</button>
         </form>
         <p id="track-result" class="track-result" hidden></p>
+        <p class="track-full-link">
+          Need the full delivery timeline?
+          <a href="trackshipment.html">Open the tracking page &rarr;</a>
+        </p>
       </div>
     </section>
 
@@ -144,8 +153,9 @@
           <li>Direct communication and route tracking</li>
         </ul>
         <div class="carrier-cta">
-          <a href="messages.html" > 
-          <button type="button">Connect to your Carrier</button>
+          <a href="messages.html">
+            <button type="button">Connect to your Carrier</button>
+          </a>
         </div>
       </div>
     </section>
@@ -166,6 +176,69 @@
           HTML, CSS, and a small amount of JavaScript for shipment tracking.
         </p>
       </section>
+
+      <section class="panel reasons-section">
+        <div class="section-heading">
+          <h2>Why Choose Us</h2>
+          <p>
+            Smarter shipping for businesses that need reliable deliveries without
+            paying for a full truckload.
+          </p>
+        </div>
+
+        <div class="reasons-grid">
+          <article class="reason-card">
+            <div class="icon-badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="#fff"/>
+              </svg>
+            </div>
+            <h3>Real-time tracking</h3>
+            <p>Monitor your shipment progress and stay updated from pickup to delivery.</p>
+          </article>
+
+          <article class="reason-card">
+            <div class="icon-badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26">
+                <path d="M3 6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h1.17a2.5 2.5 0 0 0 4.66 0h5.34a2.5 2.5 0 0 0 4.66 0H20a1 1 0 0 0 1-1v-4.5a1 1 0 0 0-.29-.71l-3-3A1 1 0 0 0 17 7h-2V7a1 1 0 0 0-1-1H3zm12 3h1.59L19 11.41V15h-1.17a2.49 2.49 0 0 0-3.66 0H15V9zM7 15.5A1.5 1.5 0 1 1 7 18.5a1.5 1.5 0 0 1 0-3zm10 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" fill="#fff"/>
+              </svg>
+            </div>
+            <h3>National coverage</h3>
+            <p>Move cargo across key cities and provinces with a growing logistics network.</p>
+          </article>
+
+          <article class="reason-card">
+            <div class="icon-badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26">
+                <path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z" fill="#fff"/>
+              </svg>
+            </div>
+            <h3>Secure handling</h3>
+            <p>Careful cargo management and trusted carriers help protect your goods in transit.</p>
+          </article>
+
+          <article class="reason-card">
+            <div class="icon-badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26">
+                <path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" fill="#fff"/>
+              </svg>
+            </div>
+            <h3>24/7 support</h3>
+            <p>Get assistance whenever you need it with fast answers for route and booking issues.</p>
+          </article>
+
+          <article class="reason-card">
+            <div class="icon-badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26">
+                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-1.5 14.5-4-4 1.41-1.41L10.5 13.67l6.09-6.09L18 9l-7.5 7.5z" fill="#fff"/>
+              </svg>
+            </div>
+            <h3>Money-back protection</h3>
+            <p>Enjoy added confidence with coverage for lost or damaged cargo and transparent support.</p>
+          </article>
+        </div>
+      </section>
+
     </main>
 
     <footer>
@@ -175,6 +248,20 @@
       </p>
     </footer>
 
+    <script>
+      const pickupDate = document.querySelector('input[name="date"]');
+
+      if (pickupDate) {
+        const today = new Date();
+        const localDate = new Date(
+          today.getTime() - today.getTimezoneOffset() * 60000,
+        )
+          .toISOString()
+          .split('T')[0];
+        pickupDate.min = localDate;
+        pickupDate.value = localDate;
+      }
+    </script>
     <script src="track.js" defer></script>
   </body>
 </html>

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Us | CargoFlow</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <a href="index.html#book" class="brand" aria-label="CargoFlow home">
+        <svg viewBox="0 0 56 56" width="40" height="40" aria-hidden="true">
+          <path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#0B3D91" />
+          <path
+            d="m37 3 14 5v14l-14-5ZM23 28l15-6-3-5 16 5-7 15-1-6-20 9Z"
+            fill="#FF7A00"
+          />
+          <path d="m23 44 17-7v12l-17 6Z" fill="#0B3D91" />
+        </svg>
+        <span>Cargo<b>Flow</b></span>
+      </a>
+      <p class="tag">Share the Road. Share the Cost.</p>
+      <nav>
+        <a href="index.html#book">Book cargo space</a>
+        <a href="trackshipment.html">Track shipment</a>
+        <a href="index.html#carrier">Connect to carrier</a>
+        <a href="index.html#about">About</a>
+        <a href="contact.html" aria-current="page">Contact Us</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="contact" class="panel contact-section">
+        <div class="section-heading">
+          <h1>Email Us</h1>
+          <p>
+            Have questions about pricing, route availability, or booking a
+            shared shipment? Send us a message and we&rsquo;ll get back to you.
+          </p>
+        </div>
+
+        <div class="contact-grid">
+          <form class="contact-form" id="contactForm">
+            <label>
+              Name
+              <input type="text" name="name" placeholder="Your full name" required />
+            </label>
+            <label>
+              Email address
+              <input type="email" name="email" placeholder="you@example.com" required />
+            </label>
+            <label>
+              Message
+              <textarea name="message" rows="5" placeholder="How can we help?" required></textarea>
+            </label>
+            <button type="submit">Send message</button>
+            <p class="form-note">We reply within 24 hours.</p>
+            <p class="success-message" id="successMessage" aria-live="polite" hidden>
+              Thanks! Your inquiry has been sent successfully.
+            </p>
+          </form>
+
+          <aside class="contact-details">
+            <h2>Direct Email</h2>
+            <p>
+              <a href="mailto:support@cargoflow.ph">support@cargoflow.ph</a>
+            </p>
+            <p>
+              Need a faster response? Call
+              <a href="tel:+6325550123">+63 (2) 555-0123</a>.
+            </p>
+            <ul>
+              <li>Route and booking support</li>
+              <li>Shipment and pricing questions</li>
+              <li>Customer support assistance</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Share space. Move more. &nbsp;·&nbsp; CargoFlow &mdash; a student
+        project. Made in the Philippines.
+      </p>
+    </footer>
+
+    <script>
+      const contactForm = document.getElementById('contactForm');
+      const successMessage = document.getElementById('successMessage');
+
+      contactForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        successMessage.hidden = false;
+        contactForm.reset();
+      });
+    </script>
+  </body>
+</html>
