@@ -35,4 +35,10 @@ function addMessage(text, messageType) {
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
+function sendMessage() {
+  const text = messageInput.value.trim();
+  if (text === '') return;
+  addMessage(text, 'outgoing');
+  messageInput.value = '';
+}
 
