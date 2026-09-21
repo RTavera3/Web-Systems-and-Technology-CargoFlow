@@ -11,3 +11,7 @@ document.querySelector(".track-search").addEventListener("submit", (event) => {
   result.textContent = shipments[code] || "No shipment found for that code.";
   result.hidden = false;
 });
+
+document.getElementById("connect-carrier-btn").addEventListener("click", () => {
+  window.location.href = "messages.html";
+});
