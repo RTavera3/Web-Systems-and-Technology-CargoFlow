@@ -22,7 +22,6 @@
       <p class="tag">Share the Road. Share the Cost.</p>
       <nav>
         <a href="#book">Book cargo space</a>
-        <a href="#audience">Who it's for</a>
         <a href="#about">About</a>
         <a href="contact.html">Contact Us</a>
       </nav>
@@ -38,7 +37,7 @@
             you use.
           </p>
           <div class="hero-actions">
-            <a href="#calculator" class="primary-btn">Book Cargo Space</a>
+            <a href="#quote" class="primary-btn">Book Cargo Space</a>
             <a href="contact.html" class="secondary-btn">Contact Us</a>
           </div>
           <ul class="hero-points">
@@ -48,7 +47,7 @@
           </ul>
         </div>
 
-        <form class="quote" action="booking-details.html" method="get">
+        <form class="quote" id="quote" action="booking-details.html" method="get">
           <h2>Get a price</h2>
           <div class="quote-grid">
             <label>
@@ -121,125 +120,40 @@
       </div>
     </section>
 
-    <!-- RATE CALCULATOR SECTION -->
-    <section id="calculator" class="panel">
-      <h2>Rate Calculator</h2>
-      <p>Calculate your estimated cargo cost based on weight and route.</p>
-
-      <form class="quote">
-        <div class="quote-grid">
-          <label>
-            Pick-up city
-            <select name="from">
-              <option value="">Select</option>
-              <option>Manila</option>
-              <option>Batangas</option>
-              <option>Baguio</option>
-              <option>Cebu</option>
-              <option>Davao</option>
-              <option>Pampanga</option>
-            </select>
-          </label>
-
-          <label>
-            Drop-off city
-            <select name="to">
-              <option value="">Select</option>
-              <option>Manila</option>
-              <option>Batangas</option>
-              <option>Baguio</option>
-              <option>Cebu</option>
-              <option>Davao</option>
-              <option>Pampanga</option>
-            </select>
-          </label>
-
-          <label>
-            Cargo weight (kg)
-            <input type="number" name="weight" placeholder="e.g. 250" />
-          </label>
-
-          <label>
-            Cargo type
-            <select name="type">
-              <option value="">Select</option>
-              <option>General goods</option>
-              <option>Fragile</option>
-              <option>Perishable</option>
-              <option>Bulk / sacks</option>
-              <option>Appliances / furniture</option>
-            </select>
-          </label>
-        </div>
-
-        <div class="quote-opts">
-          <label
-            ><input type="checkbox" name="express" /> Priority shipping</label
-          >
-          <label
-            ><input type="checkbox" name="insurance" /> Add insurance</label
-          >
-        </div>
-
-        <button type="button">Calculate price</button>
-      </form>
-
-      <div class="calc-result">
-        <h3>Estimated Breakdown</h3>
-        <p>Standard rate: ₱8,500.00</p>
-        <p>Shared space discount: -₱5,100.00</p>
-        <p>Handling fee: ₱350.00</p>
-        <hr />
-        <p><strong>Total Estimate: ₱3,750.00</strong></p>
+    <!-- TRACK SHIPMENT: lookup handled by track.js against a mock dataset -->
+    <section class="hero" id="track">
+      <div class="track-hero-inner">
+        <h1>Track your shipment</h1>
+        <p>Enter your booking code to check its status.</p>
+        <form class="track-search">
+          <input type="text" name="code" placeholder="e.g. CF-10492" />
+          <button type="submit">Track</button>
+        </form>
+        <p id="track-result" class="track-result" hidden></p>
       </div>
     </section>
-    
-    <main>
-      <!-- WHO IT'S FOR -->
-      <section id="audience" class="band">
-        <div class="band-inner">
-          <div class="band-copy">
-            <h2>Built for businesses that ship less than a truckload</h2>
-            <p>
-              CargoFlow is for Philippine businesses that move goods regularly
-              but can't fill &mdash; or don't want to pay for &mdash; a whole
-              truck.
-            </p>
-            <ul class="band-points">
-              <li>SMEs with partial-load shipments</li>
-              <li>Online sellers fulfilling customer orders</li>
-              <li>Manufacturers moving stock between sites</li>
-              <li>Distributors restocking provincial outlets</li>
-            </ul>
-          </div>
 
-          <div class="band-visual">
-            <p class="bv-title">One trip, shared four ways</p>
-            <ul class="bv-list">
-              <li><span class="bv-dot bv-a"></span>SME &mdash; 8 boxes</li>
-              <li>
-                <span class="bv-dot bv-b"></span>Online seller &mdash; 20
-                parcels
-              </li>
-              <li>
-                <span class="bv-dot bv-you"></span>Your load &mdash; 250 kg
-              </li>
-              <li>
-                <span class="bv-dot bv-d"></span>Manufacturer &mdash; 5 crates
-              </li>
-            </ul>
-            <div class="bv-bar" aria-hidden="true">
-              <span class="bv-seg bv-a"></span>
-              <span class="bv-seg bv-b"></span>
-              <span class="bv-seg bv-you"></span>
-              <span class="bv-seg bv-d"></span>
-              <span class="bv-seg bv-open"></span>
-            </div>
-            <p class="bv-note">You pay only for your share of the truck.</p>
-          </div>
+    <!-- MESSAGES: Connect to Carrier Section -->
+    <section class="hero" id="carrier">
+      <div class="track-hero-inner">
+        <h1>Connect to your carrier</h1>
+        <p>
+          Directly link up with verified carriers already driving along your route.
+          Save costs by locking in reliable shared truck space instantly.
+        </p>
+        <ul class="hero-points carrier-points">
+          <li>Instant matching with active route carriers</li>
+          <li>Verified and pre-screened local drivers</li>
+          <li>Direct communication and route tracking</li>
+        </ul>
+        <div class="carrier-cta">
+          <a href="messages.html" > 
+          <button type="button">Connect to your Carrier</button>
         </div>
-      </section>
+      </div>
+    </section>
 
+    <main>
       <!-- ABOUT -->
       <section id="about" class="panel">
         <h2>About CargoFlow</h2>
@@ -252,7 +166,7 @@
         </p>
         <p>
           Built for MO-IT161 &ndash; Web Systems and Technology. This page is
-          HTML and CSS only.
+          HTML, CSS, and a small amount of JavaScript for shipment tracking.
         </p>
       </section>
 
@@ -321,5 +235,6 @@
         pickupDate.value = localDate;
       }
     </script>
+    <script src="track.js" defer></script>
   </body>
 </html>
