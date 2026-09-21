@@ -243,6 +243,83 @@ nav a:hover {
   }
 }
 
+/* Track shipment — same hero card language as Book Cargo Space */
+.track-hero-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 40px var(--pad) 44px;
+  text-align: center;
+}
+
+.track-hero-inner h1 {
+  color: #fff;
+}
+
+.track-hero-inner p {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.track-search {
+  display: flex;
+  gap: 12px;
+  max-width: 420px;
+  margin: 20px auto 0;
+  background: #fff;
+  border-top: 4px solid #ff7a00;
+  padding: 16px;
+}
+
+.track-search input {
+  flex: 1;
+  margin-top: 0;
+}
+
+.track-search button {
+  flex: none;
+  margin-top: 0;
+}
+
+.hero p.track-result {
+  max-width: 420px;
+  margin: 16px auto 0;
+  padding: 12px 16px;
+  background: #fff;
+  color: #1a1a1a;
+  border-left: 4px solid #0b3d91;
+  font-weight: 600;
+}
+
+.track-full-link {
+  margin: 16px 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.track-full-link a {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.carrier-points {
+  max-width: 420px;
+  margin: 0 auto 4px;
+  text-align: left;
+}
+
+.carrier-cta {
+  max-width: 420px;
+  margin: 20px auto 0;
+  background: #fff;
+  border-top: 4px solid #ff7a00;
+  padding: 16px;
+}
+
+.carrier-cta button {
+  width: 100%;
+  margin-top: 0;
+}
+
 /* Sections */
 .panel {
   border: 1px solid #ddd;
@@ -419,7 +496,7 @@ button:hover {
   flex: none;
 }
 
-.bv-a { background: #3882f6; }
+.bv-a { background: #3b82f6; }
 .bv-b { background: #ff7a00; }
 .bv-you { background: #0b3d91; }
 .bv-d { background: #9ab8ec; }
@@ -711,62 +788,6 @@ legend {
   font-weight: bold;
 }
 
-.reasons-section {
-  background: linear-gradient(180deg, #ffffff 0%, #f3f8ff 100%);
-  border: 1px solid #dfeafc;
-  box-shadow: 0 10px 28px rgba(11, 61, 145, 0.06);
-}
-
-.reasons-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-top: 18px;
-}
-
-.reason-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  background: #fff;
-  border: 1px solid #dfe3ee;
-  border-top: 4px solid #ff7a00;
-  padding: 18px 16px;
-  min-height: 190px;
-  border-radius: 14px;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
-}
-
-.reason-card h3 {
-  margin: 14px 0 8px;
-  font-size: 18px;
-  color: #0b3d91;
-}
-
-.reason-card p {
-  margin: 0;
-  color: #4b4b4b;
-  line-height: 1.6;
-}
-
-.icon-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 52px;
-  height: 52px;
-  background: linear-gradient(135deg, #0b3d91 0%, #2459c7 100%);
-  color: #fff;
-  border-radius: 14px;
-  font-size: 24px;
-  box-shadow: 0 8px 16px rgba(11, 61, 145, 0.18);
-}
-
-.guarantee-card {
-  border-top-color: #0b3d91;
-  background: linear-gradient(180deg, #fffaf5 0%, #fff 100%);
-}
-
 @media (max-width: 760px) {
   .contact-grid {
     grid-template-columns: 1fr;
@@ -782,4 +803,572 @@ footer {
   font-size: 12px;
   color: #666;
   text-align: center;
+}
+
+/* ===================================================
+   Track Shipment page additions
+   Uses existing palette: deep blue #0b3d91, orange #ff7a00
+   =================================================== */
+
+/* Compact hero variant (no two-column quote card, just a search bar) */
+.track-hero-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 40px var(--pad) 44px;
+  text-align: center;
+}
+
+.track-hero-inner h1 {
+  color: #fff;
+  font-size: clamp(26px, 3.2vw, 36px);
+  margin: 0 0 12px;
+}
+
+.track-hero-inner p {
+  margin: 0 auto 22px;
+  max-width: 60ch;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.track-search {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.track-search input {
+  margin-top: 0;
+  background: #fff;
+}
+
+.track-search button {
+  margin-top: 0;
+  white-space: nowrap;
+  background: #fff;
+  color: #0b3d91;
+}
+
+.track-search button:hover {
+  background: #f4f1ea
+}
+
+/* Visually hide label but keep it for screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* Shipment summary */
+.summary-label {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #666;
+  margin: 0 0 4px;
+}
+
+.summary-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: #0b3d91;
+  margin: 0;
+}
+
+/* Status badge */
+.badge {
+  display: inline-block;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.badge-transit {
+  background: #ff7a00;
+}
+
+.badge-delivered {
+  background: #3b82f6;
+}
+
+.badge-placed {
+  background: #0b3d91;
+}
+
+/* Timeline */
+.timeline {
+  display: flex;
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+}
+
+.step {
+  position: relative;
+  flex: 1;
+  text-align: center;
+  padding-top: 26px;
+}
+
+.step::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  left: -50%;
+  width: 100%;
+  height: 3px;
+  background: #ddd;
+  z-index: 0;
+}
+
+.step:first-child::before {
+  content: none;
+}
+
+.step-dot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #ddd;
+  z-index: 1;
+}
+
+.step-label {
+  font-size: 13px;
+  font-weight: bold;
+  margin: 4px 0 2px;
+  color: #333;
+}
+
+.step-time {
+  font-size: 11px;
+  color: #666;
+  margin: 0;
+}
+
+/* Completed steps */
+.step.is-done::before {
+  background: #0b3d91;
+}
+
+.step.is-done .step-dot {
+  background: #0b3d91;
+  border-color: #0b3d91;
+}
+
+/* Current step */
+.step.is-current .step-dot {
+  background: #ff7a00;
+  border-color: #ff7a00;
+}
+
+.step.is-current .step-label {
+  color: #ff7a00;
+}
+
+/* Upcoming steps keep the default gray styling above */
+
+@media (max-width: 700px) {
+  .timeline {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .step {
+    text-align: left;
+    padding-top: 0;
+    padding-left: 34px;
+  }
+
+  .step::before {
+    top: -20px;
+    left: 9px;
+    width: 3px;
+    height: 20px;
+  }
+
+  .step-dot {
+    top: 0;
+    left: 0;
+    transform: none;
+  }
+
+  .track-search {
+    flex-direction: column;
+  }
+}
+
+/* ===================================================
+   Messages page CSS (Added after mentoring: Sept 19, 2026)
+   Aligned with CargoFlow palette
+   =================================================== */
+.avatar-header {
+  width: 35px;
+  height: 35px;
+  background-color: #ff7a00;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Page Layout */
+.container {
+  max-width: var(--maxw, 1180px);
+  margin: 20px auto;
+  padding: 0 var(--pad, 20px);
+}
+
+.page-title h1 {
+  color: #0b3d91;
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.page-title p {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* Chat Box Container */
+.chat-app {
+  display: flex;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-top: 4px solid #ff7a00;
+  min-height: 550px;
+  overflow: hidden;
+}
+
+/* Sidebar & Conversation List */
+.sidebar {
+  width: 320px;
+  border-right: 1px solid #ddd;
+  background: #fafafa;
+}
+
+.search-box {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.search-box input {
+  width: 100%;
+  height: 38px;
+  padding: 8px 12px;
+  border: 1px solid #999;
+  font-size: 14px;
+  background: #ffffff;
+}
+
+.search-box input:focus {
+  outline: 2px solid #0b3d91;
+  outline-offset: -1px;
+}
+
+.conversation-item {
+  display: flex;
+  gap: 12px;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.conversation-item:hover {
+  background-color: #f4f1ea;
+}
+
+.conversation-item.active {
+  background-color: #edf2ff;
+  border-left: 4px solid #0b3d91;
+}
+
+/* Color Badges & Avatars */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.bg-navy { background-color: #0b3d91; }
+.bg-orange { background-color: #ff7a00; }
+
+.badge {
+  font-size: 11px;
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: bold;
+}
+
+.location-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.bg-light-blue { 
+  background-color: #e2ebff; 
+  color: #0b3d91; 
+}
+
+.preview-text {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Chat Main Workspace */
+.chat-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.chat-user h3 {
+  font-size: 16px;
+  color: #0b3d91;
+  margin: 0;
+}
+
+.chat-actions button {
+  background: none;
+  color: #0b3d91;
+  border: none;
+  padding: 4px 8px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.chat-actions button:hover {
+  background: #f4f1ea;
+  color: #ff7a00;
+}
+
+/* Booking Summary Card */
+.booking-card {
+  margin: 15px 20px 0;
+  background-color: #f4f1ea;
+  border: 1px solid #ddd;
+  border-left: 4px solid #0b3d91;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #333;
+}
+
+.booking-card strong {
+  color: #0b3d91;
+}
+
+.booking-card p {
+  margin: 0;
+  color: #666;
+}
+
+/* Message Bubbles */
+.messages-container {
+  flex-grow: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.message {
+  display: flex;
+  gap: 10px;
+  max-width: 70%;
+}
+
+.message-avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+}
+
+.message-content p {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin: 0;
+}
+
+.time {
+  font-size: 11px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.incoming {
+  align-self: flex-start;
+}
+
+.incoming .message-content p {
+  background-color: #f4f1ea;
+  color: #333;
+  border: 1px solid #e0ddd5;
+}
+
+.outgoing {
+  align-self: flex-end;
+}
+
+.outgoing .message-content p {
+  background-color: #0b3d91;
+  color: #ffffff;
+}
+
+.outgoing .time {
+  text-align: right;
+}
+
+/* Bottom Chat Input Bar */
+.chat-input-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 20px;
+  border-top: 1px solid #ddd;
+  background-color: #fafafa;
+}
+
+.chat-input-area .message-input {
+  flex-grow: 1;
+  height: 38px;
+  padding: 8px 12px;
+  border: 1px solid #999;
+  background: #ffffff;
+  font-size: 14px;
+}
+
+.chat-input-area .message-input:focus {
+  outline: 2px solid #0b3d91;
+  outline-offset: -1px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #0b3d91;
+  padding: 0 8px;
+}
+
+.send-btn {
+  background-color: #ff7a00;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 0;
+}
+
+.send-btn:hover {
+  background-color: #e96d00;
+}
+
+/* Make the messages page header span the full available width. */
+.messages-page header {
+  max-width: none;
+}
+
+/* Keep the messages page content aligned with the full-width header. */
+.container {
+  max-width: none;
+  margin: 20px 0;
+}
+
+/* Reduce the space below the Messages heading. */
+.page-title h1 {
+  margin-bottom: 2px;
+}
+
+/* Remove extra space above the subtitle. */
+.page-title p {
+  margin-top: 0;
+}
+
+/* Place the carrier avatar beside the carrier name and route. */
+.chat-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.truck-icon {
+  flex: none;
+}
+
+/* Larger badge for emphasis */
+.badge-lg {
+  font-size: 15px;
+  padding: 10px 20px;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+
+/* Icons next to summary labels */
+.summary-icon {
+  width: 14px;
+  height: 14px;
+  vertical-align: -2px;
+  margin-right: 4px;
+}
+
+/* Pulse animation on the current timeline step */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 122, 0, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 122, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 122, 0, 0);
+  }
+}
+
+.step.is-current .step-dot {
+  animation: pulse 1.8s infinite;
 }
