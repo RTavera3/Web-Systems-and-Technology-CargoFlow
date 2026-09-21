@@ -41,14 +41,29 @@ body {
   color: var(--cf-navy);
 }
 
-/* Hero — only .cf-hero (the Book cargo space section) is navy */
+/* Hero — only .cf-hero (the Book cargo space section) is navy.
+   padding-bottom is large on purpose: it leaves clear space below the
+   subtitle so the floating card (pulled up by .cf-overlap-card's negative
+   margin) only pokes into empty navy, never over the text above it. */
 .cf-hero {
   background: var(--cf-navy);
   color: #fff;
+  padding-bottom: 150px;
 }
 
 .cf-hero .lead {
   color: rgba(255, 255, 255, 0.92);
+}
+
+/* Section headings — Bootstrap's display-* utilities are sized for a full
+   marketing hero; every other heading on the site uses a much more modest
+   scale, so headings here match that instead of using display-*. */
+.cf-h1 {
+  font-size: clamp(28px, 3.4vw, 40px);
+}
+
+.cf-h2 {
+  font-size: clamp(22px, 2.6vw, 28px);
 }
 
 .cf-points {
@@ -75,10 +90,43 @@ body {
   color: #333;
 }
 
+/* Decorative icon accent used to balance the Track shipment and Connect to
+   carrier sections, so their text column isn't floating alone in empty
+   space on wide screens. */
+.cf-icon-circle {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.cf-icon-circle-navy {
+  background: #eef4ff;
+}
+
+.cf-icon-circle-orange {
+  background: #fff4e8;
+}
+
 .cf-card {
   border: none;
   border-top: 4px solid var(--cf-orange);
   border-radius: 0;
+}
+
+/* The "Get a price" card floats on the boundary between the navy hero and
+   the white page below it, like the search bar on booking.com's homepage:
+   pulled up with a negative margin so its top half sits on navy and its
+   bottom half sits on white. */
+.cf-overlap-card {
+  margin-top: -70px;
+  position: relative;
+  z-index: 2;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 /* Bootstrap 5.3 exposes each button variant's colors as its own --bs-btn-*
@@ -103,11 +151,6 @@ body {
   --bs-btn-active-bg: #e96d00;
   --bs-btn-active-border-color: #e96d00;
   font-weight: 700;
-}
-
-.btn-outline-light:hover,
-.btn-outline-light:focus {
-  color: var(--cf-navy);
 }
 
 #track-result:not([hidden]) {
