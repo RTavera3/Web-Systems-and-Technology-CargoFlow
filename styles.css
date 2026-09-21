@@ -289,6 +289,18 @@ nav a:hover {
   font-weight: 600;
 }
 
+.track-full-link {
+  margin: 16px 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.track-full-link a {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
 .carrier-points {
   max-width: 420px;
   margin: 0 auto 4px;
@@ -1057,37 +1069,9 @@ footer {
 }
 
 /* ===================================================
-   Adding Messages Page CSS (Added after mentoring: Sept 19, 2026)
+   Messages page CSS (Added after mentoring: Sept 19, 2026)
    Aligned with CargoFlow palette
    =================================================== */
-/* Header & Nav alignment */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #ffffff;
-  padding: 14px var(--pad, 20px); 
-  border-bottom: 1px solid #ddd;
-  max-width: var(--maxw, 1180px);
-  margin: 0 auto;
-}
-
-.nav-links a {
-  margin: 0 12px;
-  text-decoration: none;
-  color: #333;
-  font-size: 14px;
-}
-
-.nav-links a:hover {
-  text-decoration: underline;
-}
-
-.nav-links a.active {
-  color: #0b3d91;
-  font-weight: bold;
-}
-
 .avatar-header {
   width: 35px;
   height: 35px;
@@ -1380,12 +1364,12 @@ footer {
   background-color: #e96d00;
 }
 
-/* Make the messages page navbar span the full available width. */
-.navbar {
+/* Make the messages page header span the full available width. */
+.messages-page header {
   max-width: none;
 }
 
-/* Keep the messages page content aligned with the full-width navbar. */
+/* Keep the messages page content aligned with the full-width header. */
 .container {
   max-width: none;
   margin: 20px 0;
@@ -1408,11 +1392,8 @@ footer {
   gap: 10px;
 }
 
-/* Style for the Font Awesome Truck Icon */
 .truck-icon {
-  font-size: 24px;       
-  color: #f26522;      
-  margin-right: 12px;    
+  flex: none;
 }
 
 /* Larger badge for emphasis */
