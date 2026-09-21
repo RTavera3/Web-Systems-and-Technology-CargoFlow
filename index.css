@@ -1,0 +1,117 @@
+/* CargoFlow brand theme for the Bootstrap-based homepage.
+   Colours: navy #0B3D91, orange #FF7A00 (same palette as the rest of the site).
+   Only the "Book cargo space" hero keeps the navy background; every section
+   below it (Track shipment, Connect to carrier, About) is white, like the
+   pattern on booking.com's homepage. */
+
+:root {
+  --cf-navy: #0b3d91;
+  --cf-orange: #ff7a00;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.text-cf-navy {
+  color: var(--cf-navy) !important;
+}
+
+.text-cf-orange {
+  color: var(--cf-orange) !important;
+}
+
+.bg-cf-panel {
+  background: #f4f1ea;
+}
+
+/* Header */
+.navbar-brand span {
+  font-weight: bold;
+  color: var(--cf-navy);
+  font-size: 1.25rem;
+}
+
+.nav-link {
+  color: #333;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--cf-navy);
+}
+
+/* Hero — only .cf-hero (the Book cargo space section) is navy */
+.cf-hero {
+  background: var(--cf-navy);
+  color: #fff;
+}
+
+.cf-hero .lead {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.cf-points {
+  padding-left: 0;
+}
+
+.cf-points li {
+  position: relative;
+  padding-left: 22px;
+  margin-bottom: 8px;
+}
+
+.cf-points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 10px;
+  height: 10px;
+  background: var(--cf-orange);
+}
+
+.cf-points-dark li {
+  color: #333;
+}
+
+.cf-card {
+  border: none;
+  border-top: 4px solid var(--cf-orange);
+  border-radius: 0;
+}
+
+/* Bootstrap 5.3 exposes each button variant's colors as its own --bs-btn-*
+   custom properties, so they can be re-themed here without a Sass rebuild. */
+.btn-primary {
+  --bs-btn-bg: var(--cf-navy);
+  --bs-btn-border-color: var(--cf-navy);
+  --bs-btn-hover-bg: #082c69;
+  --bs-btn-hover-border-color: #082c69;
+  --bs-btn-active-bg: #082c69;
+  --bs-btn-active-border-color: #082c69;
+}
+
+.btn-cf-accent {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--cf-orange);
+  --bs-btn-border-color: var(--cf-orange);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #e96d00;
+  --bs-btn-hover-border-color: #e96d00;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #e96d00;
+  --bs-btn-active-border-color: #e96d00;
+  font-weight: 700;
+}
+
+.btn-outline-light:hover,
+.btn-outline-light:focus {
+  color: var(--cf-navy);
+}
+
+#track-result:not([hidden]) {
+  border-left: 4px solid var(--cf-navy);
+  color: #1a1a1a;
+  font-weight: 600;
+}
