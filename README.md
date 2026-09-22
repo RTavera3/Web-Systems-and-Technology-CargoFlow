@@ -115,15 +115,26 @@ console).
 
 ```
 Web-Systems-and-Technology-CargoFlow/
-├── index.html          # The page: all markup
-├── styles.css          # Brand styles and responsive layouts
-├── app.js              # Icons, mobile nav, and the route search
-├── search.js           # Mock route data and the findRoutes filter
-├── tests.html          # Opens in a browser to run the tests
-├── search.test.js      # Route-search assertions (run by tests.html)
-├── cargo-journey.svg   # Local branded truck illustration
-└── favicon.svg         # CargoFlow-inspired icon
+├── index.html                    # Home page: hero, quote form, track widget, carrier CTA, about
+├── css/
+│   ├── index.css                 # Bootstrap theme overrides for index.html (navy/orange brand)
+│   └── styles.css                # Shared styles for every page under pages/
+├── js/
+│   ├── track.js                  # Home page's quick shipment-tracking widget
+│   └── trackshipment.js          # Full tracking page logic (pages/trackshipment.html)
+├── pages/
+│   ├── contact.html              # Contact form
+│   ├── booking-details.html      # Cargo/address details step of the booking flow
+│   ├── payment.html              # Payment step of the booking flow
+│   ├── messages.html             # Carrier messaging UI
+│   └── trackshipment.html        # Full shipment-tracking page
+└── resources/
+    └── cargoflow.logo.png        # Brand logo asset
 ```
+
+`index.html` stays at the project root (so `index.html` loads by default from any static host);
+every other page lives under `pages/`. Pages link to each other with plain relative paths — no
+build step, router, or bundler is involved.
 
 ---
 

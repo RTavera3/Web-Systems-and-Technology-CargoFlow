@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Payment | CargoFlow</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../css/styles.css" />
   </head>
   <body>
     <header>
-      <a href="index.html#book" class="brand" aria-label="CargoFlow home">
+      <a href="../index.html#book" class="brand" aria-label="CargoFlow home">
         <svg viewBox="0 0 56 56" width="40" height="40" aria-hidden="true">
           <path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#0B3D91" />
           <path
@@ -21,10 +21,10 @@
       </a>
       <p class="tag">Share the Road. Share the Cost.</p>
       <nav>
-        <a href="index.html#book">Book cargo space</a>
+        <a href="../index.html#book">Book cargo space</a>
         <a href="trackshipment.html">Track shipment</a>
-        <a href="index.html#carrier">Connect to carrier</a>
-        <a href="index.html#about">About</a>
+        <a href="../index.html#carrier">Connect to carrier</a>
+        <a href="../index.html#about">About</a>
         <a href="contact.html">Contact Us</a>
       </nav>
     </header>
@@ -155,7 +155,7 @@
 
     <footer>
       <p>
-        Share space. Move more. &nbsp;·&nbsp; CargoFlow &mdash; a student
+        Share space. Move more. &nbsp;·&nbsp; CargoFlow, a student
         project. Made in the Philippines.
       </p>
     </footer>
@@ -187,7 +187,9 @@
       setPaymentValue('paymentWeight', 'weight');
       setPaymentValue('paymentPackages', 'packageCount');
       setPaymentValue('paymentType', 'type');
-      setPaymentValue('paymentValue', 'declaredValue');
+      document.getElementById('paymentValue').textContent = paymentParams.has('declaredValue')
+        ? new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(paymentParams.get('declaredValue')))
+        : 'Not provided';
       setPaymentValue('paymentVehicle', 'vehicleType');
       setPaymentValue('paymentSender', 'senderName');
       setPaymentValue('paymentSenderContact', 'senderContact');

@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Booking Details | CargoFlow</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../css/styles.css" />
   </head>
   <body>
     <header>
-      <a href="index.html#book" class="brand" aria-label="CargoFlow home">
+      <a href="../index.html#book" class="brand" aria-label="CargoFlow home">
         <svg viewBox="0 0 56 56" width="40" height="40" aria-hidden="true">
           <path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#0B3D91" />
           <path
@@ -21,10 +21,10 @@
       </a>
       <p class="tag">Share the Road. Share the Cost.</p>
       <nav>
-        <a href="index.html#book">Book cargo space</a>
+        <a href="../index.html#book">Book cargo space</a>
         <a href="trackshipment.html">Track shipment</a>
-        <a href="index.html#carrier">Connect to carrier</a>
-        <a href="index.html#about">About</a>
+        <a href="../index.html#carrier">Connect to carrier</a>
+        <a href="../index.html#about">About</a>
         <a href="contact.html">Contact Us</a>
       </nav>
     </header>
@@ -97,7 +97,7 @@
 
           <p class="booking-incomplete" id="bookingIncomplete" hidden>
             Complete all fields in the Get a price section before continuing to
-            your cargo details. <a href="index.html#book">Return to booking</a>
+            your cargo details. <a href="../index.html#book">Return to booking</a>
           </p>
 
           <div class="address-details-grid">
@@ -207,7 +207,7 @@
               </label>
               <label>
                 Declared cargo value (PHP)
-                <input type="number" name="declaredValue" id="declaredValue" min="0" step="0.01" placeholder="e.g. 25000" required />
+                <input type="text" name="declaredValue" id="declaredValue" inputmode="decimal" placeholder="e.g. 25,000" required />
               </label>
               <label>
                 Vehicle type
@@ -267,7 +267,7 @@
 
     <footer>
       <p>
-        Share space. Move more. &nbsp;·&nbsp; CargoFlow &mdash; a student
+        Share space. Move more. &nbsp;·&nbsp; CargoFlow, a student
         project. Made in the Philippines.
       </p>
     </footer>
@@ -343,6 +343,22 @@
       syncAddressCity('detailTo', 'dropoffCitySelect', 'dropoffCity');
       setProvinceFromCity('pickupCitySelect', 'pickupProvinceSelect', 'pickupProvince');
       setProvinceFromCity('dropoffCitySelect', 'dropoffProvinceSelect', 'dropoffProvince');
+
+      const declaredValue = document.getElementById('declaredValue');
+      const formatCurrencyInput = () => {
+        const numericValue = declaredValue.value.replace(/[^0-9.]/g, '');
+        if (!numericValue) return;
+        const [whole, decimal] = numericValue.split('.');
+        declaredValue.value = Number(whole).toLocaleString('en-PH') +
+          (decimal !== undefined ? `.${decimal.slice(0, 2)}` : '');
+      };
+
+      setValue('declaredValue', 'declaredValue');
+      formatCurrencyInput();
+      declaredValue.addEventListener('input', formatCurrencyInput);
+      document.querySelector('.details-form').addEventListener('submit', () => {
+        declaredValue.value = declaredValue.value.replace(/,/g, '');
+      });
 
       const vehicleSpecs = {
         Motorcycle: { maxWeight: 20 },
