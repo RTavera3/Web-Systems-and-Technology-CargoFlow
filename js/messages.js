@@ -3,39 +3,27 @@ const messageInput = document.querySelector('.message-input');
 const sendButton = document.querySelector('.send-btn');
 const messagesContainer = document.querySelector('.messages-container');
 
-// -------------------------------------------------------------
-// STORAGE HELPERS
-// -------------------------------------------------------------
-
-// 1. Get existing messages array from localStorage (or return empty array [])
+// Storage helpers as advised during mentoring session - MDN WebDocs
 function getStoredMessages() {
   const saved = localStorage.getItem('chatMessages');
   return saved ? JSON.parse(saved) : [];
 }
 
-// 2. Save a new message object into localStorage
 function saveMessage(text, messageType) {
   const currentMessages = getStoredMessages();
   currentMessages.push({ text: text, messageType: messageType });
   localStorage.setItem('chatMessages', JSON.stringify(currentMessages));
 }
 
-// 3. Load stored messages on page load
 function loadMessages() {
   const storedMessages = getStoredMessages();
   storedMessages.forEach(function (msg) {
-    // Pass false for 'shouldSave' so loading old messages doesn't duplicate them in storage
     addMessage(msg.text, msg.messageType, false);
   });
 }
 
-// -------------------------------------------------------------
-// CHAT FUNCTIONS
-// -------------------------------------------------------------
-
-// Add one message to the chat window.
+//Chat functions.
 function addMessage(text, messageType, shouldSave = true) {
-  // Create the elements that make up a message.
   const message = document.createElement('div');
   const messageContent = document.createElement('div');
   const messageText = document.createElement('p');
@@ -61,47 +49,44 @@ function addMessage(text, messageType, shouldSave = true) {
 
   message.appendChild(messageContent);
   messagesContainer.appendChild(message);
-
-  // Scroll down so the newest message is visible.
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-  // Save to localStorage if this is a new message being sent/received
   if (shouldSave) {
     saveMessage(text, messageType);
   }
 }
 
-// Send the typed message and prepare the automatic reply.
 function sendMessage() {
   const text = messageInput.value.trim();
-
-  // Do not add an empty message.
-  if (text === '') {
-    return;
-  }
-
+  if (text === '') return;
   addMessage(text, 'outgoing');
   messageInput.value = '';
 
-  // Simulate a short wait before the carrier replies.
   setTimeout(function () {
-    addMessage('Got it! We are on schedule for pick-up.', 'incoming');
+    addMessage('Hello! Your shipment is currently in transit to Cebu and on schedule.', 'incoming');
   }, 1500);
+
 }
 
-// -------------------------------------------------------------
-// EVENT LISTENERS & INITIALIZATION
-// -------------------------------------------------------------
+// Function to clear all stored messages
+function clearChat() {
+  localStorage.removeItem('chatMessages');
+  messagesContainer.innerHTML = '';
+}
 
-// Load previously saved messages when the JS script runs
-loadMessages();
-
-// The click listener sends a message when the user presses Send.
 sendButton.addEventListener('click', sendMessage);
 
-// The key listener also lets the user press Enter to send.
+//This code would help load the messages from local storage when the page is loaded.
+loadMessages();
+
+// Key listener.
 messageInput.addEventListener('keydown', function (event) {
   if (event.key === 'Enter') {
     sendMessage();
   }
 });
+
+const clearButton = document.querySelector('#clear-btn');
+if (clearButton) {
+  clearButton.addEventListener('click', clearChat);
+}
