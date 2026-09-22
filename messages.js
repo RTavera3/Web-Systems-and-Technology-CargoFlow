@@ -40,5 +40,19 @@ function sendMessage() {
   if (text === '') return;
   addMessage(text, 'outgoing');
   messageInput.value = '';
-}
 
+  setTimeout(function () {
+    addMessage('Got it! We are on schedule for pick-up.', 'incoming');
+  }, 1500)
+
+}
+sendButton.addEventListener('click', sendMessage);
+
+// Key listener.
+messageInput.addEventListener('keydown', function (event) {
+  if (event.key === 'Enter') {
+    sendMessage();
+  }
+});
+
+// Will add storage functionality as mentioned during mentoring session...
