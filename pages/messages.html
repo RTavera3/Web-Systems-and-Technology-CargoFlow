@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CargoFlow - Messages</title>
   <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body class="messages-page">
@@ -23,7 +24,7 @@
     <nav>
       <a href="../index.html#book">Book cargo space</a>
       <a href="trackshipment.html">Track shipment</a>
-      <a href="../index.html#carrier">Connect to carrier</a>
+      <a href="messages.html">Connect to carrier</a>
       <a href="../index.html#about">About</a>
       <a href="contact.html">Contact Us</a>
     </nav>
@@ -61,7 +62,6 @@
             <div class="conversation-info">
               <div class="item-header">
                 <strong>LBC Express</strong>
-                <span class="badge bg-orange">2</span>
               </div>
               <span class="location-tag bg-light-blue">Manila to Cebu</span>
               <p class="preview-text">Your shipment is ready for pickup.</p>
@@ -85,49 +85,27 @@
           </div>
           <div class="chat-actions">
             <button type="button" aria-label="Start a call">☎</button>
-            <button type="button" aria-label="More options">⋮</button>
+            <button type="button" id="clear-btn" aria-label="Clear chat">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
           </div>
         </div>
 
         <!-- Booking Info Box -->
         <div class="booking-card">
           <svg class="truck-icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-            <path d="M3 6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h1.17a2.5 2.5 0 0 0 4.66 0h5.34a2.5 2.5 0 0 0 4.66 0H20a1 1 0 0 0 1-1v-4.5a1 1 0 0 0-.29-.71l-3-3A1 1 0 0 0 17 7h-2V7a1 1 0 0 0-1-1H3zm12 3h1.59L19 11.41V15h-1.17a2.49 2.49 0 0 0-3.66 0H15V9zM7 15.5A1.5 1.5 0 1 1 7 18.5a1.5 1.5 0 0 1 0-3zm10 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" fill="#FF7A00" />
+            <path
+              d="M3 6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h1.17a2.5 2.5 0 0 0 4.66 0h5.34a2.5 2.5 0 0 0 4.66 0H20a1 1 0 0 0 1-1v-4.5a1 1 0 0 0-.29-.71l-3-3A1 1 0 0 0 17 7h-2V7a1 1 0 0 0-1-1H3zm12 3h1.59L19 11.41V15h-1.17a2.49 2.49 0 0 0-3.66 0H15V9zM7 15.5A1.5 1.5 0 1 1 7 18.5a1.5 1.5 0 0 1 0-3zm10 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"
+              fill="#FF7A00" />
           </svg>
           <div>
-            <strong>Tracking Number: CF-10492</strong>
+            <strong>Tracking Number: CF-24810293</strong>
             <p>Manila to Cebu • 15 Sept 2026</p>
           </div>
         </div>
 
-        <!-- Chat Messages -->
+        <!-- Chat Messages // added a loadmessages function in js -->
         <div class="messages-container">
-
-          <!-- Received Message -->
-          <div class="message incoming">
-            <div class="avatar bg-navy message-avatar">L</div>
-            <div class="message-content">
-              <p>Your cargo is ready for pickup. Please confirm the schedule.</p>
-              <span class="time">Today · 9:30 AM</span>
-            </div>
-          </div>
-
-          <!-- Sent Message -->
-          <div class="message outgoing">
-            <div class="message-content">
-              <p>Thanks! I will confirm the pickup details with my team.</p>
-              <span class="time">Today · 9:35 AM</span>
-            </div>
-          </div>
-
-          <!-- Received Message -->
-          <div class="message incoming">
-            <div class="avatar bg-navy message-avatar">L</div>
-            <div class="message-content">
-              <p>Great. We will keep you updated when the truck departs.</p>
-              <span class="time">Today · 9:36 AM</span>
-            </div>
-          </div>
 
         </div>
 
@@ -142,7 +120,15 @@
     </div>
   </main>
 
-  <script src="messages.js"></script>
+<footer class="border-top py-4 text-center text-muted small">
+  <div class="container">
+    <p class="mb-2">
+      Share space. Move more. &nbsp;·&nbsp; CargoFlow, a student project. Made in the Philippines.
+    </p>
+  </div>
+</footer>
+
+  <script src="../js/messages.js"></script>
 
 </body>
 

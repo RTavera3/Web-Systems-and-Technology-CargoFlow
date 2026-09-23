@@ -800,13 +800,20 @@ legend {
 
 /* Footer */
 footer {
-  border-top: 1px solid #ccc;
-  margin: 8px auto 0;
-  max-width: var(--maxw);
-  padding: 16px var(--pad) 28px;
+  border-top: 1px solid #ccc; /* Full-width line across the screen */
+  margin-top: 40px;
+  width: 100%;
+  padding: 16px 0 28px;
   font-size: 12px;
   color: #666;
   text-align: center;
+}
+
+/* Keeps only the text centered and bounded */
+footer p {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 var(--pad);
 }
 
 /* ===================================================
@@ -1359,6 +1366,24 @@ footer {
 
 .truck-icon {
   flex: none;
+}
+
+/* Trash can button */
+#clear-btn {
+  background: transparent;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+#clear-btn:hover {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: #ffffff;
 }
 
 /* Larger badge for emphasis */
