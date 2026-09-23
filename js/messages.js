@@ -6,7 +6,21 @@ const messagesContainer = document.querySelector('.messages-container');
 // Storage helpers as advised during mentoring session - MDN WebDocs
 function getStoredMessages() {
   const saved = localStorage.getItem('chatMessages');
-  return saved ? JSON.parse(saved) : [];
+  if (!saved) {
+    return [];
+  }
+  try {
+    return JSON.parse(saved);
+  } catch (error) {
+    // Malformed JSON (e.g. hand-edited in DevTools) would otherwise throw
+    // here and stop the rest of this script from running, silently
+    // breaking Enter-to-send since its listener is registered after
+    // loadMessages(). Fall back to an empty history and clear the bad
+    // entry so it does not keep failing on every reload.
+    console.warn('Could not parse stored chat messages, resetting history.', error);
+    localStorage.removeItem('chatMessages');
+    return [];
+  }
 }
 
 function saveMessage(text, messageType) {
