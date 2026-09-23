@@ -278,6 +278,39 @@
       const bookingIsComplete = requiredBookingFields.every(
         (field) => bookingParams.get(field),
       );
+      const detailDate = document.getElementById('detailDate');
+      const detailTime = document.getElementById('detailTime');
+      const formatDateValue = (date) => {
+        const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+        return localDate.toISOString().split('T')[0];
+      };
+      const formatTimeValue = (date) => {
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+      };
+      const limitTimeForSelectedDate = () => {
+        if (!detailDate || !detailTime) return;
+
+        const todayString = formatDateValue(new Date());
+        detailDate.min = todayString;
+
+        if (!detailDate.value || detailDate.value < todayString) {
+          detailDate.value = todayString;
+        }
+
+        if (detailDate.value === todayString) {
+          const minTimeDate = new Date(Date.now() + 60000);
+          const minTime = formatTimeValue(minTimeDate);
+          detailTime.min = minTime;
+
+          if (detailTime.value && detailTime.value < minTime) {
+            detailTime.value = '';
+          }
+        } else {
+          detailTime.min = '';
+        }
+      };
       const cityProvinceMap = {
         Manila: 'Metro Manila',
         Batangas: 'Batangas',
@@ -301,6 +334,13 @@
       setValue('detailTo', 'to');
       setValue('detailDate', 'date');
       setValue('detailTime', 'time');
+      limitTimeForSelectedDate();
+      detailDate?.addEventListener('change', limitTimeForSelectedDate);
+      detailTime?.addEventListener('change', () => {
+        if (detailDate.value === detailDate.min && detailTime.value && detailTime.value < detailTime.min) {
+          detailTime.value = '';
+        }
+      });
       setValue('detailWeight', 'weight');
       setValue('detailType', 'type');
       setValue('cargoDescription', 'cargoDescription');

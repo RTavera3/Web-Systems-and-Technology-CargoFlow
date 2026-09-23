@@ -237,16 +237,52 @@
 
     <script>
       const pickupDate = document.querySelector('input[name="date"]');
+      const pickupTime = document.querySelector('input[name="time"]');
+
+      const formatDateValue = (date) => {
+        const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+        return localDate.toISOString().split('T')[0];
+      };
+
+      const formatTimeValue = (date) => {
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+      };
+
+      const limitTimeForSelectedDate = () => {
+        if (!pickupDate || !pickupTime) return;
+
+        const todayString = formatDateValue(new Date());
+        pickupDate.min = todayString;
+
+        if (!pickupDate.value || pickupDate.value < todayString) {
+          pickupDate.value = todayString;
+        }
+
+        const selectedDate = pickupDate.value;
+
+        if (selectedDate === todayString) {
+          const minTimeDate = new Date(Date.now() + 60000);
+          const minTime = formatTimeValue(minTimeDate);
+          pickupTime.min = minTime;
+
+          if (pickupTime.value && pickupTime.value < minTime) {
+            pickupTime.value = '';
+          }
+        } else {
+          pickupTime.min = '';
+        }
+      };
 
       if (pickupDate) {
-        const today = new Date();
-        const localDate = new Date(
-          today.getTime() - today.getTimezoneOffset() * 60000,
-        )
-          .toISOString()
-          .split('T')[0];
-        pickupDate.min = localDate;
-        pickupDate.value = localDate;
+        pickupDate.addEventListener('change', limitTimeForSelectedDate);
+        pickupTime?.addEventListener('change', () => {
+          if (pickupDate.value === pickupDate.min && pickupTime.value && pickupTime.value < pickupTime.min) {
+            pickupTime.value = '';
+          }
+        });
+        limitTimeForSelectedDate();
       }
     </script>
     <script src="js/track.js" defer></script>
