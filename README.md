@@ -65,7 +65,10 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 
 </div>
 
-> **Note:** No framework, no build step, and no backend. Plain HTML, CSS, and JavaScript. Route data is mock data in `search.js` and all filtering runs in the browser.
+> **Note:** No framework, no build step, and no backend. Plain HTML, CSS, and
+> JavaScript, plus Bootstrap 5 (via CDN) on the home page only. Shipment
+> tracking uses mock data; carrier messaging persists to `localStorage` in
+> your own browser. Everything else runs entirely client-side.
 
 ---
 
@@ -74,40 +77,47 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 ### Prerequisites
 
 - A modern web browser. That's it — no Node.js, no install step.
+- Python 3 (already on macOS/Linux) if you want to serve the site locally
+  instead of opening files directly — recommended, since a couple of pages
+  use relative paths that behave more reliably over `http://` than `file://`.
 
 ### Run it
 
 ```bash
-git clone https://github.com/armielynobinguar/Web-Systems-and-Technology-CargoFlow.git
+git clone https://github.com/RTavera3/Web-Systems-and-Technology-CargoFlow.git
 cd Web-Systems-and-Technology-CargoFlow
+python3 -m http.server 8000
 ```
 
-Then either:
+Then open **http://localhost:8000/index.html**. Any other static server
+works the same way (`npx serve .`, VS Code's "Live Server" extension, etc.) —
+just make sure whatever you use serves the project root, since `index.html`
+loads `css/`, `js/`, and `pages/` with paths relative to it.
 
-- **Open `index.html` directly** in your browser, or
-- Serve the folder with any static server for a cleaner URL, e.g.
-  `python3 -m http.server` (then visit **http://localhost:8000**) or the
-  VS Code "Live Server" extension.
+Opening `index.html` directly via `file://` also works for a quick look, but
+some browsers restrict relative-path loading over `file://` more than others,
+so a local server is the more reliable option.
 
-### About the page
+### About the pages
 
-`index.html` is the Home page: responsive navigation, a platform overview, a
-three-step guide, and an interactive quick search with origin, destination, and
-optional weight filters. Popular-route shortcuts, location swapping, input
-validation, and empty results are supported. `app.js` renders the icons, drives
-the mobile menu, and runs the search; `search.js` holds the mock route data.
+`index.html` (project root) is the Home page — Bootstrap 5 navbar, hero with
+a floating "Get a price" quote card, a shipment-tracking widget, a carrier
+CTA, and an About section. Every other page lives under `pages/`:
+`contact.html`, `booking-details.html`, `payment.html`, `messages.html`
+(carrier chat with `localStorage`-backed history), and `trackshipment.html`
+(the full tracking page, separate from the home page's quick widget).
 
-The design follows the supplied CargoFlow brand board: deep blue (`#0B3D91`), sky blue (`#3882F6`), flow orange (`#FF7A00`), sand (`#F4F1EA`), and charcoal (`#1F2937`). The logo is an SVG recreation inspired by the reference; the truck illustration is original local SVG artwork, not an extracted image from the board.
+The design follows the CargoFlow brand palette: deep blue (`#0B3D91`) and
+flow orange (`#FF7A00`), with sand (`#F4F1EA`) as a secondary background.
+Icons are inline SVG (no icon font/CDN) to keep the site's look consistent
+and working offline.
 
-**Prototype scope:** route listings, schedules, capacities, and starting prices are mock data in `search.js`. Search runs entirely in the browser; booking, accounts, live tracking, and messaging are not implemented. Navigation uses in-page section anchors. No API keys or backend are needed.
+**Prototype scope:** shipment tracking and pricing use mock data; there's no
+backend, database, or real payment processing. No API keys are needed to run
+it.
 
-Fonts (DM Sans and Manrope) load from Google Fonts, which receives normal browser request metadata. System sans-serif fallbacks are used when offline; all artwork is local.
-
-### Tests
-
-Open **`tests.html`** in a browser. It runs the route-search assertions
-against `search.js` and prints a pass/fail list on the page (and to the
-console).
+Fonts load from Google Fonts, which receives normal browser request
+metadata; system sans-serif fallbacks are used when offline.
 
 ---
 
