@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Booking Details | CargoFlow</title>
+    <meta name="description" content="Enter your pickup, drop-off, and contact details to complete your CargoFlow booking." />
+    <link rel="icon" type="image/png" href="../resources/cargoflow.logo.png" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../css/theme.css" />
   </head>
@@ -53,7 +55,7 @@
         <p class="lead text-muted mb-0">Enter your contact details so we can arrange your cargo booking.</p>
       </div>
 
-      <form class="details-form" action="payment.html" method="get">
+      <form class="details-form needs-validation" action="payment.html" method="get" novalidate>
         <div class="card cf-card mb-4" id="bookingSummary" hidden>
           <div class="card-body p-4">
             <h2 class="h5 fw-bold text-cf-navy mb-3">Your Cargo Details</h2>
@@ -69,6 +71,7 @@
                   <option>Davao</option>
                   <option>Pampanga</option>
                 </select>
+                <div class="invalid-feedback">Select a pick-up city.</div>
               </div>
               <div class="col-md-4">
                 <label class="form-label" for="detailTo">Drop-off city</label>
@@ -81,19 +84,23 @@
                   <option>Davao</option>
                   <option>Pampanga</option>
                 </select>
+                <div class="invalid-feedback">Select a drop-off city.</div>
               </div>
               <div class="col-md-4"></div>
               <div class="col-md-4">
                 <label class="form-label" for="detailDate">Pick-up date</label>
                 <input type="date" class="form-control" name="date" id="detailDate" required />
+                <div class="invalid-feedback">Choose a pick-up date.</div>
               </div>
               <div class="col-md-4">
                 <label class="form-label" for="detailTime">Pick-up time</label>
                 <input type="time" class="form-control" name="time" id="detailTime" required />
+                <div class="invalid-feedback">Choose a pick-up time.</div>
               </div>
               <div class="col-md-4">
                 <label class="form-label" for="detailWeight">Cargo weight (kg)</label>
                 <input type="number" class="form-control" name="weight" id="detailWeight" min="1" max="50000" required />
+                <div class="invalid-feedback">Enter a weight between 1 and 50,000 kg.</div>
               </div>
               <div class="col-md-6">
                 <label class="form-label" for="detailType">Cargo type</label>
@@ -105,6 +112,7 @@
                   <option>Bulk / sacks</option>
                   <option>Appliances / furniture</option>
                 </select>
+                <div class="invalid-feedback">Select a cargo type.</div>
               </div>
             </div>
 
@@ -134,14 +142,17 @@
                 <div class="mb-3">
                   <label class="form-label" for="senderName">Sender Name</label>
                   <input type="text" class="form-control" name="senderName" id="senderName" placeholder="Sender's full name" required />
+                  <div class="invalid-feedback">Enter the sender's name.</div>
                 </div>
                 <div class="mb-3">
                   <label class="form-label" for="senderContact">Sender Contact Number</label>
                   <input type="tel" class="form-control" name="senderContact" id="senderContact" placeholder="Sender's contact number" required />
+                  <div class="invalid-feedback">Enter the sender's contact number.</div>
                 </div>
                 <div class="mb-3">
                   <label class="form-label" for="pickupAddress">Address</label>
                   <input type="text" class="form-control" name="pickupAddress" id="pickupAddress" placeholder="Street and building" required />
+                  <div class="invalid-feedback">Enter the pick-up address.</div>
                 </div>
                 <div class="mb-3">
                   <label class="form-label" for="pickupCitySelect">City</label>
@@ -172,6 +183,7 @@
                 <div class="mb-0">
                   <label class="form-label" for="pickupZip">Zip code</label>
                   <input type="text" class="form-control" name="pickupZip" id="pickupZip" inputmode="numeric" placeholder="Zip code" required />
+                  <div class="invalid-feedback">Enter the pick-up zip code.</div>
                 </div>
               </div>
             </fieldset>
@@ -184,14 +196,17 @@
                 <div class="mb-3">
                   <label class="form-label" for="receiverName">Receiver Name</label>
                   <input type="text" class="form-control" name="receiverName" id="receiverName" placeholder="Receiver's full name" required />
+                  <div class="invalid-feedback">Enter the receiver's name.</div>
                 </div>
                 <div class="mb-3">
                   <label class="form-label" for="receiverContact">Receiver Contact Number</label>
                   <input type="tel" class="form-control" name="receiverContact" id="receiverContact" placeholder="Receiver's contact number" required />
+                  <div class="invalid-feedback">Enter the receiver's contact number.</div>
                 </div>
                 <div class="mb-3">
                   <label class="form-label" for="dropoffAddress">Address</label>
                   <input type="text" class="form-control" name="dropoffAddress" id="dropoffAddress" placeholder="Street and building" required />
+                  <div class="invalid-feedback">Enter the drop-off address.</div>
                 </div>
                 <div class="mb-3">
                   <label class="form-label" for="dropoffCitySelect">City</label>
@@ -222,6 +237,7 @@
                 <div class="mb-0">
                   <label class="form-label" for="dropoffZip">Zip code</label>
                   <input type="text" class="form-control" name="dropoffZip" id="dropoffZip" inputmode="numeric" placeholder="Zip code" required />
+                  <div class="invalid-feedback">Enter the drop-off zip code.</div>
                 </div>
               </div>
             </fieldset>
@@ -234,15 +250,18 @@
             <div class="mb-3">
               <label class="form-label" for="cargoDescription">Cargo description</label>
               <textarea class="form-control" name="cargoDescription" id="cargoDescription" rows="3" placeholder="Describe the items being shipped" required></textarea>
+              <div class="invalid-feedback">Describe the cargo being shipped.</div>
             </div>
             <div class="row g-3 mb-3">
               <div class="col-md-4">
                 <label class="form-label" for="packageCount">Number of packages</label>
                 <input type="number" class="form-control" name="packageCount" id="packageCount" min="1" placeholder="e.g. 10" required />
+                <div class="invalid-feedback">Enter the number of packages.</div>
               </div>
               <div class="col-md-4">
                 <label class="form-label" for="declaredValue">Declared cargo value (PHP)</label>
                 <input type="text" class="form-control" name="declaredValue" id="declaredValue" inputmode="decimal" placeholder="e.g. 25,000" required />
+                <div class="invalid-feedback">Enter the declared cargo value.</div>
               </div>
               <div class="col-md-4">
                 <label class="form-label" for="vehicleType">Vehicle type</label>
@@ -254,6 +273,7 @@
                   <option value="6-wheeler truck">6-wheeler truck - up to 5,000 kg</option>
                   <option value="10-wheeler truck">10-wheeler truck - up to 10,000 kg</option>
                 </select>
+                <div class="invalid-feedback">Select a vehicle type.</div>
               </div>
             </div>
             <p class="vehicle-guidance" id="vehicleGuidance" aria-live="polite">
@@ -433,6 +453,7 @@
       });
       updateVehicleGuidance();
     </script>
+    <script src="../js/form-validation.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
