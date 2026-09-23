@@ -37,6 +37,14 @@
         </div>
 
         <form class="quote details-form" action="payment.html" method="get">
+          <ol class="booking-step-indicator" aria-label="Booking steps">
+            <li class="is-active" data-step-indicator="1">Cargo</li>
+            <li data-step-indicator="2">Addresses</li>
+            <li data-step-indicator="3">Shipment</li>
+            <li data-step-indicator="4">Review</li>
+          </ol>
+
+          <div class="booking-step" data-step="1">
           <div class="booking-summary" id="bookingSummary" hidden>
             <h2>Your Cargo Details</h2>
             <div class="booking-edit-grid">
@@ -70,11 +78,22 @@
               </label>
               <label>
                 Pick-up time
-                <input type="time" name="time" id="detailTime" required />
+                <select name="time" id="detailTime" required>
+                  <option value="">Select pick-up time</option>
+                </select>
+                <small class="time-error" hidden></small>
               </label>
               <label>
                 Cargo weight (kg)
-                <input type="number" name="weight" id="detailWeight" min="1" max="50000" required />
+                <select name="weight" id="detailWeight" required>
+                  <option value="">Select weight range</option>
+                  <option value="20">1-20 kg</option>
+                  <option value="500">21-500 kg</option>
+                  <option value="2000">501-2,000 kg</option>
+                  <option value="5000">2,001-5,000 kg</option>
+                  <option value="10000">5,001-10,000 kg</option>
+                  <option value="50000">10,001-50,000 kg</option>
+                </select>
               </label>
               <label>
                 Cargo type
@@ -94,12 +113,17 @@
               <label><input type="checkbox" name="loading" id="detailLoading" /> Need help loading</label>
             </div>
           </div>
+              <div class="step-actions step-actions-end">
+                <button type="button" class="step-next">Next: Addresses</button>
+              </div>
+            </div>
 
           <p class="booking-incomplete" id="bookingIncomplete" hidden>
             Complete all fields in the Get a price section before continuing to
             your cargo details. <a href="../index.html#book">Return to booking</a>
           </p>
 
+          <div class="booking-step" data-step="2" hidden>
           <div class="address-details-grid">
             <fieldset>
               <legend>Complete Pick-up Address</legend>
@@ -193,7 +217,13 @@
               </label>
             </fieldset>
           </div>
+            <div class="step-actions">
+              <button type="button" class="step-back">Back</button>
+              <button type="button" class="step-next">Next: Shipment</button>
+            </div>
+          </div>
 
+          <div class="booking-step" data-step="3" hidden>
           <fieldset class="shipment-details">
             <legend>Shipment Details</legend>
             <label>
@@ -229,7 +259,13 @@
               <textarea name="specialInstructions" id="specialInstructions" rows="4" placeholder="Loading instructions, access details, delivery notes, or other requests"></textarea>
             </label>
           </fieldset>
+            <div class="step-actions">
+              <button type="button" class="step-back">Back</button>
+              <button type="button" class="step-next">Next: Review</button>
+            </div>
+          </div>
 
+          <div class="booking-step" data-step="4" hidden>
           <fieldset class="account-owner-details">
             <legend>Account Owner Details</legend>
             <div class="booking-edit-grid">
@@ -260,7 +296,11 @@
             </div>
           </fieldset>
 
-          <button type="submit">Confirm and Pay</button>
+            <div class="step-actions">
+              <button type="button" class="step-back">Back</button>
+              <button type="submit">Confirm and Pay</button>
+            </div>
+          </div>
         </form>
       </section>
     </main>
@@ -289,6 +329,18 @@
         const minutes = String(date.getMinutes()).padStart(2, '0');
         return `${hours}:${minutes}`;
       };
+      const formatTimeLabel = (hour, minute) => {
+        const period = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        return `${String(displayHour).padStart(2, '0')}:${String(minute).padStart(2, '0')} ${period}`;
+      };
+
+      for (let hour = 0; hour < 24; hour += 1) {
+        for (let minute = 0; minute < 60; minute += 30) {
+          const value = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+          detailTime.add(new Option(formatTimeLabel(hour, minute), value));
+        }
+      }
       const limitTimeForSelectedDate = () => {
         if (!detailDate || !detailTime) return;
 
@@ -302,13 +354,13 @@
         if (detailDate.value === todayString) {
           const minTimeDate = new Date(Date.now() + 60000);
           const minTime = formatTimeValue(minTimeDate);
-          detailTime.min = minTime;
-
-          if (detailTime.value && detailTime.value < minTime) {
-            detailTime.value = '';
-          }
+          [...detailTime.options].forEach((option) => {
+            option.disabled = Boolean(option.value) && option.value < minTime;
+          });
         } else {
-          detailTime.min = '';
+          [...detailTime.options].forEach((option) => {
+            option.disabled = false;
+          });
         }
       };
       const cityProvinceMap = {
@@ -336,11 +388,6 @@
       setValue('detailTime', 'time');
       limitTimeForSelectedDate();
       detailDate?.addEventListener('change', limitTimeForSelectedDate);
-      detailTime?.addEventListener('change', () => {
-        if (detailDate.value === detailDate.min && detailTime.value && detailTime.value < detailTime.min) {
-          detailTime.value = '';
-        }
-      });
       setValue('detailWeight', 'weight');
       setValue('detailType', 'type');
       setValue('cargoDescription', 'cargoDescription');
@@ -433,6 +480,78 @@
         document.getElementById(id).addEventListener('input', updateVehicleGuidance);
       });
       updateVehicleGuidance();
+
+      const detailsForm = document.querySelector('.details-form');
+      const bookingSteps = [...document.querySelectorAll('.booking-step')];
+      const stepIndicators = [...document.querySelectorAll('[data-step-indicator]')];
+      let activeStep = 1;
+
+      bookingSteps.forEach((step) => {
+        step.querySelectorAll('input, select, textarea').forEach((control) => {
+          control.dataset.initiallyDisabled = control.disabled ? 'true' : 'false';
+        });
+      });
+
+      const setActiveStep = (stepNumber) => {
+        activeStep = stepNumber;
+        bookingSteps.forEach((step) => {
+          const isActive = Number(step.dataset.step) === activeStep;
+          step.hidden = !isActive;
+        });
+        stepIndicators.forEach((indicator) => {
+          const indicatorStep = Number(indicator.dataset.stepIndicator);
+          indicator.classList.toggle('is-active', indicatorStep === activeStep);
+          indicator.classList.toggle('is-complete', indicatorStep < activeStep);
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      const validateActiveStep = () => {
+        const currentStep = bookingSteps[activeStep - 1];
+        const controls = [...currentStep.querySelectorAll('input, select, textarea')];
+        const invalidControl = controls.find((control) => !control.checkValidity());
+        if (invalidControl) invalidControl.reportValidity();
+        return !invalidControl;
+      };
+
+      detailsForm.querySelectorAll('.step-next').forEach((button) => {
+        button.addEventListener('click', () => {
+          if (activeStep === 1) enforceCurrentTime();
+          if (validateActiveStep() && activeStep < bookingSteps.length) {
+            setActiveStep(activeStep + 1);
+          }
+        });
+      });
+
+      detailsForm.querySelectorAll('.step-back').forEach((button) => {
+        button.addEventListener('click', () => {
+          if (activeStep > 1) setActiveStep(activeStep - 1);
+        });
+      });
+
+      const enforceCurrentTime = () => {
+        limitTimeForSelectedDate();
+        const timeError = detailTime.parentElement.querySelector('.time-error');
+        const isPastTime = detailDate.value === detailDate.min && detailTime.value && detailTime.options[detailTime.selectedIndex].disabled;
+        detailTime.setCustomValidity(isPastTime ? 'Choose a future pick-up time.' : '');
+        detailTime.classList.toggle('time-invalid', isPastTime);
+        timeError.hidden = !isPastTime;
+        timeError.textContent = isPastTime ? 'This time has already passed. Please choose a later time.' : '';
+      };
+
+      detailDate?.addEventListener('input', enforceCurrentTime);
+      detailTime?.addEventListener('input', enforceCurrentTime);
+      detailTime?.addEventListener('change', enforceCurrentTime);
+
+      detailsForm.addEventListener('submit', (event) => {
+        enforceCurrentTime();
+        if (!validateActiveStep()) event.preventDefault();
+      });
+
+      detailsForm.querySelector('button[type="submit"]').addEventListener('click', enforceCurrentTime);
+
+      enforceCurrentTime();
+      setActiveStep(1);
     </script>
   </body>
 </html>

@@ -351,6 +351,26 @@ form label {
   margin-bottom: 14px;
 }
 
+.time-invalid {
+  color: #777;
+  opacity: 0.65;
+  border-color: #c7c7c7 !important;
+  background: #f2f2f2;
+}
+
+select option:disabled {
+  color: #aaa;
+  background: #f2f2f2;
+}
+
+.time-error {
+  display: block;
+  margin-top: 6px;
+  color: #a33a00;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -567,6 +587,59 @@ button:hover {
   margin-bottom: 0;
 }
 
+.booking-step-indicator {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+  counter-reset: booking-step;
+}
+
+.booking-step-indicator li {
+  padding: 10px 8px;
+  border-bottom: 3px solid #d8d8d8;
+  color: #666;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.booking-step-indicator li::before {
+  counter-increment: booking-step;
+  content: counter(booking-step) ". ";
+}
+
+.booking-step-indicator li.is-active,
+.booking-step-indicator li.is-complete {
+  border-color: #ff7a00;
+  color: #0b3d91;
+}
+
+.step-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.step-actions-end {
+  justify-content: flex-end;
+}
+
+.step-actions button {
+  width: auto;
+  min-width: 150px;
+  margin-top: 0;
+}
+
+.step-actions .step-back {
+  background: #fff;
+  border: 1px solid #0b3d91;
+  color: #0b3d91;
+}
+
 .address-details-grid {
   margin-bottom: 20px;
 }
@@ -712,6 +785,15 @@ legend {
   .booking-edit-grid,
   .address-details-grid {
     grid-template-columns: 1fr;
+  }
+
+  .booking-step-indicator li {
+    font-size: 11px;
+  }
+
+  .step-actions button {
+    min-width: 0;
+    flex: 1;
   }
 }
 

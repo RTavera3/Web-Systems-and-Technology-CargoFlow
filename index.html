@@ -96,19 +96,22 @@
                     </div>
                     <div class="col-sm-6">
                       <label class="form-label">Pick-up time</label>
-                      <input type="time" name="time" class="form-control" required />
+                      <select name="time" id="pickupTime" class="form-select" required>
+                        <option value="">Select pick-up time</option>
+                      </select>
+                      <small class="time-error" hidden></small>
                     </div>
                     <div class="col-sm-6">
                       <label class="form-label">Cargo weight (kg)</label>
-                      <input
-                        type="number"
-                        name="weight"
-                        min="1"
-                        max="50000"
-                        placeholder="e.g. 250"
-                        class="form-control"
-                        required
-                      />
+                      <select name="weight" class="form-select" required>
+                        <option value="">Select weight range</option>
+                        <option value="20">1-20 kg</option>
+                        <option value="500">21-500 kg</option>
+                        <option value="2000">501-2,000 kg</option>
+                        <option value="5000">2,001-5,000 kg</option>
+                        <option value="10000">5,001-10,000 kg</option>
+                        <option value="50000">10,001-50,000 kg</option>
+                      </select>
                     </div>
                     <div class="col-sm-6">
                       <label class="form-label">Cargo type</label>
@@ -250,6 +253,19 @@
         return `${hours}:${minutes}`;
       };
 
+      const formatTimeLabel = (hour, minute) => {
+        const period = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        return `${String(displayHour).padStart(2, '0')}:${String(minute).padStart(2, '0')} ${period}`;
+      };
+
+      for (let hour = 0; hour < 24; hour += 1) {
+        for (let minute = 0; minute < 60; minute += 30) {
+          const value = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+          pickupTime.add(new Option(formatTimeLabel(hour, minute), value));
+        }
+      }
+
       const limitTimeForSelectedDate = () => {
         if (!pickupDate || !pickupTime) return;
 
@@ -265,24 +281,33 @@
         if (selectedDate === todayString) {
           const minTimeDate = new Date(Date.now() + 60000);
           const minTime = formatTimeValue(minTimeDate);
-          pickupTime.min = minTime;
-
-          if (pickupTime.value && pickupTime.value < minTime) {
-            pickupTime.value = '';
-          }
+          [...pickupTime.options].forEach((option) => {
+            option.disabled = Boolean(option.value) && option.value < minTime;
+          });
         } else {
-          pickupTime.min = '';
+          [...pickupTime.options].forEach((option) => {
+            option.disabled = false;
+          });
         }
       };
 
-      if (pickupDate) {
-        pickupDate.addEventListener('change', limitTimeForSelectedDate);
-        pickupTime?.addEventListener('change', () => {
-          if (pickupDate.value === pickupDate.min && pickupTime.value && pickupTime.value < pickupTime.min) {
-            pickupTime.value = '';
-          }
-        });
+      const updateTimeValidity = () => {
+        if (!pickupDate || !pickupTime) return;
         limitTimeForSelectedDate();
+        const timeError = pickupTime.parentElement.querySelector('.time-error');
+        const isPastTime = pickupDate.value === pickupDate.min && pickupTime.value && pickupTime.options[pickupTime.selectedIndex].disabled;
+        pickupTime.setCustomValidity(isPastTime ? 'Choose a future pick-up time.' : '');
+        pickupTime.classList.toggle('time-invalid', isPastTime);
+        timeError.hidden = !isPastTime;
+        timeError.textContent = isPastTime ? 'This time has already passed. Please choose a later time.' : '';
+      };
+
+      if (pickupDate) {
+        pickupDate.addEventListener('change', updateTimeValidity);
+        pickupTime?.addEventListener('input', updateTimeValidity);
+        pickupTime?.addEventListener('change', updateTimeValidity);
+        document.getElementById('quote').addEventListener('submit', updateTimeValidity);
+        updateTimeValidity();
       }
     </script>
     <script src="js/track.js" defer></script>
