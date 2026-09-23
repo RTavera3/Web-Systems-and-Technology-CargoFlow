@@ -4,261 +4,252 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CargoFlow</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/index.css" />
   </head>
   <body>
-    <header>
-      <a href="#book" class="brand" aria-label="CargoFlow home">
-        <svg viewBox="0 0 56 56" width="40" height="40" aria-hidden="true">
-          <path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#0B3D91" />
-          <path
-            d="m37 3 14 5v14l-14-5ZM23 28l15-6-3-5 16 5-7 15-1-6-20 9Z"
-            fill="#FF7A00"
-          />
-          <path d="m23 44 17-7v12l-17 6Z" fill="#0B3D91" />
-        </svg>
-        <span>Cargo<b>Flow</b></span>
-      </a>
-      <p class="tag">Share the Road. Share the Cost.</p>
-      <nav>
-        <a href="#book">Book cargo space</a>
-        <a href="#audience">Who it's for</a>
-        <a href="#about">About</a>
-      </nav>
-    </header>
-
-    <section class="hero" id="book">
-      <div class="hero-inner">
-        <div class="hero-copy">
-          <h1>Book cargo space going your way</h1>
-          <p>
-            Don't pay for a whole truck. Tell us your route and load &mdash; we
-            match a carrier already driving that way and price it by the space
-            you use.
-          </p>
-          <div class="hero-actions">
-            <a href="#calculator" class="primary-btn">Book Cargo Space</a>
-          </div>
-          <ul class="hero-points">
-            <li>Pay only for the space your cargo takes</li>
-            <li>Carrier matched automatically to your route</li>
-            <li>Price based on distance and weight, not a flat truck fee</li>
+    <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#book" aria-label="CargoFlow home">
+          <svg viewBox="0 0 56 56" width="36" height="36" aria-hidden="true">
+            <path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#0B3D91" />
+            <path
+              d="m37 3 14 5v14l-14-5ZM23 28l15-6-3-5 16 5-7 15-1-6-20 9Z"
+              fill="#FF7A00"
+            />
+            <path d="m23 44 17-7v12l-17 6Z" fill="#0B3D91" />
+          </svg>
+          <span>Cargo<b class="text-cf-orange">Flow</b></span>
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navMain"
+          aria-controls="navMain"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMain">
+          <span class="navbar-text small fw-bold text-cf-orange d-none d-lg-inline me-auto ms-3">
+            Share the Road. Share the Cost.
+          </span>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a class="nav-link" href="#book">Book cargo space</a></li>
+            <li class="nav-item"><a class="nav-link" href="pages/trackshipment.html">Track shipment</a></li>
+            <li class="nav-item"><a class="nav-link" href="pages/messages.html">Connect to carrier</a></li>
+            <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="pages/contact.html">Contact Us</a></li>
           </ul>
         </div>
-
-        <form class="quote" action="#book" method="get">
-          <h2>Get a price</h2>
-          <div class="quote-grid">
-            <label>
-              Pick-up city
-              <select name="from">
-                <option value="">Select</option>
-                <option>Manila</option>
-                <option>Batangas</option>
-                <option>Baguio</option>
-                <option>Cebu</option>
-                <option>Davao</option>
-                <option>Pampanga</option>
-              </select>
-            </label>
-            <label>
-              Drop-off city
-              <select name="to">
-                <option value="">Select</option>
-                <option>Manila</option>
-                <option>Batangas</option>
-                <option>Baguio</option>
-                <option>Cebu</option>
-                <option>Davao</option>
-                <option>Pampanga</option>
-              </select>
-            </label>
-            <label>
-              Pick-up date
-              <input type="date" name="date" />
-            </label>
-            <label>
-              Pick-up time
-              <input type="time" name="time" />
-            </label>
-            <label>
-              Cargo weight (kg)
-              <input
-                type="number"
-                name="weight"
-                min="1"
-                max="50000"
-                placeholder="e.g. 250"
-              />
-            </label>
-            <label>
-              Cargo type
-              <select name="type">
-                <option value="">Select</option>
-                <option>General goods</option>
-                <option>Fragile</option>
-                <option>Perishable</option>
-                <option>Bulk / sacks</option>
-                <option>Appliances / furniture</option>
-              </select>
-            </label>
-          </div>
-
-          <div class="quote-opts">
-            <label
-              ><input type="checkbox" name="fragile" /> Handle with care</label
-            >
-            <label
-              ><input type="checkbox" name="loading" /> Need help loading</label
-            >
-          </div>
-
-          <button type="submit">Get matched &amp; see price</button>
-        </form>
       </div>
-    </section>
+    </nav>
 
-    <!-- RATE CALCULATOR SECTION -->
-    <section id="calculator" class="panel">
-      <h2>Rate Calculator</h2>
-      <p>Calculate your estimated cargo cost based on weight and route.</p>
-
-      <form class="quote">
-        <div class="quote-grid">
-          <label>
-            Pick-up city
-            <select name="from">
-              <option value="">Select</option>
-              <option>Manila</option>
-              <option>Batangas</option>
-              <option>Baguio</option>
-              <option>Cebu</option>
-              <option>Davao</option>
-              <option>Pampanga</option>
-            </select>
-          </label>
-
-          <label>
-            Drop-off city
-            <select name="to">
-              <option value="">Select</option>
-              <option>Manila</option>
-              <option>Batangas</option>
-              <option>Baguio</option>
-              <option>Cebu</option>
-              <option>Davao</option>
-              <option>Pampanga</option>
-            </select>
-          </label>
-
-          <label>
-            Cargo weight (kg)
-            <input type="number" name="weight" placeholder="e.g. 250" />
-          </label>
-
-          <label>
-            Cargo type
-            <select name="type">
-              <option value="">Select</option>
-              <option>General goods</option>
-              <option>Fragile</option>
-              <option>Perishable</option>
-              <option>Bulk / sacks</option>
-              <option>Appliances / furniture</option>
-            </select>
-          </label>
-        </div>
-
-        <div class="quote-opts">
-          <label
-            ><input type="checkbox" name="express" /> Priority shipping</label
-          >
-          <label
-            ><input type="checkbox" name="insurance" /> Add insurance</label
-          >
-        </div>
-
-        <button type="button">Calculate price</button>
-      </form>
-
-      <div class="calc-result">
-        <h3>Estimated Breakdown</h3>
-        <p>Standard rate: ₱8,500.00</p>
-        <p>Shared space discount: -₱5,100.00</p>
-        <p>Handling fee: ₱350.00</p>
-        <hr />
-        <p><strong>Total Estimate: ₱3,750.00</strong></p>
+    <header class="cf-hero pt-5" id="book">
+      <div class="container text-center">
+        <h1 class="cf-h1 fw-bold mb-3">Book cargo space going your way</h1>
+        <p class="lead mb-0 mx-auto" style="max-width: 60ch">
+          Don't pay for a whole truck. Tell us your route and load, and we
+          match a carrier already driving that way and price it by the space
+          you use.
+        </p>
       </div>
-    </section>
-    
-    <main>
-      <!-- WHO IT'S FOR -->
-      <section id="audience" class="band">
-        <div class="band-inner">
-          <div class="band-copy">
-            <h2>Built for businesses that ship less than a truckload</h2>
-            <p>
-              CargoFlow is for Philippine businesses that move goods regularly
-              but can't fill &mdash; or don't want to pay for &mdash; a whole
-              truck.
-            </p>
-            <ul class="band-points">
-              <li>SMEs with partial-load shipments</li>
-              <li>Online sellers fulfilling customer orders</li>
-              <li>Manufacturers moving stock between sites</li>
-              <li>Distributors restocking provincial outlets</li>
-            </ul>
-          </div>
+    </header>
 
-          <div class="band-visual">
-            <p class="bv-title">One trip, shared four ways</p>
-            <ul class="bv-list">
-              <li><span class="bv-dot bv-a"></span>SME &mdash; 8 boxes</li>
-              <li>
-                <span class="bv-dot bv-b"></span>Online seller &mdash; 20
-                parcels
-              </li>
-              <li>
-                <span class="bv-dot bv-you"></span>Your load &mdash; 250 kg
-              </li>
-              <li>
-                <span class="bv-dot bv-d"></span>Manufacturer &mdash; 5 crates
-              </li>
-            </ul>
-            <div class="bv-bar" aria-hidden="true">
-              <span class="bv-seg bv-a"></span>
-              <span class="bv-seg bv-b"></span>
-              <span class="bv-seg bv-you"></span>
-              <span class="bv-seg bv-d"></span>
-              <span class="bv-seg bv-open"></span>
+    <div class="container pb-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-9">
+          <div class="card cf-card cf-overlap-card shadow">
+            <div class="card-body p-4">
+              <h2 class="h5 fw-bold mb-3">Get a price</h2>
+              <form id="quote" action="pages/booking-details.html" method="get">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                      <label class="form-label">Pick-up city</label>
+                      <select name="from" class="form-select" required>
+                        <option value="">Select</option>
+                        <option>Manila</option>
+                        <option>Batangas</option>
+                        <option>Baguio</option>
+                        <option>Cebu</option>
+                        <option>Davao</option>
+                        <option>Pampanga</option>
+                      </select>
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label">Drop-off city</label>
+                      <select name="to" class="form-select" required>
+                        <option value="">Select</option>
+                        <option>Manila</option>
+                        <option>Batangas</option>
+                        <option>Baguio</option>
+                        <option>Cebu</option>
+                        <option>Davao</option>
+                        <option>Pampanga</option>
+                      </select>
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label">Pick-up date</label>
+                      <input type="date" name="date" class="form-control" required />
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label">Pick-up time</label>
+                      <input type="time" name="time" class="form-control" required />
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label">Cargo weight (kg)</label>
+                      <input
+                        type="number"
+                        name="weight"
+                        min="1"
+                        max="50000"
+                        placeholder="e.g. 250"
+                        class="form-control"
+                        required
+                      />
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label">Cargo type</label>
+                      <select name="type" class="form-select" required>
+                        <option value="">Select</option>
+                        <option>General goods</option>
+                        <option>Fragile</option>
+                        <option>Perishable</option>
+                        <option>Bulk / sacks</option>
+                        <option>Appliances / furniture</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="d-flex flex-wrap gap-3 mt-3">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="fragile" id="fragile" />
+                      <label class="form-check-label" for="fragile">Handle with care</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="loading" id="loading" />
+                      <label class="form-check-label" for="loading">Need help loading</label>
+                    </div>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary w-100 mt-4">Get matched &amp; see price</button>
+                </form>
+              </div>
             </div>
-            <p class="bv-note">You pay only for your share of the truck.</p>
           </div>
         </div>
-      </section>
+      </div>
+    <!-- TRACK SHIPMENT: lookup handled by track.js against a mock dataset -->
+    <section class="py-5 bg-white" id="track">
+      <div class="container">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-6 text-center text-lg-start">
+            <h1 class="cf-h2 fw-bold mb-2 text-cf-navy">Track your shipment</h1>
+            <p class="lead text-muted mb-4">Enter your booking code to check its status.</p>
+            <form
+              class="track-search d-flex gap-2 p-3 bg-cf-panel mx-auto mx-lg-0"
+              style="max-width: 480px"
+            >
+              <input type="text" name="code" class="form-control" placeholder="e.g. CF-10492" />
+              <button type="submit" class="btn btn-cf-accent">Track</button>
+            </form>
+            <p id="track-result" class="alert alert-light mt-3" hidden></p>
+            <p class="mt-3 mb-0">
+              Need the full delivery timeline?
+              <a href="pages/trackshipment.html" class="text-cf-navy fw-bold">Open the tracking page &rarr;</a>
+            </p>
+          </div>
+          <div class="col-lg-6 d-none d-lg-flex justify-content-center">
+            <div class="cf-icon-circle cf-icon-circle-navy">
+              <svg viewBox="0 0 24 24" width="88" height="88" aria-hidden="true">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="#0b3d91"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      <!-- ABOUT -->
-      <section id="about" class="panel">
-        <h2>About CargoFlow</h2>
-        <p>
-          Shipping in the Philippines is expensive for small businesses that
-          can't fill an entire truck. CargoFlow matches your shipment to a
-          carrier already running that route and prices it by the space your
-          cargo uses, so you share the trip and the cost instead of paying for
-          the whole vehicle.
-        </p>
-        <p>
-          Built for MO-IT161 &ndash; Web Systems and Technology. This page is
-          HTML and CSS only.
-        </p>
-      </section>
+    <!-- MESSAGES: Connect to Carrier Section -->
+    <section class="py-5 bg-light" id="carrier">
+      <div class="container">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-6 d-none d-lg-flex justify-content-center order-lg-1">
+            <div class="cf-icon-circle cf-icon-circle-orange">
+              <svg viewBox="0 0 24 24" width="88" height="88" aria-hidden="true">
+                <path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" fill="#ff7a00"/>
+              </svg>
+            </div>
+          </div>
+          <div class="col-lg-6 text-center text-lg-start order-lg-2">
+            <h1 class="cf-h2 fw-bold mb-2 text-cf-navy">Connect to your carrier</h1>
+            <p class="lead mb-4">
+              Directly link up with verified carriers already driving along your route.
+              Save costs by locking in reliable shared truck space instantly.
+            </p>
+            <ul class="list-unstyled cf-points cf-points-dark text-start d-inline-block d-lg-block mb-4">
+              <li>Instant matching with active route carriers</li>
+              <li>Verified and pre-screened local drivers</li>
+              <li>Direct communication and route tracking</li>
+            </ul>
+            <div>
+              <a href="pages/messages.html" class="btn btn-cf-accent btn-lg">Connect to your Carrier</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main class="container py-5" id="about">
+      <div class="row g-4">
+        <div class="col-12">
+          <h2 class="cf-h2 fw-bold text-cf-navy">About CargoFlow</h2>
+        </div>
+        <div class="col-md-6">
+          <p>
+            Shipping in the Philippines is expensive for small businesses that
+            can't fill an entire truck. CargoFlow matches your shipment to a
+            carrier already running that route and prices it by the space your
+            cargo uses, so you share the trip and the cost instead of paying for
+            the whole vehicle.
+          </p>
+        </div>
+        <div class="col-md-6">
+          <p>
+            Built for MO-IT161 &ndash; Web Systems and Technology. This page is
+            HTML, CSS, and a small amount of JavaScript for shipment tracking.
+          </p>
+        </div>
+      </div>
     </main>
 
-    <footer>
-      <p>
-        Share space. Move more. &nbsp;·&nbsp; CargoFlow &mdash; a student
-        project. Made in the Philippines.
-      </p>
+    <footer class="border-top py-4 text-center text-muted small">
+      <div class="container">
+        <p class="mb-2">
+          Share space. Move more. &nbsp;·&nbsp; CargoFlow, a student
+          project. Made in the Philippines.
+        </p>
+        <a href="pages/contact.html" class="text-cf-navy fw-bold">Contact Us</a>
+      </div>
     </footer>
+
+    <script>
+      const pickupDate = document.querySelector('input[name="date"]');
+
+      if (pickupDate) {
+        const today = new Date();
+        const localDate = new Date(
+          today.getTime() - today.getTimezoneOffset() * 60000,
+        )
+          .toISOString()
+          .split('T')[0];
+        pickupDate.min = localDate;
+        pickupDate.value = localDate;
+      }
+    </script>
+    <script src="js/track.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

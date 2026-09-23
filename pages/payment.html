@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment | CargoFlow</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+  </head>
+  <body>
+    <header>
+      <a href="../index.html#book" class="brand" aria-label="CargoFlow home">
+        <svg viewBox="0 0 56 56" width="40" height="40" aria-hidden="true">
+          <path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#0B3D91" />
+          <path
+            d="m37 3 14 5v14l-14-5ZM23 28l15-6-3-5 16 5-7 15-1-6-20 9Z"
+            fill="#FF7A00"
+          />
+          <path d="m23 44 17-7v12l-17 6Z" fill="#0B3D91" />
+        </svg>
+        <span>Cargo<b>Flow</b></span>
+      </a>
+      <p class="tag">Share the Road. Share the Cost.</p>
+      <nav>
+        <a href="../index.html#book">Book cargo space</a>
+        <a href="trackshipment.html">Track shipment</a>
+        <a href="messages.html">Connect to carrier</a>
+        <a href="../index.html#about">About</a>
+        <a href="contact.html">Contact Us</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="panel payment-section">
+        <div class="section-heading">
+          <h1>Payment</h1>
+          <p>Review your booking and choose a payment method to complete your reservation.</p>
+        </div>
+
+        <div class="payment-summary">
+          <h2>Detailed Booking Summary</h2>
+          <div class="payment-summary-grid">
+            <div>
+              <h3>Schedule and Route</h3>
+              <p><strong>Pick-up city:</strong> <span id="paymentFrom">Not provided</span></p>
+              <p><strong>Drop-off city:</strong> <span id="paymentTo">Not provided</span></p>
+              <p><strong>Pick-up date:</strong> <span id="paymentDate">Not provided</span></p>
+              <p><strong>Pick-up time:</strong> <span id="paymentTime">Not provided</span></p>
+            </div>
+            <div>
+              <h3>Cargo Information</h3>
+              <p><strong>Description:</strong> <span id="paymentDescription">Not provided</span></p>
+              <p><strong>Weight:</strong> <span id="paymentWeight">Not provided</span></p>
+              <p><strong>Packages:</strong> <span id="paymentPackages">Not provided</span></p>
+              <p><strong>Cargo type:</strong> <span id="paymentType">Not provided</span></p>
+              <p><strong>Declared value:</strong> <span id="paymentValue">Not provided</span></p>
+              <p><strong>Vehicle:</strong> <span id="paymentVehicle">Not provided</span></p>
+            </div>
+            <div>
+              <h3>Pickup Contact</h3>
+              <p><strong>Sender:</strong> <span id="paymentSender">Not provided</span></p>
+              <p><strong>Contact:</strong> <span id="paymentSenderContact">Not provided</span></p>
+              <p><strong>Address:</strong> <span id="paymentPickupAddress">Not provided</span></p>
+              <p><strong>City / Province:</strong> <span id="paymentPickupLocation">Not provided</span></p>
+              <p><strong>ZIP code:</strong> <span id="paymentPickupZip">Not provided</span></p>
+            </div>
+            <div>
+              <h3>Drop-off Contact</h3>
+              <p><strong>Receiver:</strong> <span id="paymentReceiver">Not provided</span></p>
+              <p><strong>Contact:</strong> <span id="paymentReceiverContact">Not provided</span></p>
+              <p><strong>Address:</strong> <span id="paymentDropoffAddress">Not provided</span></p>
+              <p><strong>City / Province:</strong> <span id="paymentDropoffLocation">Not provided</span></p>
+              <p><strong>ZIP code:</strong> <span id="paymentDropoffZip">Not provided</span></p>
+            </div>
+            <div>
+              <h3>Account Owner</h3>
+              <p><strong>Name:</strong> <span id="paymentOwner">Not provided</span></p>
+              <p><strong>Contact:</strong> <span id="paymentOwnerContact">Not provided</span></p>
+              <p><strong>Address:</strong> <span id="paymentOwnerAddress">Not provided</span></p>
+              <p><strong>City / Province:</strong> <span id="paymentOwnerLocation">Not provided</span></p>
+              <p><strong>ZIP code:</strong> <span id="paymentOwnerZip">Not provided</span></p>
+            </div>
+            <div>
+              <h3>Additional Requests</h3>
+              <p><strong>Handling:</strong> <span id="paymentHandling">None</span></p>
+              <p><strong>Special instructions:</strong> <span id="paymentInstructions">None</span></p>
+            </div>
+          </div>
+        </div>
+
+        <p class="payment-incomplete" id="paymentIncomplete" hidden>
+          Your booking details are incomplete. Return to the booking details page
+          and complete all required fields before proceeding to payment.
+          <a href="booking-details.html">Return to booking details</a>
+        </p>
+
+        <form class="quote payment-form" id="paymentForm" hidden>
+          <label>
+            Payment method
+            <select name="paymentMethod" required>
+              <option value="">Select payment method</option>
+              <option>GCash</option>
+              <option>Credit or debit card</option>
+              <option>Cash on pickup</option>
+            </select>
+          </label>
+          <fieldset class="payment-method-details" id="gcashDetails" hidden>
+            <legend>GCash Details</legend>
+            <div class="gcash-qr-panel">
+              <img id="gcashQrCode" alt="CargoFlow Company GCash payment QR code" width="220" height="220" />
+              <div>
+                <h3>Scan to pay CargoFlow Company</h3>
+                <p>Use your GCash app to scan this QR code, then enter the payment reference below.</p>
+              </div>
+            </div>
+            <label>
+              GCash mobile number
+              <input type="tel" name="gcashNumber" placeholder="09XX-XXX-XXXX" disabled />
+            </label>
+            <label>
+              GCash account name
+              <input type="text" name="gcashAccountName" placeholder="Name registered to GCash" disabled />
+            </label>
+          </fieldset>
+          <fieldset class="payment-method-details" id="cardDetails" hidden>
+            <legend>Card Details</legend>
+            <label>
+              Cardholder name
+              <input type="text" name="cardholderName" placeholder="Name on card" disabled />
+            </label>
+            <label>
+              Card number
+              <input type="text" name="cardNumber" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" disabled />
+            </label>
+            <div class="payment-card-grid">
+              <label>
+                Expiry date
+                <input type="month" name="cardExpiry" autocomplete="cc-exp" disabled />
+              </label>
+              <label>
+                CVV
+                <input type="password" name="cardCvv" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="123" disabled />
+              </label>
+            </div>
+          </fieldset>
+          <p class="cash-payment-note" id="cashPaymentNote" hidden>
+            Pay the confirmed amount directly to the carrier during pickup.
+          </p>
+          <button type="submit">Submit Payment</button>
+          <p class="success-message" id="paymentSuccess" aria-live="polite" hidden>
+            Payment details submitted. Your booking request is being processed.
+          </p>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Share space. Move more. &nbsp;·&nbsp; CargoFlow, a student
+        project. Made in the Philippines.
+      </p>
+    </footer>
+
+    <script>
+      const paymentParams = new URLSearchParams(window.location.search);
+      const requiredBookingDetails = [
+        'from', 'to', 'date', 'time', 'weight', 'type',
+        'senderName', 'senderContact', 'pickupAddress', 'pickupCity',
+        'pickupProvince', 'pickupZip', 'receiverName', 'receiverContact',
+        'dropoffAddress', 'dropoffCity', 'dropoffProvince', 'dropoffZip',
+        'cargoDescription', 'packageCount', 'declaredValue', 'vehicleType',
+        'customerName', 'customerContact', 'customerAddress', 'customerCity',
+        'customerProvince', 'customerZip',
+      ];
+      const bookingIsComplete = requiredBookingDetails.every(
+        (field) => paymentParams.get(field),
+      );
+      const paymentValue = (name) => paymentParams.get(name) || 'Not provided';
+      const setPaymentValue = (id, name) => {
+        document.getElementById(id).textContent = paymentValue(name);
+      };
+
+      setPaymentValue('paymentFrom', 'from');
+      setPaymentValue('paymentTo', 'to');
+      setPaymentValue('paymentDate', 'date');
+      setPaymentValue('paymentTime', 'time');
+      setPaymentValue('paymentDescription', 'cargoDescription');
+      setPaymentValue('paymentWeight', 'weight');
+      setPaymentValue('paymentPackages', 'packageCount');
+      setPaymentValue('paymentType', 'type');
+      document.getElementById('paymentValue').textContent = paymentParams.has('declaredValue')
+        ? new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(paymentParams.get('declaredValue')))
+        : 'Not provided';
+      setPaymentValue('paymentVehicle', 'vehicleType');
+      setPaymentValue('paymentSender', 'senderName');
+      setPaymentValue('paymentSenderContact', 'senderContact');
+      setPaymentValue('paymentPickupAddress', 'pickupAddress');
+      setPaymentValue('paymentPickupZip', 'pickupZip');
+      setPaymentValue('paymentReceiver', 'receiverName');
+      setPaymentValue('paymentReceiverContact', 'receiverContact');
+      setPaymentValue('paymentDropoffAddress', 'dropoffAddress');
+      setPaymentValue('paymentDropoffZip', 'dropoffZip');
+      setPaymentValue('paymentOwner', 'customerName');
+      setPaymentValue('paymentOwnerContact', 'customerContact');
+      setPaymentValue('paymentOwnerAddress', 'customerAddress');
+      setPaymentValue('paymentOwnerZip', 'customerZip');
+      setPaymentValue('paymentInstructions', 'specialInstructions');
+      document.getElementById('paymentPickupLocation').textContent =
+        `${paymentValue('pickupCity')} / ${paymentValue('pickupProvince')}`;
+      document.getElementById('paymentDropoffLocation').textContent =
+        `${paymentValue('dropoffCity')} / ${paymentValue('dropoffProvince')}`;
+      document.getElementById('paymentOwnerLocation').textContent =
+        `${paymentValue('customerCity')} / ${paymentValue('customerProvince')}`;
+      const handling = [];
+      if (paymentParams.has('fragile')) handling.push('Handle with care');
+      if (paymentParams.has('loading')) handling.push('Need help loading');
+      document.getElementById('paymentHandling').textContent = handling.join(', ') || 'None';
+
+      document.getElementById('paymentForm').hidden = !bookingIsComplete;
+      document.getElementById('paymentIncomplete').hidden = bookingIsComplete;
+
+      const paymentMethod = document.querySelector('[name="paymentMethod"]');
+      const paymentMethodDetails = {
+        GCash: document.getElementById('gcashDetails'),
+        'Credit or debit card': document.getElementById('cardDetails'),
+      };
+      const gcashQrCode = document.getElementById('gcashQrCode');
+      const gcashPaymentData = 'CargoFlow Company | GCash payment';
+      gcashQrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(gcashPaymentData)}`;
+      const updatePaymentFields = () => {
+        Object.entries(paymentMethodDetails).forEach(([method, details]) => {
+          const isSelected = paymentMethod.value === method;
+          details.hidden = !isSelected;
+          details.querySelectorAll('input').forEach((input) => {
+            input.disabled = !isSelected;
+            input.required = isSelected;
+          });
+        });
+        document.getElementById('cashPaymentNote').hidden = paymentMethod.value !== 'Cash on pickup';
+      };
+
+      paymentMethod.addEventListener('change', updatePaymentFields);
+      updatePaymentFields();
+
+      document.getElementById('paymentForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        document.getElementById('paymentSuccess').hidden = false;
+      });
+    </script>
+  </body>
+</html>
