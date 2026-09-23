@@ -78,10 +78,7 @@
               </label>
               <label>
                 Pick-up time
-                <select name="time" id="detailTime" required>
-                  <option value="">Select pick-up time</option>
-                </select>
-                <small class="time-error" hidden></small>
+                <input type="time" name="time" id="detailTime" required />
               </label>
               <label>
                 Cargo weight (kg)
@@ -329,18 +326,6 @@
         const minutes = String(date.getMinutes()).padStart(2, '0');
         return `${hours}:${minutes}`;
       };
-      const formatTimeLabel = (hour, minute) => {
-        const period = hour >= 12 ? 'PM' : 'AM';
-        const displayHour = hour % 12 || 12;
-        return `${String(displayHour).padStart(2, '0')}:${String(minute).padStart(2, '0')} ${period}`;
-      };
-
-      for (let hour = 0; hour < 24; hour += 1) {
-        for (let minute = 0; minute < 60; minute += 30) {
-          const value = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-          detailTime.add(new Option(formatTimeLabel(hour, minute), value));
-        }
-      }
       const limitTimeForSelectedDate = () => {
         if (!detailDate || !detailTime) return;
 
@@ -354,13 +339,9 @@
         if (detailDate.value === todayString) {
           const minTimeDate = new Date(Date.now() + 60000);
           const minTime = formatTimeValue(minTimeDate);
-          [...detailTime.options].forEach((option) => {
-            option.disabled = Boolean(option.value) && option.value < minTime;
-          });
+          detailTime.min = minTime;
         } else {
-          [...detailTime.options].forEach((option) => {
-            option.disabled = false;
-          });
+          detailTime.min = '';
         }
       };
       const cityProvinceMap = {
@@ -531,12 +512,8 @@
 
       const enforceCurrentTime = () => {
         limitTimeForSelectedDate();
-        const timeError = detailTime.parentElement.querySelector('.time-error');
-        const isPastTime = detailDate.value === detailDate.min && detailTime.value && detailTime.options[detailTime.selectedIndex].disabled;
+        const isPastTime = detailDate.value === detailDate.min && detailTime.value && detailTime.value < detailTime.min;
         detailTime.setCustomValidity(isPastTime ? 'Choose a future pick-up time.' : '');
-        detailTime.classList.toggle('time-invalid', isPastTime);
-        timeError.hidden = !isPastTime;
-        timeError.textContent = isPastTime ? 'This time has already passed. Please choose a later time.' : '';
       };
 
       detailDate?.addEventListener('input', enforceCurrentTime);

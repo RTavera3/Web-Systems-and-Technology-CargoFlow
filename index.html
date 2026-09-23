@@ -96,10 +96,7 @@
                     </div>
                     <div class="col-sm-6">
                       <label class="form-label">Pick-up time</label>
-                      <select name="time" id="pickupTime" class="form-select" required>
-                        <option value="">Select pick-up time</option>
-                      </select>
-                      <small class="time-error" hidden></small>
+                      <input type="time" name="time" id="pickupTime" class="form-control" required />
                     </div>
                     <div class="col-sm-6">
                       <label class="form-label">Cargo weight (kg)</label>
@@ -253,19 +250,6 @@
         return `${hours}:${minutes}`;
       };
 
-      const formatTimeLabel = (hour, minute) => {
-        const period = hour >= 12 ? 'PM' : 'AM';
-        const displayHour = hour % 12 || 12;
-        return `${String(displayHour).padStart(2, '0')}:${String(minute).padStart(2, '0')} ${period}`;
-      };
-
-      for (let hour = 0; hour < 24; hour += 1) {
-        for (let minute = 0; minute < 60; minute += 30) {
-          const value = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-          pickupTime.add(new Option(formatTimeLabel(hour, minute), value));
-        }
-      }
-
       const limitTimeForSelectedDate = () => {
         if (!pickupDate || !pickupTime) return;
 
@@ -281,25 +265,17 @@
         if (selectedDate === todayString) {
           const minTimeDate = new Date(Date.now() + 60000);
           const minTime = formatTimeValue(minTimeDate);
-          [...pickupTime.options].forEach((option) => {
-            option.disabled = Boolean(option.value) && option.value < minTime;
-          });
+          pickupTime.min = minTime;
         } else {
-          [...pickupTime.options].forEach((option) => {
-            option.disabled = false;
-          });
+          pickupTime.min = '';
         }
       };
 
       const updateTimeValidity = () => {
         if (!pickupDate || !pickupTime) return;
         limitTimeForSelectedDate();
-        const timeError = pickupTime.parentElement.querySelector('.time-error');
-        const isPastTime = pickupDate.value === pickupDate.min && pickupTime.value && pickupTime.options[pickupTime.selectedIndex].disabled;
+        const isPastTime = pickupDate.value === pickupDate.min && pickupTime.value && pickupTime.value < pickupTime.min;
         pickupTime.setCustomValidity(isPastTime ? 'Choose a future pick-up time.' : '');
-        pickupTime.classList.toggle('time-invalid', isPastTime);
-        timeError.hidden = !isPastTime;
-        timeError.textContent = isPastTime ? 'This time has already passed. Please choose a later time.' : '';
       };
 
       if (pickupDate) {
