@@ -1,0 +1,56 @@
+[
+  {
+    "userId": "BC0001",
+    "name": "Juan Dela Cruz",
+    "contactNumber": "0999-123-4567",
+    "streetAddress": "123 Rizal Street, Barangay 660",
+    "city": "Manila",
+    "province": "Metro Manila",
+    "zipCode": "1000"
+  },
+  {
+    "userId": "BC0002",
+    "name": "Maria Santos",
+    "contactNumber": "0917-234-5678",
+    "streetAddress": "45 Mabini Avenue, Barangay 3",
+    "city": "Batangas City",
+    "province": "Batangas",
+    "zipCode": "4200"
+  },
+  {
+    "userId": "BC0003",
+    "name": "Jose Reyes",
+    "contactNumber": "0928-345-6789",
+    "streetAddress": "78 Bonifacio Street, Barangay 21",
+    "city": "Baguio City",
+    "province": "Benguet",
+    "zipCode": "2600"
+  },
+  {
+    "userId": "BC0004",
+    "name": "Ana Garcia",
+    "contactNumber": "0939-456-7890",
+    "streetAddress": "22 Aguinaldo Road, Barangay 8",
+    "city": "Cebu City",
+    "province": "Cebu",
+    "zipCode": "6000"
+  },
+  {
+    "userId": "BC0005",
+    "name": "Pedro Bautista",
+    "contactNumber": "0945-567-8901",
+    "streetAddress": "9 Luna Street, Barangay 19-B",
+    "city": "Davao City",
+    "province": "Davao del Sur",
+    "zipCode": "8000"
+  },
+  {
+    "userId": "BC0006",
+    "name": "Rosa Fernandez",
+    "contactNumber": "0956-678-9012",
+    "streetAddress": "15 Del Pilar Street, Barangay Dolores",
+    "city": "San Fernando",
+    "province": "Pampanga",
+    "zipCode": "2000"
+  }
+]

@@ -351,6 +351,10 @@ form label {
   margin-bottom: 14px;
 }
 
+.time-invalid {
+  border-color: #b24a00 !important;
+}
+
 .row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -489,6 +493,19 @@ button:hover {
   gap: 8px;
   padding: 4px 0;
 }
+  .user-id-status {
+    display: block;
+    margin-top: 5px;
+    color: #26603b;
+    font-size: 12px;
+    font-weight: normal;
+  }
+  .user-id-status.is-error {
+    color: #a33a00;
+  }
+  .user-id-invalid {
+    border-color: #a33a00 !important;
+  }
 
 .bv-dot {
   width: 12px;

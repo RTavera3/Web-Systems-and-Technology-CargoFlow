@@ -78,7 +78,7 @@
               </label>
               <label>
                 Pick-up time
-                <input type="time" name="time" id="detailTime" required />
+                <input type="time" name="time" id="detailTime" step="60" required />
               </label>
               <label>
                 Cargo weight (kg)
@@ -125,6 +125,11 @@
             <fieldset>
               <legend>Complete Pick-up Address</legend>
               <label>
+                Sender User ID
+                <input type="text" name="senderUserId" id="senderUserId" list="userIdOptions" autocomplete="off" placeholder="e.g. BC0001" required />
+                <small class="user-id-status" id="senderUserIdStatus" aria-live="polite"></small>
+              </label>
+              <label>
                 Sender Name
                 <input type="text" name="senderName" id="senderName" placeholder="Sender's full name" required />
               </label>
@@ -164,23 +169,28 @@
               </label>
               <label>
                 Zip code
-                <input type="text" name="pickupZip" inputmode="numeric" placeholder="Zip code" required />
+                <input type="text" name="pickupZip" id="pickupZip" inputmode="numeric" placeholder="Zip code" required />
               </label>
             </fieldset>
 
             <fieldset>
               <legend>Complete Drop-off Address</legend>
               <label>
+                Receiver User ID
+                <input type="text" name="receiverUserId" id="receiverUserId" list="userIdOptions" autocomplete="off" placeholder="e.g. BC0002" required />
+                <small class="user-id-status" id="receiverUserIdStatus" aria-live="polite"></small>
+              </label>
+              <label>
                 Receiver Name
-                <input type="text" name="receiverName" placeholder="Receiver's full name" required />
+                <input type="text" name="receiverName" id="receiverName" placeholder="Receiver's full name" required />
               </label>
               <label>
                 Receiver Contact Number
-                <input type="tel" name="receiverContact" placeholder="Receiver's contact number" required />
+                <input type="tel" name="receiverContact" id="receiverContact" placeholder="Receiver's contact number" required />
               </label>
               <label>
                 Address
-                <input type="text" name="dropoffAddress" placeholder="Street and building" required />
+                <input type="text" name="dropoffAddress" id="dropoffAddress" placeholder="Street and building" required />
               </label>
               <label>
                 City
@@ -210,10 +220,12 @@
               </label>
               <label>
                 Zip code
-                <input type="text" name="dropoffZip" inputmode="numeric" placeholder="Zip code" required />
+                <input type="text" name="dropoffZip" id="dropoffZip" inputmode="numeric" placeholder="Zip code" required />
               </label>
             </fieldset>
           </div>
+
+          <datalist id="userIdOptions"></datalist>
             <div class="step-actions">
               <button type="button" class="step-back">Back</button>
               <button type="button" class="step-next">Next: Shipment</button>
@@ -326,6 +338,13 @@
         const minutes = String(date.getMinutes()).padStart(2, '0');
         return `${hours}:${minutes}`;
       };
+
+      const getSelectedDateTime = () => {
+        if (!detailDate.value || !detailTime.value) return null;
+        const [year, month, day] = detailDate.value.split('-').map(Number);
+        const [hours, minutes] = detailTime.value.split(':').map(Number);
+        return new Date(year, month - 1, day, hours, minutes);
+      };
       const limitTimeForSelectedDate = () => {
         if (!detailDate || !detailTime) return;
 
@@ -347,10 +366,15 @@
       const cityProvinceMap = {
         Manila: 'Metro Manila',
         Batangas: 'Batangas',
+        'Batangas City': 'Batangas',
         Baguio: 'Benguet',
+        'Baguio City': 'Benguet',
         Cebu: 'Cebu',
+        'Cebu City': 'Cebu',
         Davao: 'Davao del Sur',
+        'Davao City': 'Davao del Sur',
         Pampanga: 'Pampanga',
+        'San Fernando': 'Pampanga',
       };
 
       document.getElementById('bookingSummary').hidden = !bookingIsComplete;
@@ -376,6 +400,11 @@
       setValue('declaredValue', 'declaredValue');
       setValue('vehicleType', 'vehicleType');
       setValue('specialInstructions', 'specialInstructions');
+      setValue('senderUserId', 'senderUserId');
+      setValue('receiverUserId', 'receiverUserId');
+      setValue('senderName', 'senderName');
+      setValue('senderContact', 'senderContact');
+      setValue('pickupAddress', 'pickupAddress');
       setValue('pickupZip', 'pickupZip');
       setValue('dropoffAddress', 'dropoffAddress');
       setValue('receiverName', 'receiverName');
@@ -411,6 +440,86 @@
       syncAddressCity('detailTo', 'dropoffCitySelect', 'dropoffCity');
       setProvinceFromCity('pickupCitySelect', 'pickupProvinceSelect', 'pickupProvince');
       setProvinceFromCity('dropoffCitySelect', 'dropoffProvinceSelect', 'dropoffProvince');
+
+      const addSelectOption = (select, value) => {
+        if (!value) return;
+        const existingOption = [...select.options].find((option) => option.value === value || option.textContent === value);
+        if (!existingOption) select.add(new Option(value, value));
+        select.value = value;
+      };
+
+      const fillUserDetails = (userIdFieldId, statusId, fieldIds, user) => {
+        const userIdField = document.getElementById(userIdFieldId);
+        const status = document.getElementById(statusId);
+        const isValid = Boolean(user);
+        userIdField.setCustomValidity(isValid ? '' : 'Enter a valid User ID.');
+        userIdField.classList.toggle('user-id-invalid', !isValid);
+        status.textContent = isValid ? `Details loaded for ${user.name}.` : 'User ID not found.';
+        status.classList.toggle('is-error', !isValid);
+
+        if (!user) return;
+        document.getElementById(fieldIds.name).value = user.name;
+        document.getElementById(fieldIds.contact).value = user.contactNumber;
+        document.getElementById(fieldIds.address).value = user.streetAddress;
+        document.getElementById(fieldIds.zip).value = user.zipCode;
+        addSelectOption(document.getElementById(fieldIds.citySelect), user.city);
+        addSelectOption(document.getElementById(fieldIds.provinceSelect), user.province);
+        document.getElementById(fieldIds.cityInput).value = user.city;
+        document.getElementById(fieldIds.provinceInput).value = user.province;
+        addSelectOption(document.getElementById(fieldIds.routeSelect), user.city);
+        document.getElementById(fieldIds.routeSelect).value = user.city;
+      };
+
+      fetch('../resources/users.json')
+        .then((response) => {
+          if (!response.ok) throw new Error('Unable to load user records.');
+          return response.json();
+        })
+        .then((users) => {
+          const usersById = new Map(users.map((user) => [user.userId.toUpperCase(), user]));
+          const userIdOptions = document.getElementById('userIdOptions');
+          users.forEach((user) => {
+            userIdOptions.append(new Option(`${user.userId} - ${user.name}`, user.userId));
+          });
+          const userFields = [
+            {
+              userId: 'senderUserId',
+              status: 'senderUserIdStatus',
+              fields: {
+                name: 'senderName', contact: 'senderContact', address: 'pickupAddress', zip: 'pickupZip',
+                citySelect: 'pickupCitySelect', provinceSelect: 'pickupProvinceSelect',
+                cityInput: 'pickupCity', provinceInput: 'pickupProvince', routeSelect: 'detailFrom',
+              },
+            },
+            {
+              userId: 'receiverUserId',
+              status: 'receiverUserIdStatus',
+              fields: {
+                name: 'receiverName', contact: 'receiverContact', address: 'dropoffAddress', zip: 'dropoffZip',
+                citySelect: 'dropoffCitySelect', provinceSelect: 'dropoffProvinceSelect',
+                cityInput: 'dropoffCity', provinceInput: 'dropoffProvince', routeSelect: 'detailTo',
+              },
+            },
+          ];
+
+          userFields.forEach(({ userId, status, fields }) => {
+            const input = document.getElementById(userId);
+            const lookup = () => {
+              const value = input.value.trim().toUpperCase();
+              input.value = value;
+              fillUserDetails(userId, status, fields, usersById.get(value));
+            };
+            input.addEventListener('input', lookup);
+            input.addEventListener('change', lookup);
+            if (input.value) lookup();
+          });
+        })
+        .catch(() => {
+          ['senderUserIdStatus', 'receiverUserIdStatus'].forEach((statusId) => {
+            document.getElementById(statusId).textContent = 'User records could not be loaded.';
+            document.getElementById(statusId).classList.add('is-error');
+          });
+        });
 
       const declaredValue = document.getElementById('declaredValue');
       const formatCurrencyInput = () => {
@@ -510,15 +619,20 @@
         });
       });
 
-      const enforceCurrentTime = () => {
+      const enforceCurrentTime = (showPopup = false) => {
         limitTimeForSelectedDate();
-        const isPastTime = detailDate.value === detailDate.min && detailTime.value && detailTime.value < detailTime.min;
-        detailTime.setCustomValidity(isPastTime ? 'Choose a future pick-up time.' : '');
+        const now = new Date();
+        const selectedDateTime = getSelectedDateTime();
+        const hasPastDateTime = selectedDateTime && selectedDateTime <= now;
+        const hasInvalidTime = Boolean(hasPastDateTime);
+        detailTime.setCustomValidity(hasInvalidTime ? 'Please choose a current or future pick-up time.' : '');
+        detailTime.classList.toggle('time-invalid', hasInvalidTime);
+        if (showPopup && hasInvalidTime) detailTime.reportValidity();
       };
 
-      detailDate?.addEventListener('input', enforceCurrentTime);
-      detailTime?.addEventListener('input', enforceCurrentTime);
-      detailTime?.addEventListener('change', enforceCurrentTime);
+      detailDate?.addEventListener('change', () => enforceCurrentTime(true));
+      detailTime?.addEventListener('input', () => enforceCurrentTime(false));
+      detailTime?.addEventListener('change', () => enforceCurrentTime(true));
 
       detailsForm.addEventListener('submit', (event) => {
         enforceCurrentTime();
