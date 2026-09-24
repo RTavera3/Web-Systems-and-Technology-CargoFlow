@@ -242,11 +242,11 @@
             <div class="booking-edit-grid">
               <label>
                 Number of packages
-                <input type="number" name="packageCount" id="packageCount" min="1" placeholder="e.g. 10" required />
+                <input type="text" name="packageCount" id="packageCount" inputmode="numeric" pattern="[0-9]+" placeholder="e.g. 10" required />
               </label>
               <label>
                 Declared cargo value (PHP)
-                <input type="text" name="declaredValue" id="declaredValue" inputmode="decimal" placeholder="e.g. 25,000" required />
+                <input type="text" name="declaredValue" id="declaredValue" inputmode="numeric" pattern="[0-9]+" placeholder="e.g. 25000" required />
               </label>
               <label>
                 Vehicle type
@@ -522,19 +522,17 @@
         });
 
       const declaredValue = document.getElementById('declaredValue');
-      const formatCurrencyInput = () => {
-        const numericValue = declaredValue.value.replace(/[^0-9.]/g, '');
-        if (!numericValue) return;
-        const [whole, decimal] = numericValue.split('.');
-        declaredValue.value = Number(whole).toLocaleString('en-PH') +
-          (decimal !== undefined ? `.${decimal.slice(0, 2)}` : '');
+      const packageCount = document.getElementById('packageCount');
+      const validateDigitsOnly = (field) => {
+        const hasInvalidCharacters = field.value !== '' && !/^\d+$/.test(field.value);
+        field.setCustomValidity(hasInvalidCharacters ? 'Please enter numerical digits only.' : '');
       };
 
       setValue('declaredValue', 'declaredValue');
-      formatCurrencyInput();
-      declaredValue.addEventListener('input', formatCurrencyInput);
-      document.querySelector('.details-form').addEventListener('submit', () => {
-        declaredValue.value = declaredValue.value.replace(/,/g, '');
+      [packageCount, declaredValue].forEach((field) => {
+        field.addEventListener('input', () => validateDigitsOnly(field));
+        field.addEventListener('change', () => validateDigitsOnly(field));
+        validateDigitsOnly(field);
       });
 
       const vehicleSpecs = {
