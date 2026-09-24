@@ -44,12 +44,10 @@ function loadMessages() {
 }
 
 function updateSidebarPreview(latestText) {
-  // Finds the preview text in left sidebar conversation item
-  const sidebarPreview = document.querySelector('.conversation-item p') || 
-                         document.querySelector('.sidebar p') || 
-                         document.querySelector('aside p');
-  if (sidebarPreview) {
-    sidebarPreview.textContent = latestText;
+  // Finds the preview text in the active sidebar conversation item
+  const activePreview = document.querySelector('.conversation-item.active .preview-text');
+  if (activePreview) {
+    activePreview.textContent = latestText;
   }
 }
 
@@ -139,14 +137,17 @@ function clearChat() {
 sendButton.addEventListener('click', sendMessage);
 
 //Event listeners for sending messages and clearing chat history.
-// Send triggers
-if (sendButton) sendButton.addEventListener('click', sendMessage);
+if (sendButton) {
+  sendButton.addEventListener('click', sendMessage);
+}
 
-messageInput.addEventListener('keydown', function (event) {
-  if (event.key === 'Enter') {
-    sendMessage();
-  }
-});
+if (messageInput) {
+  messageInput.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+      sendMessage();
+    }
+  });
+}
 
 // Clear Button / Trash Icon Listener
 const trashIcon = document.querySelector('.fa-trash') || 
