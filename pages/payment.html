@@ -122,7 +122,7 @@
             <label class="form-label" for="paymentMethodSelect">Payment method</label>
             <select class="form-select" id="paymentMethodSelect" name="paymentMethod" required>
               <option value="">Select payment method</option>
-              <option>GCash</option>
+              <option selected>GCash</option>
               <option>Credit or debit card</option>
               <option>Cash on pickup</option>
             </select>
@@ -140,12 +140,12 @@
             </div>
             <div class="mb-3">
               <label class="form-label" for="gcashNumber">GCash mobile number</label>
-              <input type="tel" class="form-control" id="gcashNumber" name="gcashNumber" placeholder="09XX-XXX-XXXX" disabled />
+              <input type="tel" class="form-control" id="gcashNumber" name="gcashNumber" placeholder="09XX-XXX-XXXX" value="0999-123-4567" disabled />
               <div class="invalid-feedback">Enter your GCash mobile number.</div>
             </div>
             <div class="mb-0">
               <label class="form-label" for="gcashAccountName">GCash account name</label>
-              <input type="text" class="form-control" id="gcashAccountName" name="gcashAccountName" placeholder="Name registered to GCash" disabled />
+              <input type="text" class="form-control" id="gcashAccountName" name="gcashAccountName" placeholder="Name registered to GCash" value="Juan Dela Cruz" disabled />
               <div class="invalid-feedback">Enter the name registered to GCash.</div>
             </div>
           </fieldset>
@@ -154,23 +154,23 @@
             <legend class="h6 fw-bold text-cf-navy">Card Details</legend>
             <div class="mb-3">
               <label class="form-label" for="cardholderName">Cardholder name</label>
-              <input type="text" class="form-control" id="cardholderName" name="cardholderName" placeholder="Name on card" disabled />
+              <input type="text" class="form-control" id="cardholderName" name="cardholderName" placeholder="Name on card" value="Juan Dela Cruz" disabled />
               <div class="invalid-feedback">Enter the name on the card.</div>
             </div>
             <div class="mb-3">
               <label class="form-label" for="cardNumber">Card number</label>
-              <input type="text" class="form-control" id="cardNumber" name="cardNumber" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" disabled />
+              <input type="text" class="form-control" id="cardNumber" name="cardNumber" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" value="4111 1111 1111 1111" disabled />
               <div class="invalid-feedback">Enter your card number.</div>
             </div>
             <div class="row g-3">
               <div class="col-6">
                 <label class="form-label" for="cardExpiry">Expiry date</label>
-                <input type="month" class="form-control" id="cardExpiry" name="cardExpiry" autocomplete="cc-exp" disabled />
+                <input type="month" class="form-control" id="cardExpiry" name="cardExpiry" autocomplete="cc-exp" value="2030-12" disabled />
                 <div class="invalid-feedback">Enter the card's expiry date.</div>
               </div>
               <div class="col-6">
                 <label class="form-label" for="cardCvv">CVV</label>
-                <input type="password" class="form-control" id="cardCvv" name="cardCvv" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="123" disabled />
+                <input type="password" class="form-control" id="cardCvv" name="cardCvv" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="123" value="123" disabled />
                 <div class="invalid-feedback">Enter the 3- or 4-digit CVV.</div>
               </div>
             </div>
