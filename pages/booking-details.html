@@ -204,7 +204,7 @@
                 <legend class="h6 fw-bold text-cf-navy">Complete Pick-up Address</legend>
                 <div class="mb-3">
                   <label class="form-label" for="senderUserId">Sender User ID</label>
-                  <input type="text" class="form-control" name="senderUserId" id="senderUserId" list="userIdOptions" autocomplete="off" placeholder="e.g. BC0001" required />
+                  <input type="text" class="form-control" name="senderUserId" id="senderUserId" list="userIdOptions" autocomplete="off" placeholder="e.g. BC0001" value="BC0001" required />
                   <small class="user-id-status" id="senderUserIdStatus" aria-live="polite"></small>
                 </div>
                 <div class="mb-3">
@@ -263,7 +263,7 @@
                 <legend class="h6 fw-bold text-cf-navy">Complete Drop-off Address</legend>
                 <div class="mb-3">
                   <label class="form-label" for="receiverUserId">Receiver User ID</label>
-                  <input type="text" class="form-control" name="receiverUserId" id="receiverUserId" list="userIdOptions" autocomplete="off" placeholder="e.g. BC0002" required />
+                  <input type="text" class="form-control" name="receiverUserId" id="receiverUserId" list="userIdOptions" autocomplete="off" placeholder="e.g. BC0002" value="BC0002" required />
                   <small class="user-id-status" id="receiverUserIdStatus" aria-live="polite"></small>
                 </div>
                 <div class="mb-3">
@@ -330,18 +330,18 @@
             <legend class="h6 fw-bold text-cf-navy">Shipment Details</legend>
             <div class="mb-3">
               <label class="form-label" for="cargoDescription">Cargo description</label>
-              <textarea class="form-control" name="cargoDescription" id="cargoDescription" rows="3" placeholder="Describe the items being shipped" required></textarea>
+              <textarea class="form-control" name="cargoDescription" id="cargoDescription" rows="3" placeholder="Describe the items being shipped" required>Assorted boxed goods, palletized for transport.</textarea>
               <div class="invalid-feedback">Describe the cargo being shipped.</div>
             </div>
             <div class="row g-3 mb-3">
               <div class="col-md-4">
                 <label class="form-label" for="packageCount">Number of packages</label>
-                <input type="text" class="form-control" name="packageCount" id="packageCount" inputmode="numeric" pattern="[0-9]+" placeholder="e.g. 10" required />
+                <input type="text" class="form-control" name="packageCount" id="packageCount" inputmode="numeric" pattern="[0-9]+" placeholder="e.g. 10" value="10" required />
                 <div class="invalid-feedback">Enter the number of packages using digits only.</div>
               </div>
               <div class="col-md-4">
                 <label class="form-label" for="declaredValue">Declared cargo value (PHP)</label>
-                <input type="text" class="form-control" name="declaredValue" id="declaredValue" inputmode="numeric" pattern="[0-9]+" placeholder="e.g. 25000" required />
+                <input type="text" class="form-control" name="declaredValue" id="declaredValue" inputmode="numeric" pattern="[0-9]+" placeholder="e.g. 25000" value="25000" required />
                 <div class="invalid-feedback">Enter the declared value using digits only.</div>
               </div>
               <div class="col-md-4">
@@ -349,7 +349,7 @@
                 <select class="form-select" name="vehicleType" id="vehicleType" required>
                   <option value="">Select vehicle</option>
                   <option value="Motorcycle">Motorcycle - up to 20 kg</option>
-                  <option value="Van">Van - up to 500 kg</option>
+                  <option value="Van" selected>Van - up to 500 kg</option>
                   <option value="Light truck">Light truck - up to 2,000 kg</option>
                   <option value="6-wheeler truck">6-wheeler truck - up to 5,000 kg</option>
                   <option value="10-wheeler truck">10-wheeler truck - up to 10,000 kg</option>
@@ -362,7 +362,7 @@
             </p>
             <div class="mb-0">
               <label class="form-label" for="specialInstructions">Special instructions or notes</label>
-              <textarea class="form-control" name="specialInstructions" id="specialInstructions" rows="4" placeholder="Loading instructions, access details, delivery notes, or other requests"></textarea>
+              <textarea class="form-control" name="specialInstructions" id="specialInstructions" rows="4" placeholder="Loading instructions, access details, delivery notes, or other requests">Handle with care during loading and unloading.</textarea>
             </div>
           </div>
         </fieldset>
