@@ -66,7 +66,7 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 </div>
 
 > **Note:** No framework, no build step, and no backend. Plain HTML, CSS, and
-> JavaScript, plus Bootstrap 5 (via CDN) on the home page only. Shipment
+> JavaScript, plus Bootstrap 5 (via CDN) across every page. Shipment
 > tracking uses mock data; carrier messaging persists to `localStorage` in
 > your own browser. Everything else runs entirely client-side.
 
@@ -127,11 +127,11 @@ metadata; system sans-serif fallbacks are used when offline.
 Web-Systems-and-Technology-CargoFlow/
 ├── index.html                    # Home page: hero, quote form, track widget, carrier CTA, about
 ├── css/
-│   ├── index.css                 # Bootstrap theme overrides for index.html (navy/orange brand)
-│   └── styles.css                # Shared styles for every page under pages/
+│   └── theme.css                 # Shared Bootstrap theme overrides for every page (navy/orange brand)
 ├── js/
 │   ├── track.js                  # Home page's quick shipment-tracking widget
-│   └── trackshipment.js          # Full tracking page logic (pages/trackshipment.html)
+│   ├── trackshipment.js          # Full tracking page logic (pages/trackshipment.html)
+│   └── messages.js               # Carrier chat logic (pages/messages.html)
 ├── pages/
 │   ├── contact.html              # Contact form
 │   ├── booking-details.html      # Cargo/address details step of the booking flow
@@ -160,11 +160,9 @@ build step, router, or bundler is involved.
 
 ## Screenshots
 
-> _Add screenshots of the running app here._
-
-|      Home      |  Book Cargo    |    Tracking    | 
-| :------------: | :------------: | :------------: |
-| _(screenshot)_ | _(screenshot)_ | _(screenshot)_ |
+|                Home                 |               Book Cargo                |              Tracking               |
+| :----------------------------------: | :--------------------------------------: | :-----------------------------------: |
+| ![Home page](resources/screenshots/home.jpg) | ![Book cargo space form](resources/screenshots/book-cargo.jpg) | ![Track shipment results](resources/screenshots/tracking.jpg) |
 
 ---
 
@@ -180,8 +178,12 @@ build step, router, or bundler is involved.
 ---
 
 ## Links
-[Application Development Worksheet](https://docs.google.com/spreadsheets/d/1dY_Oe7DcTmbCF5gs7h_8In5pB499XdTnBrwlWs6sxXw/edit?usp=sharing)
-[Project Plan](https://docs.google.com/spreadsheets/d/138MnAb0N5k0tvgI0hg_GSXMYZVBpTThv79Nch-e4GCY/edit?usp=sharing)
+
+| Link Text | Link URL |
+| :--- | :--- |
+| **Application Development Worksheet** | [Application Development Worksheet](https://docs.google.com/spreadsheets/d/1dY_Oe7DcTmbCF5gs7h_8In5pB499XdTnBrwlWs6sxXw/edit?usp=sharing) |
+| **Project Plan** | [Project Plan](https://docs.google.com/spreadsheets/d/138MnAb0N5k0tvgI0hg_GSXMYZVBpTThv79Nch-e4GCY/edit?usp=sharing) |
+| **AI Use Statement** | [AI Use Statement](https://docs.google.com/document/d/1LYv0N-MkpsaRtzsQQ7X2heC_45hTNs3Z9yNxwxWlT0I/edit?tab=t.0) |
 
 ## Course Information
 

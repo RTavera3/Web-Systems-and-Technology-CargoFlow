@@ -1,0 +1,689 @@
+/* CargoFlow brand theme for the Bootstrap-based homepage.
+   Colours: navy #0B3D91, orange #FF7A00 (same palette as the rest of the site).
+   Only the "Book cargo space" hero keeps the navy background; every section
+   below it (Track shipment, Connect to carrier, About) is white, like the
+   pattern on booking.com's homepage. */
+
+:root {
+  --cf-navy: #0b3d91;
+  --cf-orange: #ff7a00;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.text-cf-navy {
+  color: var(--cf-navy) !important;
+}
+
+.text-cf-orange {
+  color: var(--cf-orange) !important;
+}
+
+.bg-cf-panel {
+  background: #f4f1ea;
+}
+
+/* Header */
+.navbar-brand span {
+  font-weight: bold;
+  color: var(--cf-navy);
+  font-size: 1.25rem;
+}
+
+.nav-link {
+  color: #333;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--cf-navy);
+}
+
+/* Hero — only .cf-hero (the Book cargo space section) is navy.
+   padding-bottom is large on purpose: it leaves clear space below the
+   subtitle so the floating card (pulled up by .cf-overlap-card's negative
+   margin) only pokes into empty navy, never over the text above it. */
+.cf-hero {
+  background: var(--cf-navy);
+  color: #fff;
+  padding-bottom: 150px;
+}
+
+.cf-hero .lead {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* Section headings — Bootstrap's display-* utilities are sized for a full
+   marketing hero; every other heading on the site uses a much more modest
+   scale, so headings here match that instead of using display-*. */
+.cf-h1 {
+  font-size: clamp(28px, 3.4vw, 40px);
+}
+
+.cf-h2 {
+  font-size: clamp(22px, 2.6vw, 28px);
+}
+
+.cf-points {
+  padding-left: 0;
+}
+
+.cf-points li {
+  position: relative;
+  padding-left: 22px;
+  margin-bottom: 8px;
+}
+
+.cf-points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 10px;
+  height: 10px;
+  background: var(--cf-orange);
+}
+
+.cf-points-dark li {
+  color: #333;
+}
+
+/* Decorative icon accent used to balance the Track shipment and Connect to
+   carrier sections, so their text column isn't floating alone in empty
+   space on wide screens. */
+.cf-icon-circle {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.cf-icon-circle-navy {
+  background: #eef4ff;
+}
+
+.cf-icon-circle-orange {
+  background: #fff4e8;
+}
+
+.cf-card {
+  border: none;
+  border-top: 4px solid var(--cf-orange);
+  border-radius: 0;
+}
+
+/* The "Get a price" card floats on the boundary between the navy hero and
+   the white page below it, like the search bar on booking.com's homepage:
+   pulled up with a negative margin so its top half sits on navy and its
+   bottom half sits on white. */
+.cf-overlap-card {
+  margin-top: -70px;
+  position: relative;
+  z-index: 2;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Bootstrap 5.3 exposes each button variant's colors as its own --bs-btn-*
+   custom properties, so they can be re-themed here without a Sass rebuild. */
+.btn-primary {
+  --bs-btn-bg: var(--cf-navy);
+  --bs-btn-border-color: var(--cf-navy);
+  --bs-btn-hover-bg: #082c69;
+  --bs-btn-hover-border-color: #082c69;
+  --bs-btn-active-bg: #082c69;
+  --bs-btn-active-border-color: #082c69;
+}
+
+.btn-cf-accent {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--cf-orange);
+  --bs-btn-border-color: var(--cf-orange);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #e96d00;
+  --bs-btn-hover-border-color: #e96d00;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #e96d00;
+  --bs-btn-active-border-color: #e96d00;
+  font-weight: 700;
+}
+
+#track-result:not([hidden]) {
+  border-left: 4px solid var(--cf-navy);
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+/* Shipment summary (trackshipment.html) */
+.cf-summary-label {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #666;
+  margin: 0 0 4px;
+}
+
+.cf-summary-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--cf-navy);
+  margin: 0;
+}
+
+.cf-badge-transit {
+  --bs-badge-color: #fff;
+  background: var(--cf-orange);
+}
+
+.cf-badge-delivered {
+  --bs-badge-color: #fff;
+  background: #3b82f6;
+}
+
+.cf-badge-placed {
+  --bs-badge-color: #fff;
+  background: var(--cf-navy);
+}
+
+/* Delivery timeline (trackshipment.html) */
+.cf-timeline {
+  display: flex;
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+}
+
+.cf-step {
+  position: relative;
+  flex: 1;
+  text-align: center;
+  padding-top: 26px;
+}
+
+.cf-step::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  left: -50%;
+  width: 100%;
+  height: 3px;
+  background: #ddd;
+  z-index: 0;
+}
+
+.cf-step:first-child::before {
+  content: none;
+}
+
+.cf-step-dot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #ddd;
+  z-index: 1;
+}
+
+.cf-step-label {
+  font-size: 13px;
+  font-weight: bold;
+  margin: 4px 0 2px;
+  color: #333;
+}
+
+.cf-step-time {
+  font-size: 11px;
+  color: #666;
+  margin: 0;
+}
+
+.cf-step.is-done::before {
+  background: var(--cf-navy);
+}
+
+.cf-step.is-done .cf-step-dot {
+  background: var(--cf-navy);
+  border-color: var(--cf-navy);
+}
+
+.cf-step.is-current .cf-step-dot {
+  background: var(--cf-orange);
+  border-color: var(--cf-orange);
+  animation: cf-pulse 1.8s infinite;
+}
+
+.cf-step.is-current .cf-step-label {
+  color: var(--cf-orange);
+}
+
+@keyframes cf-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 122, 0, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 122, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 122, 0, 0);
+  }
+}
+
+@media (max-width: 700px) {
+  .cf-timeline {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .cf-step {
+    text-align: left;
+    padding-top: 0;
+    padding-left: 34px;
+  }
+
+  .cf-step::before {
+    top: -20px;
+    left: 9px;
+    width: 3px;
+    height: 20px;
+  }
+
+  .cf-step-dot {
+    top: 0;
+    left: 0;
+    transform: none;
+  }
+}
+
+/* Messages page (pages/messages.html) — chat-app layout and JS-driven
+   message bubbles. These class names are NOT renamed with the cf- prefix
+   used elsewhere in this file: js/messages.js assigns several of them
+   directly (message, incoming/outgoing, message-content, time, avatar,
+   bg-navy, message-avatar), so renaming here would also require editing
+   that script. None of them collide with a Bootstrap class name. */
+.cf-avatar-header {
+  width: 35px;
+  height: 35px;
+  background-color: var(--cf-orange);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.chat-app {
+  display: flex;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-top: 4px solid var(--cf-orange);
+  min-height: 550px;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 320px;
+  border-right: 1px solid #ddd;
+  background: #fafafa;
+}
+
+@media (max-width: 760px) {
+  .chat-app {
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .sidebar {
+    width: 100%;
+    max-height: 240px;
+    overflow-y: auto;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+}
+
+.search-box {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.search-box input {
+  width: 100%;
+  height: 38px;
+  padding: 8px 12px;
+  border: 1px solid #999;
+  font-size: 14px;
+  background: #fff;
+}
+
+.search-box input:focus {
+  outline: 2px solid var(--cf-navy);
+  outline-offset: -1px;
+}
+
+.conversation-item {
+  display: flex;
+  gap: 12px;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.conversation-item:hover {
+  background-color: #f4f1ea;
+}
+
+.conversation-item.active {
+  background-color: #edf2ff;
+  border-left: 4px solid var(--cf-navy);
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.bg-navy {
+  background-color: var(--cf-navy);
+}
+
+.bg-orange {
+  background-color: var(--cf-orange);
+}
+
+.location-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.bg-light-blue {
+  background-color: #e2ebff;
+  color: var(--cf-navy);
+}
+
+.preview-text {
+  font-size: 12px;
+  color: #666;
+}
+
+.chat-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.chat-user h3 {
+  font-size: 16px;
+  color: var(--cf-navy);
+  margin: 0;
+}
+
+.chat-actions button {
+  background: none;
+  color: var(--cf-navy);
+  border: none;
+  padding: 4px 8px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.chat-actions button:hover {
+  background: #f4f1ea;
+  color: var(--cf-orange);
+}
+
+.booking-card {
+  margin: 15px 20px 0;
+  background-color: #f4f1ea;
+  border: 1px solid #ddd;
+  border-left: 4px solid var(--cf-navy);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #333;
+}
+
+.booking-card strong {
+  color: var(--cf-navy);
+}
+
+.booking-card p {
+  margin: 0;
+  color: #666;
+}
+
+.messages-container {
+  flex-grow: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.message {
+  display: flex;
+  gap: 10px;
+  max-width: 70%;
+}
+
+.message-avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+}
+
+.message-content p {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin: 0;
+}
+
+.time {
+  font-size: 11px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.incoming {
+  align-self: flex-start;
+}
+
+.incoming .message-content p {
+  background-color: #f4f1ea;
+  color: #333;
+  border: 1px solid #e0ddd5;
+}
+
+.outgoing {
+  align-self: flex-end;
+}
+
+.outgoing .message-content p {
+  background-color: var(--cf-navy);
+  color: #fff;
+}
+
+.outgoing .time {
+  text-align: right;
+}
+
+.chat-input-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 20px;
+  border-top: 1px solid #ddd;
+  background-color: #fafafa;
+}
+
+.chat-input-area .message-input {
+  flex-grow: 1;
+  height: 38px;
+  padding: 8px 12px;
+  border: 1px solid #999;
+  background: #fff;
+  font-size: 14px;
+}
+
+.chat-input-area .message-input:focus {
+  outline: 2px solid var(--cf-navy);
+  outline-offset: -1px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--cf-navy);
+  padding: 0 8px;
+}
+
+.send-btn {
+  background-color: var(--cf-orange);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 0;
+}
+
+.send-btn:hover {
+  background-color: #e96d00;
+}
+
+/* Booking details page (pages/booking-details.html) — vehicle-guidance is
+   toggled by the page's own inline <script> via classList.add/remove,
+   so the class names stay unprefixed and unchanged. */
+.vehicle-guidance {
+  margin: -2px 0 16px;
+  padding: 10px 12px;
+  background: #eef4ff;
+  color: #24436f;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+.vehicle-guidance.vehicle-warning {
+  background: #fff4e8;
+  color: #7a3f00;
+}
+
+/* Booking details wizard (pages/booking-details.html) and the pick-up time
+   fields on both pages — classes are toggled/queried by inline <script>s,
+   so the names stay unprefixed and unchanged. */
+.time-invalid {
+  border-color: #b24a00 !important;
+}
+
+.user-id-status {
+  display: block;
+  margin-top: 5px;
+  color: #26603b;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.user-id-status.is-error {
+  color: #a33a00;
+}
+
+.user-id-invalid {
+  border-color: #a33a00 !important;
+}
+
+.booking-step-indicator {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 22px;
+  margin: 0 0 24px;
+  padding: 0 0 16px;
+  list-style: none;
+  border-bottom: 1px solid #e3e3e3;
+  counter-reset: booking-step;
+}
+
+.booking-step-indicator li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #8a8a8a;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.booking-step-indicator li::before {
+  counter-increment: booking-step;
+  content: counter(booking-step);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 50%;
+  background: #e3e3e3;
+  color: #666;
+  font-size: 12px;
+}
+
+.booking-step-indicator li.is-active {
+  color: var(--cf-navy);
+}
+
+.booking-step-indicator li.is-complete {
+  color: #666;
+}
+
+.booking-step-indicator li.is-active::before,
+.booking-step-indicator li.is-complete::before {
+  background: var(--cf-orange);
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .booking-step-indicator {
+    gap: 8px 14px;
+  }
+
+  .booking-step-indicator li {
+    font-size: 11px;
+  }
+}
