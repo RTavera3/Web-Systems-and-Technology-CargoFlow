@@ -101,7 +101,7 @@
                     </div>
                     <div class="col-sm-6">
                       <label class="form-label">Pick-up time</label>
-                      <input type="time" name="time" class="form-control" required />
+                      <input type="time" name="time" class="form-control" step="60" required />
                       <div class="invalid-feedback">Choose a pick-up time.</div>
                     </div>
                     <div class="col-sm-6">
@@ -258,6 +258,13 @@
         return `${hours}:${minutes}`;
       };
 
+      const getSelectedDateTime = () => {
+        if (!pickupDate.value || !pickupTime.value) return null;
+        const [year, month, day] = pickupDate.value.split('-').map(Number);
+        const [hours, minutes] = pickupTime.value.split(':').map(Number);
+        return new Date(year, month - 1, day, hours, minutes);
+      };
+
       const limitTimeForSelectedDate = () => {
         if (!pickupDate || !pickupTime) return;
 
@@ -274,23 +281,29 @@
           const minTimeDate = new Date(Date.now() + 60000);
           const minTime = formatTimeValue(minTimeDate);
           pickupTime.min = minTime;
-
-          if (pickupTime.value && pickupTime.value < minTime) {
-            pickupTime.value = '';
-          }
         } else {
           pickupTime.min = '';
         }
       };
 
-      if (pickupDate) {
-        pickupDate.addEventListener('change', limitTimeForSelectedDate);
-        pickupTime?.addEventListener('change', () => {
-          if (pickupDate.value === pickupDate.min && pickupTime.value && pickupTime.value < pickupTime.min) {
-            pickupTime.value = '';
-          }
-        });
+      const updateTimeValidity = (showPopup = false) => {
+        if (!pickupDate || !pickupTime) return;
         limitTimeForSelectedDate();
+        const now = new Date();
+        const selectedDateTime = getSelectedDateTime();
+        const hasPastDateTime = selectedDateTime && selectedDateTime <= now;
+        const hasInvalidTime = Boolean(hasPastDateTime);
+        pickupTime.setCustomValidity(hasInvalidTime ? 'Please choose a current or future pick-up time.' : '');
+        pickupTime.classList.toggle('time-invalid', hasInvalidTime);
+        if (showPopup && hasInvalidTime) pickupTime.reportValidity();
+      };
+
+      if (pickupDate && pickupTime) {
+        pickupDate.addEventListener('change', () => updateTimeValidity(true));
+        pickupTime.addEventListener('input', () => updateTimeValidity(false));
+        pickupTime.addEventListener('change', () => updateTimeValidity(true));
+        document.getElementById('quote').addEventListener('submit', updateTimeValidity);
+        updateTimeValidity();
       }
     </script>
     <script src="js/track.js" defer></script>

@@ -56,6 +56,14 @@
       </div>
 
       <form class="details-form needs-validation" action="payment.html" method="get" novalidate>
+        <ol class="booking-step-indicator" aria-label="Booking steps">
+          <li class="is-active" data-step-indicator="1">Cargo</li>
+          <li data-step-indicator="2">Addresses</li>
+          <li data-step-indicator="3">Shipment</li>
+          <li data-step-indicator="4">Review</li>
+        </ol>
+
+        <div class="booking-step" data-step="1">
         <div class="card cf-card mb-4" id="bookingSummary" hidden>
           <div class="card-body p-4">
             <h2 class="h5 fw-bold text-cf-navy mb-3">Your Cargo Details</h2>
@@ -94,7 +102,7 @@
               </div>
               <div class="col-md-4">
                 <label class="form-label" for="detailTime">Pick-up time</label>
-                <input type="time" class="form-control" name="time" id="detailTime" required />
+                <input type="time" class="form-control" name="time" id="detailTime" step="60" required />
                 <div class="invalid-feedback">Choose a pick-up time.</div>
               </div>
               <div class="col-md-4">
@@ -128,17 +136,27 @@
             </div>
           </div>
         </div>
+          <div class="d-flex justify-content-end mt-3">
+            <button type="button" class="step-next btn btn-cf-accent">Next: Addresses</button>
+          </div>
+        </div>
 
         <p class="alert alert-warning" id="bookingIncomplete" hidden>
           Complete all fields in the Get a price section before continuing to
           your cargo details. <a href="../index.html#book" class="alert-link">Return to booking</a>
         </p>
 
+<div class="booking-step" data-step="2" hidden>
         <div class="row g-4 mb-4">
           <div class="col-lg-6">
             <fieldset class="card cf-card h-100">
               <div class="card-body p-4">
                 <legend class="h6 fw-bold text-cf-navy">Complete Pick-up Address</legend>
+                <div class="mb-3">
+                  <label class="form-label" for="senderUserId">Sender User ID</label>
+                  <input type="text" class="form-control" name="senderUserId" id="senderUserId" list="userIdOptions" autocomplete="off" placeholder="e.g. BC0001" required />
+                  <small class="user-id-status" id="senderUserIdStatus" aria-live="polite"></small>
+                </div>
                 <div class="mb-3">
                   <label class="form-label" for="senderName">Sender Name</label>
                   <input type="text" class="form-control" name="senderName" id="senderName" placeholder="Sender's full name" required />
@@ -194,6 +212,11 @@
               <div class="card-body p-4">
                 <legend class="h6 fw-bold text-cf-navy">Complete Drop-off Address</legend>
                 <div class="mb-3">
+                  <label class="form-label" for="receiverUserId">Receiver User ID</label>
+                  <input type="text" class="form-control" name="receiverUserId" id="receiverUserId" list="userIdOptions" autocomplete="off" placeholder="e.g. BC0002" required />
+                  <small class="user-id-status" id="receiverUserIdStatus" aria-live="polite"></small>
+                </div>
+                <div class="mb-3">
                   <label class="form-label" for="receiverName">Receiver Name</label>
                   <input type="text" class="form-control" name="receiverName" id="receiverName" placeholder="Receiver's full name" required />
                   <div class="invalid-feedback">Enter the receiver's name.</div>
@@ -244,6 +267,14 @@
           </div>
         </div>
 
+        <datalist id="userIdOptions"></datalist>
+          <div class="d-flex justify-content-between mt-3">
+            <button type="button" class="step-back btn btn-outline-secondary">Back</button>
+            <button type="button" class="step-next btn btn-cf-accent">Next: Shipment</button>
+          </div>
+        </div>
+
+        <div class="booking-step" data-step="3" hidden>
         <fieldset class="card cf-card mb-4">
           <div class="card-body p-4">
             <legend class="h6 fw-bold text-cf-navy">Shipment Details</legend>
@@ -255,13 +286,13 @@
             <div class="row g-3 mb-3">
               <div class="col-md-4">
                 <label class="form-label" for="packageCount">Number of packages</label>
-                <input type="number" class="form-control" name="packageCount" id="packageCount" min="1" placeholder="e.g. 10" required />
-                <div class="invalid-feedback">Enter the number of packages.</div>
+                <input type="text" class="form-control" name="packageCount" id="packageCount" inputmode="numeric" pattern="[0-9]+" placeholder="e.g. 10" required />
+                <div class="invalid-feedback">Enter the number of packages using digits only.</div>
               </div>
               <div class="col-md-4">
                 <label class="form-label" for="declaredValue">Declared cargo value (PHP)</label>
-                <input type="text" class="form-control" name="declaredValue" id="declaredValue" inputmode="decimal" placeholder="e.g. 25,000" required />
-                <div class="invalid-feedback">Enter the declared cargo value.</div>
+                <input type="text" class="form-control" name="declaredValue" id="declaredValue" inputmode="numeric" pattern="[0-9]+" placeholder="e.g. 25000" required />
+                <div class="invalid-feedback">Enter the declared value using digits only.</div>
               </div>
               <div class="col-md-4">
                 <label class="form-label" for="vehicleType">Vehicle type</label>
@@ -285,7 +316,13 @@
             </div>
           </div>
         </fieldset>
+          <div class="d-flex justify-content-between mt-3">
+            <button type="button" class="step-back btn btn-outline-secondary">Back</button>
+            <button type="button" class="step-next btn btn-cf-accent">Next: Review</button>
+          </div>
+        </div>
 
+        <div class="booking-step" data-step="4" hidden>
         <fieldset class="card cf-card mb-4">
           <div class="card-body p-4">
             <legend class="h6 fw-bold text-cf-navy">Account Owner Details</legend>
@@ -317,8 +354,11 @@
             </div>
           </div>
         </fieldset>
-
-        <button type="submit" class="btn btn-cf-accent">Confirm and Pay</button>
+          <div class="d-flex justify-content-between mt-3">
+            <button type="button" class="step-back btn btn-outline-secondary">Back</button>
+            <button type="submit" class="btn btn-cf-accent">Confirm and Pay</button>
+          </div>
+        </div>
       </form>
     </main>
 
@@ -348,6 +388,13 @@
         const minutes = String(date.getMinutes()).padStart(2, '0');
         return `${hours}:${minutes}`;
       };
+
+      const getSelectedDateTime = () => {
+        if (!detailDate.value || !detailTime.value) return null;
+        const [year, month, day] = detailDate.value.split('-').map(Number);
+        const [hours, minutes] = detailTime.value.split(':').map(Number);
+        return new Date(year, month - 1, day, hours, minutes);
+      };
       const limitTimeForSelectedDate = () => {
         if (!detailDate || !detailTime) return;
 
@@ -362,10 +409,6 @@
           const minTimeDate = new Date(Date.now() + 60000);
           const minTime = formatTimeValue(minTimeDate);
           detailTime.min = minTime;
-
-          if (detailTime.value && detailTime.value < minTime) {
-            detailTime.value = '';
-          }
         } else {
           detailTime.min = '';
         }
@@ -373,10 +416,15 @@
       const cityProvinceMap = {
         Manila: 'Metro Manila',
         Batangas: 'Batangas',
+        'Batangas City': 'Batangas',
         Baguio: 'Benguet',
+        'Baguio City': 'Benguet',
         Cebu: 'Cebu',
+        'Cebu City': 'Cebu',
         Davao: 'Davao del Sur',
+        'Davao City': 'Davao del Sur',
         Pampanga: 'Pampanga',
+        'San Fernando': 'Pampanga',
       };
 
       document.getElementById('bookingSummary').hidden = !bookingIsComplete;
@@ -395,11 +443,6 @@
       setValue('detailTime', 'time');
       limitTimeForSelectedDate();
       detailDate?.addEventListener('change', limitTimeForSelectedDate);
-      detailTime?.addEventListener('change', () => {
-        if (detailDate.value === detailDate.min && detailTime.value && detailTime.value < detailTime.min) {
-          detailTime.value = '';
-        }
-      });
       setValue('detailWeight', 'weight');
       setValue('detailType', 'type');
       setValue('cargoDescription', 'cargoDescription');
@@ -407,6 +450,11 @@
       setValue('declaredValue', 'declaredValue');
       setValue('vehicleType', 'vehicleType');
       setValue('specialInstructions', 'specialInstructions');
+      setValue('senderUserId', 'senderUserId');
+      setValue('receiverUserId', 'receiverUserId');
+      setValue('senderName', 'senderName');
+      setValue('senderContact', 'senderContact');
+      setValue('pickupAddress', 'pickupAddress');
       setValue('pickupZip', 'pickupZip');
       setValue('dropoffAddress', 'dropoffAddress');
       setValue('receiverName', 'receiverName');
@@ -443,20 +491,98 @@
       setProvinceFromCity('pickupCitySelect', 'pickupProvinceSelect', 'pickupProvince');
       setProvinceFromCity('dropoffCitySelect', 'dropoffProvinceSelect', 'dropoffProvince');
 
+      const addSelectOption = (select, value) => {
+        if (!value) return;
+        const existingOption = [...select.options].find((option) => option.value === value || option.textContent === value);
+        if (!existingOption) select.add(new Option(value, value));
+        select.value = value;
+      };
+
+      const fillUserDetails = (userIdFieldId, statusId, fieldIds, user) => {
+        const userIdField = document.getElementById(userIdFieldId);
+        const status = document.getElementById(statusId);
+        const isValid = Boolean(user);
+        userIdField.setCustomValidity(isValid ? '' : 'Enter a valid User ID.');
+        userIdField.classList.toggle('user-id-invalid', !isValid);
+        status.textContent = isValid ? `Details loaded for ${user.name}.` : 'User ID not found.';
+        status.classList.toggle('is-error', !isValid);
+
+        if (!user) return;
+        document.getElementById(fieldIds.name).value = user.name;
+        document.getElementById(fieldIds.contact).value = user.contactNumber;
+        document.getElementById(fieldIds.address).value = user.streetAddress;
+        document.getElementById(fieldIds.zip).value = user.zipCode;
+        addSelectOption(document.getElementById(fieldIds.citySelect), user.city);
+        addSelectOption(document.getElementById(fieldIds.provinceSelect), user.province);
+        document.getElementById(fieldIds.cityInput).value = user.city;
+        document.getElementById(fieldIds.provinceInput).value = user.province;
+        addSelectOption(document.getElementById(fieldIds.routeSelect), user.city);
+        document.getElementById(fieldIds.routeSelect).value = user.city;
+      };
+
+      fetch('../resources/users.json')
+        .then((response) => {
+          if (!response.ok) throw new Error('Unable to load user records.');
+          return response.json();
+        })
+        .then((users) => {
+          const usersById = new Map(users.map((user) => [user.userId.toUpperCase(), user]));
+          const userIdOptions = document.getElementById('userIdOptions');
+          users.forEach((user) => {
+            userIdOptions.append(new Option(`${user.userId} - ${user.name}`, user.userId));
+          });
+          const userFields = [
+            {
+              userId: 'senderUserId',
+              status: 'senderUserIdStatus',
+              fields: {
+                name: 'senderName', contact: 'senderContact', address: 'pickupAddress', zip: 'pickupZip',
+                citySelect: 'pickupCitySelect', provinceSelect: 'pickupProvinceSelect',
+                cityInput: 'pickupCity', provinceInput: 'pickupProvince', routeSelect: 'detailFrom',
+              },
+            },
+            {
+              userId: 'receiverUserId',
+              status: 'receiverUserIdStatus',
+              fields: {
+                name: 'receiverName', contact: 'receiverContact', address: 'dropoffAddress', zip: 'dropoffZip',
+                citySelect: 'dropoffCitySelect', provinceSelect: 'dropoffProvinceSelect',
+                cityInput: 'dropoffCity', provinceInput: 'dropoffProvince', routeSelect: 'detailTo',
+              },
+            },
+          ];
+
+          userFields.forEach(({ userId, status, fields }) => {
+            const input = document.getElementById(userId);
+            const lookup = () => {
+              const value = input.value.trim().toUpperCase();
+              input.value = value;
+              fillUserDetails(userId, status, fields, usersById.get(value));
+            };
+            input.addEventListener('input', lookup);
+            input.addEventListener('change', lookup);
+            if (input.value) lookup();
+          });
+        })
+        .catch(() => {
+          ['senderUserIdStatus', 'receiverUserIdStatus'].forEach((statusId) => {
+            document.getElementById(statusId).textContent = 'User records could not be loaded.';
+            document.getElementById(statusId).classList.add('is-error');
+          });
+        });
+
       const declaredValue = document.getElementById('declaredValue');
-      const formatCurrencyInput = () => {
-        const numericValue = declaredValue.value.replace(/[^0-9.]/g, '');
-        if (!numericValue) return;
-        const [whole, decimal] = numericValue.split('.');
-        declaredValue.value = Number(whole).toLocaleString('en-PH') +
-          (decimal !== undefined ? `.${decimal.slice(0, 2)}` : '');
+      const packageCount = document.getElementById('packageCount');
+      const validateDigitsOnly = (field) => {
+        const hasInvalidCharacters = field.value !== '' && !/^\d+$/.test(field.value);
+        field.setCustomValidity(hasInvalidCharacters ? 'Please enter numerical digits only.' : '');
       };
 
       setValue('declaredValue', 'declaredValue');
-      formatCurrencyInput();
-      declaredValue.addEventListener('input', formatCurrencyInput);
-      document.querySelector('.details-form').addEventListener('submit', () => {
-        declaredValue.value = declaredValue.value.replace(/,/g, '');
+      [packageCount, declaredValue].forEach((field) => {
+        field.addEventListener('input', () => validateDigitsOnly(field));
+        field.addEventListener('change', () => validateDigitsOnly(field));
+        validateDigitsOnly(field);
       });
 
       const vehicleSpecs = {
@@ -492,6 +618,79 @@
         document.getElementById(id).addEventListener('input', updateVehicleGuidance);
       });
       updateVehicleGuidance();
+
+      const detailsForm = document.querySelector('.details-form');
+      const bookingSteps = [...document.querySelectorAll('.booking-step')];
+      const stepIndicators = [...document.querySelectorAll('[data-step-indicator]')];
+      let activeStep = 1;
+
+      bookingSteps.forEach((step) => {
+        step.querySelectorAll('input, select, textarea').forEach((control) => {
+          control.dataset.initiallyDisabled = control.disabled ? 'true' : 'false';
+        });
+      });
+
+      const setActiveStep = (stepNumber) => {
+        activeStep = stepNumber;
+        bookingSteps.forEach((step) => {
+          const isActive = Number(step.dataset.step) === activeStep;
+          step.hidden = !isActive;
+        });
+        stepIndicators.forEach((indicator) => {
+          const indicatorStep = Number(indicator.dataset.stepIndicator);
+          indicator.classList.toggle('is-active', indicatorStep === activeStep);
+          indicator.classList.toggle('is-complete', indicatorStep < activeStep);
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      const validateActiveStep = () => {
+        const currentStep = bookingSteps[activeStep - 1];
+        const controls = [...currentStep.querySelectorAll('input, select, textarea')];
+        const invalidControl = controls.find((control) => !control.checkValidity());
+        if (invalidControl) invalidControl.reportValidity();
+        return !invalidControl;
+      };
+
+      detailsForm.querySelectorAll('.step-next').forEach((button) => {
+        button.addEventListener('click', () => {
+          if (activeStep === 1) enforceCurrentTime();
+          if (validateActiveStep() && activeStep < bookingSteps.length) {
+            setActiveStep(activeStep + 1);
+          }
+        });
+      });
+
+      detailsForm.querySelectorAll('.step-back').forEach((button) => {
+        button.addEventListener('click', () => {
+          if (activeStep > 1) setActiveStep(activeStep - 1);
+        });
+      });
+
+      const enforceCurrentTime = (showPopup = false) => {
+        limitTimeForSelectedDate();
+        const now = new Date();
+        const selectedDateTime = getSelectedDateTime();
+        const hasPastDateTime = selectedDateTime && selectedDateTime <= now;
+        const hasInvalidTime = Boolean(hasPastDateTime);
+        detailTime.setCustomValidity(hasInvalidTime ? 'Please choose a current or future pick-up time.' : '');
+        detailTime.classList.toggle('time-invalid', hasInvalidTime);
+        if (showPopup && hasInvalidTime) detailTime.reportValidity();
+      };
+
+      detailDate?.addEventListener('change', () => enforceCurrentTime(true));
+      detailTime?.addEventListener('input', () => enforceCurrentTime(false));
+      detailTime?.addEventListener('change', () => enforceCurrentTime(true));
+
+      detailsForm.addEventListener('submit', (event) => {
+        enforceCurrentTime();
+        if (!validateActiveStep()) event.preventDefault();
+      });
+
+      detailsForm.querySelector('button[type="submit"]').addEventListener('click', enforceCurrentTime);
+
+      enforceCurrentTime();
+      setActiveStep(1);
     </script>
     <script src="../js/form-validation.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

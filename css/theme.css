@@ -604,3 +604,86 @@ body {
   background: #fff4e8;
   color: #7a3f00;
 }
+
+/* Booking details wizard (pages/booking-details.html) and the pick-up time
+   fields on both pages — classes are toggled/queried by inline <script>s,
+   so the names stay unprefixed and unchanged. */
+.time-invalid {
+  border-color: #b24a00 !important;
+}
+
+.user-id-status {
+  display: block;
+  margin-top: 5px;
+  color: #26603b;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.user-id-status.is-error {
+  color: #a33a00;
+}
+
+.user-id-invalid {
+  border-color: #a33a00 !important;
+}
+
+.booking-step-indicator {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 22px;
+  margin: 0 0 24px;
+  padding: 0 0 16px;
+  list-style: none;
+  border-bottom: 1px solid #e3e3e3;
+  counter-reset: booking-step;
+}
+
+.booking-step-indicator li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #8a8a8a;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.booking-step-indicator li::before {
+  counter-increment: booking-step;
+  content: counter(booking-step);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 50%;
+  background: #e3e3e3;
+  color: #666;
+  font-size: 12px;
+}
+
+.booking-step-indicator li.is-active {
+  color: var(--cf-navy);
+}
+
+.booking-step-indicator li.is-complete {
+  color: #666;
+}
+
+.booking-step-indicator li.is-active::before,
+.booking-step-indicator li.is-complete::before {
+  background: var(--cf-orange);
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .booking-step-indicator {
+    gap: 8px 14px;
+  }
+
+  .booking-step-indicator li {
+    font-size: 11px;
+  }
+}
