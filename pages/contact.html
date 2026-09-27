@@ -121,21 +121,7 @@
       </div>
     </footer>
 
-    <script>
-      const contactForm = document.getElementById('contactForm');
-      const successMessage = document.getElementById('successMessage');
-
-      contactForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        if (!contactForm.checkValidity()) {
-          contactForm.classList.add('was-validated');
-          return;
-        }
-        successMessage.hidden = false;
-        contactForm.reset();
-        contactForm.classList.remove('was-validated');
-      });
-    </script>
+    <script src="../js/contact.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
