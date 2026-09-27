@@ -1,9 +1,30 @@
-// Track Shipment page — DOM manipulation for the search form.
-// Hardcoded sample data for Milestone 1 (no backend yet), plus real
-// bookings seeded into localStorage by payment.html under the
-// "cargoflow_bookings" key (see js/payment.js).
-// Group-agreed default tracking number: CF-24810293
+/**
+ * Track Shipment page.
+ *
+ * There is no backend, so tracking results come from two sources, checked
+ * in order:
+ *   1. `knownShipments` below - one hardcoded sample shipment
+ *      (CF-24810293) with a full fake "in transit" timeline, used for demos
+ *      and grading.
+ *   2. `localStorage["cargoflow_bookings"]` - real bookings seeded by
+ *      js/payment.js when someone completes the booking + payment flow.
+ *      These always render as "Booking Placed" (nothing has actually been
+ *      picked up yet in this simulation).
+ *
+ * Both sources are normalized into the same shape (see `renderShipment`)
+ * so one render function can display either.
+ */
 
+/**
+ * The one hardcoded demo shipment, keyed by tracking code.
+ * @type {Record<string, {
+ *   route: string,
+ *   eta: string,
+ *   status: string,
+ *   badgeClass: string,
+ *   timeline: {label: string, time: string, state: string}[],
+ * }>}
+ */
 const knownShipments = {
   "CF-24810293": {
     route: "Manila &rarr; Cebu",
@@ -20,6 +41,22 @@ const knownShipments = {
   },
 };
 
+/**
+ * Looks up a tracking code among the real bookings saved by
+ * js/payment.js, and if found, builds the same "shipment" shape that
+ * `knownShipments` entries use so `renderShipment` can display it.
+ *
+ * Because a booking has only just been paid for (never actually picked
+ * up), the timeline always shows step 1 ("Order Placed") as done, the
+ * scheduled pickup date/time as the next (upcoming) step, and everything
+ * after that as "Pending pickup".
+ *
+ * @param {string} code Tracking code, already trimmed/uppercased.
+ * @returns {{
+ *   route: string, eta: string, status: string, badgeClass: string,
+ *   timeline: {label: string, time: string, state: string}[],
+ * }|null} null if no booking with that code exists in localStorage.
+ */
 function getStoredBooking(code) {
   const bookings = JSON.parse(localStorage.getItem("cargoflow_bookings") || "{}");
   const booking = bookings[code];
@@ -61,6 +98,22 @@ const timelineList = document.getElementById("timeline-list");
 const trackingInput = document.getElementById("trackingNumber");
 const trackButton = form.querySelector("button[type='submit']");
 
+/**
+ * Fills in and reveals the shipment summary card + delivery timeline for
+ * a found shipment (from either `knownShipments` or `getStoredBooking`).
+ *
+ * `summaryRoute` is set with `innerHTML` (not `textContent`) because the
+ * route string contains an `&rarr;` HTML entity for the arrow between
+ * cities; the timeline `<li>` markup is rebuilt from scratch every call so
+ * it always matches the given shipment's own step count/labels/state,
+ * rather than trying to patch the 5 sample `<li>`s already in the HTML.
+ *
+ * @param {string} code The tracking code, used for display only.
+ * @param {{
+ *   route: string, eta: string, status: string, badgeClass: string,
+ *   timeline: {label: string, time: string, state: string}[],
+ * }} shipment
+ */
 function renderShipment(code, shipment) {
   summaryCode.textContent = code;
   summaryTrackingId.textContent = code;
@@ -85,6 +138,19 @@ function renderShipment(code, shipment) {
   notFoundMessage.hidden = true;
 }
 
+/**
+ * Handles the tracking search form's submit event.
+ *
+ * Flow:
+ *   1. Empty input -> show a "please enter a code" message and stop.
+ *   2. Otherwise, disable the button and show "Searching..." for 600ms
+ *      (a fake delay purely for the feel of a real lookup - there is no
+ *      actual network request).
+ *   3. Look the code up in `knownShipments` first, then in localStorage
+ *      via `getStoredBooking`. If found, render it; otherwise show the
+ *      "not found" message with a hint toward the sample code.
+ *   4. Re-enable the button either way.
+ */
 form.addEventListener("submit", (event) => {
   event.preventDefault();
 
