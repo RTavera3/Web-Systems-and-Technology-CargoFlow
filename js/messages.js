@@ -234,26 +234,5 @@ if (trashIcon) {
   });
 }
 
-// Search Bar Filtering Listener
-// Live-filters the visible messages as the user types, by hiding any
-// message bubble whose text doesn't contain the search term.
-const searchInput = document.querySelector('input[placeholder*="Search"]') ||
-                    document.querySelector('.search-bar input');
-
-if (searchInput) {
-  searchInput.addEventListener('input', function (e) {
-    const searchTerm = e.target.value.toLowerCase();
-    const allMessages = messagesContainer.querySelectorAll('.message');
-
-    allMessages.forEach(function (msg) {
-      const p = msg.querySelector('p');
-      if (p) {
-        const text = p.textContent.toLowerCase();
-        msg.style.display = text.includes(searchTerm) ? 'flex' : 'none';
-      }
-    });
-  });
-}
-
 // Initialize messages on page load
 loadMessages();
