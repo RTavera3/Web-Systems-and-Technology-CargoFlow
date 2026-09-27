@@ -182,7 +182,9 @@
 
           <button type="submit" class="btn btn-cf-accent">Submit Payment</button>
           <p class="alert alert-success mt-3 mb-0" id="paymentSuccess" aria-live="polite" hidden>
-            Payment details submitted. Your booking request is being processed.
+            Payment details submitted. Your booking reference is
+            <strong id="paymentBookingCode"></strong>. Save this code -
+            <a href="trackshipment.html" class="alert-link">track your shipment</a> with it anytime.
           </p>
         </div>
       </form>
@@ -278,6 +280,24 @@
       paymentMethod.addEventListener('change', updatePaymentFields);
       updatePaymentFields();
 
+      const generateBookingCode = () => {
+        const digits = String(Math.floor(Math.random() * 1e8)).padStart(8, '0');
+        return `CF-${digits}`;
+      };
+
+      const saveBooking = (code) => {
+        const bookings = JSON.parse(localStorage.getItem('cargoflow_bookings') || '{}');
+        bookings[code] = {
+          from: paymentValue('from'),
+          to: paymentValue('to'),
+          pickupDate: paymentValue('date'),
+          pickupTime: paymentValue('time'),
+          paymentMethod: paymentMethod.value,
+          createdAt: new Date().toISOString(),
+        };
+        localStorage.setItem('cargoflow_bookings', JSON.stringify(bookings));
+      };
+
       const paymentFormEl = document.getElementById('paymentForm');
       paymentFormEl.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -285,6 +305,9 @@
           paymentFormEl.classList.add('was-validated');
           return;
         }
+        const bookingCode = generateBookingCode();
+        saveBooking(bookingCode);
+        document.getElementById('paymentBookingCode').textContent = bookingCode;
         document.getElementById('paymentSuccess').hidden = false;
       });
     </script>
