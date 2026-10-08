@@ -16,3 +16,17 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
+
+// Reference: https://expressjs.com/en/guide/routing.html
+// Planning to edit the get for the loading of chat history and the post for 
+// saving new messages to the data/messages.json file
+
+// GET method route (Placeholder to fetch stored messages)
+app.get('/api/messages', (req, res) => {
+  res.send('GET request to the messages server');
+});
+
+// POST method route (Placeholder to save a new message)
+app.post('/api/messages', (req, res) => {
+  res.send('POST request to the messages server');
+});
