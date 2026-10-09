@@ -9,6 +9,7 @@
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 
 </div>
 
@@ -61,12 +62,14 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 |       **HTML5**       |      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" width="48" />      | Markup and page structure (`index.html`)    |
 |       **CSS3**        |       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="48" />       | Styling, layout, and responsive design      |
 | **JavaScript (ES6+)** | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="48" /> | Icon rendering, mobile nav, and route search |
+|  **Node.js + Express** |       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" width="48" />       | Local web server (`server.js`) that serves the site |
 |   **Git & GitHub**    |      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="48" />      | Version control and collaboration           |
 
 </div>
 
-> **Note:** No framework, no build step, and no backend. Plain HTML, CSS, and
-> JavaScript, plus Bootstrap 5 (via CDN) across every page. Shipment
+> **Note:** No framework and no build step. Plain HTML, CSS, and
+> JavaScript, plus Bootstrap 5 (via CDN) across every page. A basic
+> Node.js + Express server (`server.js`) serves the pages; it has no API yet. Shipment
 > tracking uses mock data; carrier messaging persists to `localStorage` in
 > your own browser. Everything else runs entirely client-side.
 
@@ -76,27 +79,26 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 
 ### Prerequisites
 
-- A modern web browser. That's it — no Node.js, no install step.
-- Python 3 (already on macOS/Linux) if you want to serve the site locally
-  instead of opening files directly — recommended, since a couple of pages
-  use relative paths that behave more reliably over `http://` than `file://`.
+- [Node.js](https://nodejs.org/) 20 or newer (LTS recommended). Check with `node -v`.
+- A modern web browser.
 
 ### Run it
 
 ```bash
 git clone https://github.com/RTavera3/Web-Systems-and-Technology-CargoFlow.git
 cd Web-Systems-and-Technology-CargoFlow
-python3 -m http.server 8000
+npm install
+npm run dev
 ```
 
-Then open **http://localhost:8000/index.html**. Any other static server
-works the same way (`npx serve .`, VS Code's "Live Server" extension, etc.) —
-just make sure whatever you use serves the project root, since `index.html`
-loads `css/`, `js/`, and `pages/` with paths relative to it.
+Then open **http://localhost:3000**. `npm run dev` restarts the server when a file
+changes; `npm start` runs it without watching. To use another port, set `PORT`
+(for example `PORT=8080 npm start`).
 
-Opening `index.html` directly via `file://` also works for a quick look, but
-some browsers restrict relative-path loading over `file://` more than others,
-so a local server is the more reliable option.
+The server only serves the front-end folders (`css/`, `js/`, `pages/`, `resources/`)
+and `index.html`, so `server.js`, `package.json` and `node_modules/` are never
+reachable from the browser. Serving over `http://` also lets the booking page load
+`resources/users.json`, which browsers block when the HTML file is opened directly.
 
 ### About the pages
 
@@ -125,6 +127,8 @@ metadata; system sans-serif fallbacks are used when offline.
 
 ```
 Web-Systems-and-Technology-CargoFlow/
+├── server.js                     # Node.js + Express server that serves the site (npm run dev)
+├── package.json                  # Project info, npm scripts, Express dependency
 ├── index.html                    # Home page: hero, quote form, track widget, carrier CTA, about
 ├── css/
 │   └── theme.css                 # Shared Bootstrap theme overrides for every page (navy/orange brand)
