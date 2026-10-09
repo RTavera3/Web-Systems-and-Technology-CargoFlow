@@ -5,9 +5,16 @@
 // FUTURE WORK: We will add GET /api/messages and POST /api/messages routes here
 // to read and save chat messages into data/messages.json instead of localStorage.
 
+//Reference:https://expressjs.com/en/resources/middleware/cors/
+
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const port = 3000;
+
+// Enable CORS and JSON body parsing middleware
+app.use(cors());
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.send('CargoFlow Messaging Server is Running!');
