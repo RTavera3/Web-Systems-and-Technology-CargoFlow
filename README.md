@@ -106,8 +106,10 @@ reachable from the browser. Serving over `http://` also lets the booking page lo
 a floating "Get a price" quote card, a shipment-tracking widget, a carrier
 CTA, and an About section. Every other page lives under `pages/`:
 `contact.html`, `booking-details.html`, `payment.html`, `messages.html`
-(carrier chat with `localStorage`-backed history), and `trackshipment.html`
-(the full tracking page, separate from the home page's quick widget).
+(carrier chat with `localStorage`-backed history), `trackshipment.html`
+(the full tracking page, separate from the home page's quick widget), and
+`history.html` (Shipment History: every active and past booking, with status
+filters, search and sorting; completed bookings appear there automatically).
 
 The design follows the CargoFlow brand palette: deep blue (`#0B3D91`) and
 flow orange (`#FF7A00`), with sand (`#F4F1EA`) as a secondary background.
@@ -135,13 +137,15 @@ Web-Systems-and-Technology-CargoFlow/
 ├── js/
 │   ├── track.js                  # Home page's quick shipment-tracking widget
 │   ├── trackshipment.js          # Full tracking page logic (pages/trackshipment.html)
+│   ├── history.js                # Shipment History list, filters, search and sort (pages/history.html)
 │   └── messages.js               # Carrier chat logic (pages/messages.html)
 ├── pages/
 │   ├── contact.html              # Contact form
 │   ├── booking-details.html      # Cargo/address details step of the booking flow
 │   ├── payment.html              # Payment step of the booking flow
 │   ├── messages.html             # Carrier messaging UI
-│   └── trackshipment.html        # Full shipment-tracking page
+│   ├── trackshipment.html        # Full shipment-tracking page (accepts ?code=CF-... to search directly)
+│   └── history.html              # Shipment History: active and past bookings
 └── resources/
     └── cargoflow.logo.png        # Brand logo asset
 ```
@@ -157,7 +161,7 @@ build step, router, or bundler is involved.
 1. **Home** — platform overview and quick search
 2. **Book Cargo Space** — reserve space and view shared cost breakdown
 3. **Track Shipment** — see shipment status and timeline
-4. **Shipment History** - for viewing active and past bookings. 
+4. **Shipment History** — view active and past bookings, filter by status, search, and open any one to track it
 5. **Messages** — chat directly with carriers
 
 ---
