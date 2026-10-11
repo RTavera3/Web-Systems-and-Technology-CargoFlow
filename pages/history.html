@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CargoFlow — Shipment History</title>
+    <meta name="description" content="See all your active and past CargoFlow shipments, filter them by status, and open any one to track it." />
+    <link rel="icon" type="image/png" href="../resources/cargoflow.logo.png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../css/theme.css" />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html#book" aria-label="CargoFlow home">
+          <svg viewBox="0 0 56 56" width="36" height="36" aria-hidden="true">
+            <path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#0B3D91" />
+            <path
+              d="m37 3 14 5v14l-14-5ZM23 28l15-6-3-5 16 5-7 15-1-6-20 9Z"
+              fill="#FF7A00"
+            />
+            <path d="m23 44 17-7v12l-17 6Z" fill="#0B3D91" />
+          </svg>
+          <span>Cargo<b class="text-cf-orange">Flow</b></span>
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navMain"
+          aria-controls="navMain"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMain">
+          <span class="navbar-text small fw-bold text-cf-orange d-none d-lg-inline me-auto ms-3">
+            Share the Road. Share the Cost.
+          </span>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a class="nav-link" href="../index.html#book">Book cargo space</a></li>
+            <li class="nav-item"><a class="nav-link" href="trackshipment.html">Track shipment</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="history.html">My shipments</a></li>
+            <li class="nav-item"><a class="nav-link" href="messages.html">Connect to carrier</a></li>
+            <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <header class="cf-hero py-5 text-center">
+      <div class="container">
+        <h1 class="cf-h1 fw-bold mb-3">Shipment history</h1>
+        <p class="lead mb-0 mx-auto cf-measure">
+          All your active and past shipments in one place. Filter by status,
+          search by tracking number or city, and open any shipment to track it.
+        </p>
+      </div>
+    </header>
+
+    <main class="container py-5">
+      <!-- Summary counts, filled in by js/history.js -->
+      <section class="row g-3 mb-4" aria-label="Shipment summary">
+        <div class="col-6 col-lg-3">
+          <div class="card cf-card h-100">
+            <div class="card-body">
+              <p class="cf-summary-label">Total shipments</p>
+              <p class="cf-summary-value fs-3 mb-0" id="stat-total">0</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card cf-card h-100">
+            <div class="card-body">
+              <p class="cf-summary-label">Active</p>
+              <p class="cf-summary-value fs-3 mb-0" id="stat-active">0</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card cf-card h-100">
+            <div class="card-body">
+              <p class="cf-summary-label">Delivered</p>
+              <p class="cf-summary-value fs-3 mb-0" id="stat-delivered">0</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card cf-card h-100">
+            <div class="card-body">
+              <p class="cf-summary-label">Total shared cost paid</p>
+              <p class="cf-summary-value fs-3 mb-0" id="stat-spent">₱0</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filters -->
+      <section class="card cf-card mb-4" aria-label="Filter shipments">
+        <div class="card-body p-4">
+          <div class="row g-3 align-items-end">
+            <div class="col-lg-5">
+              <p class="form-label fw-semibold mb-2" id="status-filter-label">Status</p>
+              <div class="btn-group flex-wrap" role="group" aria-labelledby="status-filter-label" id="status-filter">
+                <button type="button" class="btn btn-outline-secondary active" data-status="all" aria-pressed="true">All</button>
+                <button type="button" class="btn btn-outline-secondary" data-status="Booking Placed" aria-pressed="false">Booking placed</button>
+                <button type="button" class="btn btn-outline-secondary" data-status="In Transit" aria-pressed="false">In transit</button>
+                <button type="button" class="btn btn-outline-secondary" data-status="Delivered" aria-pressed="false">Delivered</button>
+              </div>
+            </div>
+            <div class="col-md-7 col-lg-4">
+              <label class="form-label fw-semibold" for="history-search">Search</label>
+              <input
+                type="search"
+                id="history-search"
+                class="form-control"
+                placeholder="Tracking number or city, e.g. Cebu"
+              />
+            </div>
+            <div class="col-md-5 col-lg-3">
+              <label class="form-label fw-semibold" for="history-sort">Sort by</label>
+              <select id="history-sort" class="form-select">
+                <option value="newest" selected>Pickup date: newest first</option>
+                <option value="oldest">Pickup date: oldest first</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Results -->
+      <section class="card cf-card" aria-labelledby="history-heading">
+        <div class="card-body p-4">
+          <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-3">
+            <h2 class="h5 fw-bold text-cf-navy mb-0" id="history-heading">Your shipments</h2>
+            <p class="text-muted small mb-0" id="history-count" aria-live="polite"></p>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">Tracking ID</th>
+                  <th scope="col">Route</th>
+                  <th scope="col">Pickup date</th>
+                  <th scope="col">Payment</th>
+                  <th scope="col" class="text-end">Your share</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody id="history-rows"></tbody>
+            </table>
+          </div>
+
+          <p class="text-muted text-center py-4 mb-0" id="history-empty" hidden>
+            No shipments match your filters.
+            <a href="../index.html#book">Book cargo space</a> to add one.
+          </p>
+        </div>
+      </section>
+
+      <p class="text-muted small mt-3 mb-0">
+        Bookings you complete on this device appear here automatically with the status
+        <strong>Booking placed</strong>. Sample past shipments are included for demonstration.
+      </p>
+    </main>
+
+    <footer class="border-top py-4 text-center text-muted small">
+      <div class="container">
+        <p class="mb-0">
+          Share space. Move more. &nbsp;·&nbsp; CargoFlow, a student
+          project. Made in the Philippines.
+        </p>
+      </div>
+    </footer>
+    <script src="../js/history.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

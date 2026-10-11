@@ -186,3 +186,16 @@ form.addEventListener("submit", (event) => {
     trackButton.textContent = "Track";
   }, 600);
 });
+
+/**
+ * Opening this page with a tracking code in the address, for example
+ * trackshipment.html?code=CF-24810293 (the links on the Shipment History
+ * page), fills the code into the search box and runs the search
+ * immediately, so the user does not have to type it again.
+ * requestSubmit() fires the same submit handler as clicking "Track".
+ */
+const codeFromUrl = new URLSearchParams(window.location.search).get("code");
+if (codeFromUrl) {
+  trackingInput.value = codeFromUrl;
+  form.requestSubmit();
+}
