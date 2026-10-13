@@ -23,6 +23,11 @@ const DATA_FILE = path.join(__dirname, 'data', 'messages.json');
 app.use(cors());
 app.use(express.json());
 
+// Serve static frontend files (html, css, js) 
+// Reference: https://expressjs.com/en/starter/static-files.html
+const publicPath = path.join(__dirname, 'public');
+app.use(express.static(publicPath));
+
 app.get('/', (req, res) => {
   res.send('CargoFlow Messaging Server is Running!');
 });
@@ -38,7 +43,14 @@ app.get('/api/messages', (req, res) => {
   }
 });
 
-// POST route: Save a new message to data/messages.json - acccepted
+// Reference: https://expressjs.com/en/4x/api.html#res.status
+// Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
+if (!req.body || !req.body.text || req.body.text.trim() === '') {
+  return res.status(400).json({ error: 'Message text cannot be empty.' });
+}
+
+
+// POST route: Save a new message to data/messages.json - acccepted 
 app.post('/api/messages', (req, res) => {
   try {
     const newMessage = req.body;
@@ -52,20 +64,15 @@ app.post('/api/messages', (req, res) => {
   }
 });
 
+    // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
+    // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now
+    const newMessage = {
+      id: Date.now().toString(),
+      ...req.body,
+      timestamp: new Date().toISOString()
+    };
+
+
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
-});
-
-// Reference: https://expressjs.com/en/guide/routing.html
-// Planning to edit the get for the loading of chat history and the post for 
-// saving new messages to the data/messages.json file
-
-// GET method route (Placeholder to fetch stored messages)
-app.get('/api/messages', (req, res) => {
-  res.send('GET request to the messages server');
-});
-
-// POST method route (Placeholder to save a new message)
-app.post('/api/messages', (req, res) => {
-  res.send('POST request to the messages server');
 });
