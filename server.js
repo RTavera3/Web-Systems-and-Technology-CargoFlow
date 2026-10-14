@@ -72,23 +72,37 @@ app.get('/api/messages', (req, res) => {
   }
 });
 
+// POST route: Save a new message to data/messages.json - acccepted 
+// Reference: https://expressjs.com/en/4x/api.html#app.post.method
 // Reference: https://expressjs.com/en/4x/api.html#res.status
 // Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
-if (!req.body || !req.body.text || req.body.text.trim() === '') {
-  return res.status(400).json({ error: 'Message text cannot be empty.' });
-}
-
-
-// POST route: Save a new message to data/messages.json - acccepted 
 app.post('/api/messages', (req, res) => {
   try {
-    const newMessage = req.body;
+    const { text, sender, recipient } = req.body;
+
+    // Validation check placed safely inside the route handler scope
+    if (!text || typeof text !== 'string' || text.trim() === '') {
+      return res.status(400).json({ error: 'Message text cannot be empty.' });
+    }
+
+    ensureDataFileExists();
+
     const fileData = fs.readFileSync(DATA_FILE, 'utf8');
     const messages = JSON.parse(fileData || '[]');
-    messages.push(newMessage);
-    fs.writeFileSync(DATA_FILE, JSON.stringify(messages));
-    res.status(201).json({ message: 'Message saved successfully.' });
+
+    // Constructs a structured message object with a unique timestamped ID
+    // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now
+    // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
+    const newMessage = {
+      id: Date.now().toString(),
+      sender: sender || 'Shipper',
+      recipient: recipient || 'Carrier',
+      text: text.trim(),
+      timestamp: new Date().toISOString()
+    };
+    
   } catch (error) {
+    console.error('Error saving message:', error);
     res.status(500).json({ error: 'Failed to save message.' });
   }
 });
