@@ -85,7 +85,7 @@ async function sendMessage() {
   if (text === '' || isSending) return;
 
   isSending = true;
-  messageInput.disabled = true;
+  messageInput.readOnly = true;
   messageSendStatus.textContent = 'Sending…';
   messageSendStatus.removeAttribute('data-error');
   updateSendButton();
@@ -107,7 +107,7 @@ async function sendMessage() {
     messageSendStatus.dataset.error = 'true';
   } finally {
     isSending = false;
-    messageInput.disabled = false;
+    messageInput.readOnly = false;
     updateSendButton();
   }
 }
@@ -136,6 +136,7 @@ updateSendButton();
 
 //This code would help load the messages from local storage when the page is loaded.
 loadMessages();
+messagesContainer.setAttribute('aria-live', 'polite');
 
 // Key listener.
 messageInput.addEventListener('keydown', function (event) {

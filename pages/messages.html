@@ -105,7 +105,7 @@
         </div>
 
         <!-- Chat Messages // added a loadmessages function in js -->
-        <div class="messages-container">
+        <div class="messages-container" role="log" aria-live="off" aria-relevant="additions" aria-label="Chat messages">
 
         </div>
 
@@ -114,8 +114,8 @@
           <button class="icon-btn" type="button" aria-label="Add an attachment">＋</button>
           <!-- JavaScript listens and adds new chat bubbles. -->
           <div class="message-compose-field">
-            <input class="message-input" type="text" maxlength="300" placeholder="Type a message..." aria-label="Message text">
-            <span class="message-character-count" id="messageCharacterCount" aria-live="polite">0 / 300</span>
+            <input class="message-input" type="text" maxlength="300" placeholder="Type a message..." aria-label="Message text" aria-describedby="messageCharacterCount">
+            <span class="message-character-count" id="messageCharacterCount">0 / 300</span>
           </div>
           <button class="send-btn" type="button" aria-label="Send message" disabled>➤</button>
         </div>
