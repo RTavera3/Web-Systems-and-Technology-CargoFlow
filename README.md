@@ -99,6 +99,9 @@ The server only serves the front-end folders (`css/`, `js/`, `pages/`, `resource
 and `index.html`, so `server.js`, `package.json` and `node_modules/` are never
 reachable from the browser. Serving over `http://` also lets the booking page load
 `resources/users.json`, which browsers block when the HTML file is opened directly.
+The payment, tracking, history and chat pages also load their scripts as ES modules,
+which browsers only run over `http://`, so open the site through the server rather than
+by double-clicking an HTML file.
 
 ### About the pages
 
@@ -106,7 +109,7 @@ reachable from the browser. Serving over `http://` also lets the booking page lo
 a floating "Get a price" quote card, a shipment-tracking widget, a carrier
 CTA, and an About section. Every other page lives under `pages/`:
 `contact.html`, `booking-details.html`, `payment.html`, `messages.html`
-(carrier chat with `localStorage`-backed history), `trackshipment.html`
+(carrier chat whose history is saved in the browser via `js/storage.js`), `trackshipment.html`
 (the full tracking page, separate from the home page's quick widget), and
 `history.html` (Shipment History: every active and past booking, with status
 filters, search and sorting; completed bookings appear there automatically).
@@ -119,6 +122,11 @@ and working offline.
 **Prototype scope:** shipment tracking and pricing use mock data; there's no
 backend, database, or real payment processing. No API keys are needed to run
 it.
+
+**Saved data:** bookings and chat history are kept in the browser's `localStorage`,
+through one shared module, `js/storage.js`. It owns the storage keys, never throws on
+missing or corrupted data, and records a storage version so data saved by an older
+version of the site is upgraded on the next visit.
 
 Fonts load from Google Fonts, which receives normal browser request
 metadata; system sans-serif fallbacks are used when offline.
@@ -135,6 +143,7 @@ Web-Systems-and-Technology-CargoFlow/
 ├── css/
 │   └── theme.css                 # Shared Bootstrap theme overrides for every page (navy/orange brand)
 ├── js/
+│   ├── storage.js                # Shared localStorage module: bookings, chat history, versioning
 │   ├── track.js                  # Home page's quick shipment-tracking widget
 │   ├── trackshipment.js          # Full tracking page logic (pages/trackshipment.html)
 │   ├── history.js                # Shipment History list, filters, search and sort (pages/history.html)

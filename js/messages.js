@@ -3,10 +3,12 @@
  *
  * A simulated chat with a carrier ("LBC Express"): every message the user
  * sends gets a canned auto-reply after a short "typing..." delay. There is
- * no backend or real carrier on the other end - chat history is persisted
- * entirely in `localStorage` (key "chatMessages") so it survives a page
- * reload, and can be wiped with the trash-icon "clear chat" control.
+ * no backend or real carrier on the other end - chat history is saved in
+ * the browser through js/storage.js (key "chatMessages") so it survives a
+ * page reload, and can be wiped with the trash-icon "clear chat" control.
  */
+
+import { getMessages, addMessage as storeMessage, clearMessages } from './storage.js';
 
 // Select the chat elements we need to use.
 /** @type {HTMLInputElement} The message composer text input. */
@@ -29,41 +31,26 @@ function getCurrentFormattedTime() {
 // Storage helpers as advised during mentoring session - MDN WebDocs
 
 /**
- * Reads and parses the saved chat history from localStorage.
- * @returns {{text: string, messageType: string, time: string}[]} The
- *   saved messages in send order, or an empty array if nothing is saved
- *   or the saved value can't be parsed as JSON.
+ * Reads the saved chat history. js/storage.js returns an empty array when
+ * nothing is saved or the saved value is corrupted (and resets it), so a bad
+ * value can never stop the rest of this script, such as Enter-to-send, from
+ * running.
+ * @returns {{text: string, messageType: string, time: string}[]} The saved
+ *   messages in send order.
  */
 function getStoredMessages() {
-  const saved = localStorage.getItem('chatMessages');
-  if (!saved) {
-    return [];
-  }
-  try {
-    return JSON.parse(saved);
-  } catch (error) {
-    // Malformed JSON (e.g. hand-edited in DevTools) would otherwise throw
-    // here and stop the rest of this script from running, silently
-    // breaking Enter-to-send since its listener is registered after
-    // loadMessages(). Fall back to an empty history and clear the bad
-    // entry so it does not keep failing on every reload.
-    console.warn('Could not parse stored chat messages, resetting history.', error);
-    localStorage.removeItem('chatMessages');
-    return [];
-  }
+  return getMessages();
 }
 
 /**
- * Appends one message to the saved chat history in localStorage.
+ * Appends one message to the saved chat history.
  * @param {string} text The message body.
  * @param {string} messageType Either "incoming" (from the carrier) or
  *   "outgoing" (from the user) - matches the CSS class used to style it.
  * @param {string} time Pre-formatted display time for this message.
  */
 function saveMessage(text, messageType, time) {
-  const currentMessages = getStoredMessages();
-  currentMessages.push({ text: text, messageType: messageType, time: time });
-  localStorage.setItem('chatMessages', JSON.stringify(currentMessages));
+  storeMessage({ text: text, messageType: messageType, time: time });
 }
 
 /**
@@ -128,7 +115,7 @@ function removeTypingIndicator() {
  * @param {string} messageType "incoming" or "outgoing" - controls bubble
  *   alignment/color and whether an avatar is shown.
  * @param {boolean} [shouldSave=true] Whether to persist this message to
- *   localStorage. Set to false when replaying history on load (via
+ *   saved history (js/storage.js). Set to false when replaying history on load (via
  *   `loadMessages`) so it isn't duplicated in storage.
  * @param {string|null} [formattedTime=null] A pre-formatted time to show
  *   instead of the current time - used when replaying a saved message so
@@ -194,12 +181,12 @@ function sendMessage() {
 }
 
 /**
- * Wipes the entire chat history: clears localStorage, empties the chat
+ * Wipes the entire chat history: clears the saved history, empties the chat
  * window, and resets the sidebar preview text. Triggered by the trash
  * icon after a confirmation prompt.
  */
 function clearChat() {
-  localStorage.removeItem('chatMessages');
+  clearMessages();
   messagesContainer.innerHTML = '';
 
   const sidebarPreview = document.querySelector('.preview-text');
