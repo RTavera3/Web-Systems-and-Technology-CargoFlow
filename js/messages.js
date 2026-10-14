@@ -71,7 +71,7 @@ function addMessage(text, messageType, shouldSave = true) {
 }
 
 function sendMessage() {
-  const text = messageInput.value.trim();
+  const text = messageInput.value.slice(0, 300).trim();
   if (text === '') return;
   addMessage(text, 'outgoing');
   messageInput.value = '';
