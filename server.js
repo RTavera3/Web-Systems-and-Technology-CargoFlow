@@ -16,8 +16,29 @@ const path = require('path');
 const app = express();
 const port = 3000;
 
+//Reference: https://nodejs.org/api/path.html#pathjoinpaths
 // Absolute path to data/messages.json
-const DATA_FILE = path.join(__dirname, 'data', 'messages.json');
+// Uses path.join() and __dirname to build reliable absolute directory paths on any OS.
+// Locates where messages are saved and where HTML/CSS/JS frontend files live.
+const DATA_DIR = path.join(__dirname, 'data');
+const DATA_FILE = path.join(DATA_DIR, 'messages.json');
+const PUBLIC_PATH = path.join(__dirname, 'public');
+
+// Reference: https://nodejs.org/api/fs.html#fsexistssyncpath
+// Reference: https://nodejs.org/api/fs.html#fsmkdirsyncpath-options
+// Reference: https://nodejs.org/api/fs.html#fswritefilesyncfile-data-options
+// Ensure that the data directory and messages.json file exist before starting the server
+// Prepares the backend database file automatically before reading or writing data.
+function ensureDataFileExists() {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+  if (!fs.existsSync(DATA_FILE)) {
+    fs.writeFileSync(DATA_FILE, JSON.stringify([]), 'utf8');
+  }
+}
+
+ensureDataFileExists();
 
 // Enable CORS and JSON body parsing middleware
 app.use(cors());
@@ -27,6 +48,13 @@ app.use(express.json());
 // Reference: https://expressjs.com/en/starter/static-files.html
 const publicPath = path.join(__dirname, 'public');
 app.use(express.static(publicPath));
+
+// Reference: https://expressjs.com/en/4x/api.html#app.get.method
+// Listens for GET requests made to '/api/health' and returns status JSON.
+// Offers a quick endpoint to verify server status.
+app.get('/api/health', (req, res) => {
+  res.send({ status: 'OK', message: 'CargoFlow Messaging Server is Running!' });
+});
 
 app.get('/', (req, res) => {
   res.send('CargoFlow Messaging Server is Running!');
