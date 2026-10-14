@@ -10,14 +10,16 @@
  *   1. `sampleShipments` below - a few hardcoded past and current shipments
  *      for demos and grading. CF-24810293 matches the sample shipment on the
  *      Track Shipment page, so both pages tell the same story.
- *   2. `localStorage["cargoflow_bookings"]` - real bookings saved by
- *      js/payment.js when someone completes the booking + payment flow.
+ *   2. Bookings saved by js/payment.js through js/storage.js when someone
+ *      completes the booking + payment flow.
  *      They always show as "Booking Placed", because nothing has been
  *      picked up yet in this simulation.
  *
  * Both sources are normalized into one shape (see `normalizeBooking`) so a
  * single render function can display them.
  */
+
+import { listBookings } from './storage.js';
 
 /**
  * One shipment row, after normalizing either source.
@@ -103,7 +105,7 @@ const statusBadgeClass = {
  * "Not provided". It does not store a price, so `cost` is null and the
  * table shows a dash instead of a made-up number.
  *
- * @param {string} code The booking's tracking code (the localStorage key).
+ * @param {string} code The booking's tracking code.
  * @param {{from: string, to: string, pickupDate: string, paymentMethod: string}} booking
  * @returns {Shipment}
  */
@@ -132,18 +134,12 @@ function formatPaymentMethod(method) {
 }
 
 /**
- * Reads the bookings saved by js/payment.js. A missing or corrupted value
- * (for example, edited by hand in DevTools) is treated as "no bookings"
- * instead of breaking the page.
+ * Reads the bookings saved by js/payment.js. js/storage.js already turns a
+ * missing or corrupted value into "no bookings", so this never throws.
  * @returns {Shipment[]}
  */
 function getSavedBookings() {
-  try {
-    const saved = JSON.parse(localStorage.getItem("cargoflow_bookings") || "{}");
-    return Object.entries(saved).map(([code, booking]) => normalizeBooking(code, booking));
-  } catch {
-    return [];
-  }
+  return listBookings().map(({ code, ...booking }) => normalizeBooking(code, booking));
 }
 
 /**
