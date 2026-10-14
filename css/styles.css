@@ -1299,13 +1299,26 @@ footer p {
   background-color: #fafafa;
 }
 
-.chat-input-area .message-input {
+.message-compose-field {
   flex-grow: 1;
+  min-width: 0;
+}
+
+.chat-input-area .message-input {
+  width: 100%;
   height: 38px;
   padding: 8px 12px;
   border: 1px solid #999;
   background: #ffffff;
   font-size: 14px;
+}
+
+.message-character-count {
+  display: block;
+  margin-top: 4px;
+  color: #666;
+  font-size: 12px;
+  text-align: right;
 }
 
 .chat-input-area .message-input:focus {
@@ -1334,6 +1347,11 @@ footer p {
 
 .send-btn:hover {
   background-color: #e96d00;
+}
+
+.send-btn:disabled {
+  background-color: #a6a6a6;
+  cursor: not-allowed;
 }
 
 /* Make the messages page header span the full available width. */

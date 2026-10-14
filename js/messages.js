@@ -2,6 +2,7 @@
 const messageInput = document.querySelector('.message-input');
 const sendButton = document.querySelector('.send-btn');
 const messagesContainer = document.querySelector('.messages-container');
+const messageCharacterCount = document.querySelector('#messageCharacterCount');
 
 // Storage helpers as advised during mentoring session - MDN WebDocs
 function getStoredMessages() {
@@ -75,6 +76,7 @@ function sendMessage() {
   if (text === '') return;
   addMessage(text, 'outgoing');
   messageInput.value = '';
+  updateSendButton();
 
   setTimeout(function () {
     addMessage('Hello! Your shipment is currently in transit to Cebu and on schedule.', 'incoming');
@@ -82,13 +84,23 @@ function sendMessage() {
 
 }
 
+function updateSendButton() {
+  sendButton.disabled = messageInput.value.trim() === '';
+  messageCharacterCount.textContent = `${messageInput.value.length} / 300`;
+}
+
 // Function to clear all stored messages
 function clearChat() {
+  if (!window.confirm('Are you sure you want to clear this chat? This cannot be undone.')) {
+    return;
+  }
   localStorage.removeItem('chatMessages');
   messagesContainer.innerHTML = '';
 }
 
 sendButton.addEventListener('click', sendMessage);
+messageInput.addEventListener('input', updateSendButton);
+updateSendButton();
 
 //This code would help load the messages from local storage when the page is loaded.
 loadMessages();
