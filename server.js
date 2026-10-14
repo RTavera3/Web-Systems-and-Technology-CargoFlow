@@ -67,6 +67,7 @@ app.get('/api/messages', (req, res) => {
     const messages = JSON.parse(fileData || '[]');
     res.json(messages);
   } catch (error) {
+    console.error('Error reading messages:', error);
     res.status(500).json({ error: 'Failed to read messages.' });
   }
 });
