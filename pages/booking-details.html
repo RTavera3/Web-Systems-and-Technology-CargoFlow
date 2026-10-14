@@ -104,6 +104,11 @@
             <fieldset>
               <legend>Complete Pick-up Address</legend>
               <label>
+                Sender User ID
+                <input type="text" name="senderUserId" id="senderUserId" list="senderUserIdSuggestions" placeholder="e.g. FC00001" autocomplete="off" />
+              </label>
+              <p class="text-muted small" id="senderUserIdStatus" aria-live="polite" hidden></p>
+              <label>
                 Sender Name
                 <input type="text" name="senderName" id="senderName" placeholder="Sender's full name" required />
               </label>
@@ -117,20 +122,25 @@
               </label>
               <label>
                 City
-                <select id="pickupCitySelect" disabled>
+                <select id="pickupCitySelect">
                   <option value="">Select city</option>
                   <option>Manila</option>
                   <option>Batangas</option>
+                  <option>Batangas City</option>
                   <option>Baguio</option>
+                  <option>Baguio City</option>
                   <option>Cebu</option>
+                  <option>Cebu City</option>
                   <option>Davao</option>
+                  <option>Davao City</option>
                   <option>Pampanga</option>
+                  <option>San Fernando</option>
                 </select>
                 <input type="hidden" name="pickupCity" id="pickupCity" />
               </label>
               <label>
                 Province
-                <select id="pickupProvinceSelect" disabled required>
+                <select id="pickupProvinceSelect" required>
                   <option value="">Select province</option>
                   <option>Metro Manila</option>
                   <option>Batangas</option>
@@ -143,40 +153,50 @@
               </label>
               <label>
                 Zip code
-                <input type="text" name="pickupZip" inputmode="numeric" placeholder="Zip code" required />
+                <input type="text" name="pickupZip" id="pickupZip" inputmode="numeric" placeholder="Zip code" required />
               </label>
             </fieldset>
 
             <fieldset>
               <legend>Complete Drop-off Address</legend>
               <label>
+                Receiver User ID
+                <input type="text" name="receiverUserId" id="receiverUserId" list="receiverUserIdSuggestions" placeholder="e.g. FC00001" autocomplete="off" />
+              </label>
+              <p class="text-muted small" id="receiverUserIdStatus" aria-live="polite" hidden></p>
+              <label>
                 Receiver Name
-                <input type="text" name="receiverName" placeholder="Receiver's full name" required />
+                <input type="text" name="receiverName" id="receiverName" placeholder="Receiver's full name" required />
               </label>
               <label>
                 Receiver Contact Number
-                <input type="tel" name="receiverContact" placeholder="Receiver's contact number" required />
+                <input type="tel" name="receiverContact" id="receiverContact" placeholder="Receiver's contact number" required />
               </label>
               <label>
                 Address
-                <input type="text" name="dropoffAddress" placeholder="Street and building" required />
+                <input type="text" name="dropoffAddress" id="dropoffAddress" placeholder="Street and building" required />
               </label>
               <label>
                 City
-                <select id="dropoffCitySelect" disabled>
+                <select id="dropoffCitySelect">
                   <option value="">Select city</option>
                   <option>Manila</option>
                   <option>Batangas</option>
+                  <option>Batangas City</option>
                   <option>Baguio</option>
+                  <option>Baguio City</option>
                   <option>Cebu</option>
+                  <option>Cebu City</option>
                   <option>Davao</option>
+                  <option>Davao City</option>
                   <option>Pampanga</option>
+                  <option>San Fernando</option>
                 </select>
                 <input type="hidden" name="dropoffCity" id="dropoffCity" />
               </label>
               <label>
                 Province
-                <select id="dropoffProvinceSelect" disabled required>
+                <select id="dropoffProvinceSelect" required>
                   <option value="">Select province</option>
                   <option>Metro Manila</option>
                   <option>Batangas</option>
@@ -189,10 +209,13 @@
               </label>
               <label>
                 Zip code
-                <input type="text" name="dropoffZip" inputmode="numeric" placeholder="Zip code" required />
+                <input type="text" name="dropoffZip" id="dropoffZip" inputmode="numeric" placeholder="Zip code" required />
               </label>
             </fieldset>
           </div>
+
+          <datalist id="senderUserIdSuggestions"></datalist>
+          <datalist id="receiverUserIdSuggestions"></datalist>
 
           <fieldset class="shipment-details">
             <legend>Shipment Details</legend>
@@ -314,10 +337,15 @@
       const cityProvinceMap = {
         Manila: 'Metro Manila',
         Batangas: 'Batangas',
+        'Batangas City': 'Batangas',
         Baguio: 'Benguet',
+        'Baguio City': 'Benguet',
         Cebu: 'Cebu',
+        'Cebu City': 'Cebu',
         Davao: 'Davao del Sur',
+        'Davao City': 'Davao del Sur',
         Pampanga: 'Pampanga',
+        'San Fernando': 'Pampanga',
       };
 
       document.getElementById('bookingSummary').hidden = !bookingIsComplete;
@@ -348,8 +376,10 @@
       setValue('declaredValue', 'declaredValue');
       setValue('vehicleType', 'vehicleType');
       setValue('specialInstructions', 'specialInstructions');
+      setValue('senderUserId', 'senderUserId');
       setValue('pickupZip', 'pickupZip');
       setValue('dropoffAddress', 'dropoffAddress');
+      setValue('receiverUserId', 'receiverUserId');
       setValue('receiverName', 'receiverName');
       setValue('receiverContact', 'receiverContact');
       setValue('dropoffZip', 'dropoffZip');
@@ -363,6 +393,95 @@
         document.getElementById(provinceSelectId).value = province;
         document.getElementById(provinceInputId).value = province;
       };
+
+      const userDirectoryPromise = fetch('../users.json').then((response) => {
+        if (!response.ok) {
+          throw new Error(`Unable to load users.json (${response.status})`);
+        }
+        return response.json();
+      });
+      const updateUserLookup = async (role) => {
+        const idInput = document.getElementById(`${role}UserId`);
+        const status = document.getElementById(`${role}UserIdStatus`);
+        const userId = idInput.value.trim().toUpperCase();
+        const suggestions = document.getElementById(`${role}UserIdSuggestions`);
+        status.hidden = true;
+        status.textContent = '';
+        suggestions.replaceChildren();
+        if (!userId) return;
+
+        try {
+          const users = await userDirectoryPromise;
+          if (idInput.value.trim().toUpperCase() !== userId) return;
+          users
+            .filter((entry) => entry.userId.toUpperCase().startsWith(userId))
+            .forEach((entry) => {
+              const option = document.createElement('option');
+              option.value = entry.userId;
+              option.label = entry.name;
+              suggestions.append(option);
+            });
+
+          const user = users.find((entry) => entry.userId.toUpperCase() === userId);
+          if (!user) {
+            if (/^FC\d{5}$/.test(userId)) {
+              status.textContent = 'No user was found with that ID.';
+              status.hidden = false;
+            }
+            return;
+          }
+
+          const isSender = role === 'sender';
+          const citySelectId = isSender ? 'pickupCitySelect' : 'dropoffCitySelect';
+          const provinceSelectId = isSender ? 'pickupProvinceSelect' : 'dropoffProvinceSelect';
+          const cityInputId = isSender ? 'pickupCity' : 'dropoffCity';
+          const provinceInputId = isSender ? 'pickupProvince' : 'dropoffProvince';
+          const fieldValues = isSender
+            ? {
+                senderName: user.name,
+                senderContact: user.contactNumber,
+                pickupAddress: user.streetAddress,
+                pickupZip: user.zipCode,
+              }
+            : {
+                receiverName: user.name,
+                receiverContact: user.contactNumber,
+                dropoffAddress: user.streetAddress,
+                dropoffZip: user.zipCode,
+              };
+
+          Object.entries(fieldValues).forEach(([id, value]) => {
+            document.getElementById(id).value = value;
+          });
+          document.getElementById(citySelectId).value = user.city;
+          document.getElementById(cityInputId).value = user.city;
+          document.getElementById(provinceSelectId).value = user.province;
+          document.getElementById(provinceInputId).value = user.province;
+        } catch (error) {
+          console.error('Unable to load user directory:', error);
+          status.textContent = 'User ID lookup is unavailable. Please enter the details manually.';
+          status.hidden = false;
+        }
+      };
+      document.getElementById('senderUserId').addEventListener('input', () => {
+        updateUserLookup('sender');
+      });
+      document.getElementById('receiverUserId').addEventListener('input', () => {
+        updateUserLookup('receiver');
+      });
+
+      [
+        ['pickupCitySelect', 'pickupCity', 'pickupProvinceSelect', 'pickupProvince'],
+        ['dropoffCitySelect', 'dropoffCity', 'dropoffProvinceSelect', 'dropoffProvince'],
+      ].forEach(([citySelectId, cityInputId, provinceSelectId, provinceInputId]) => {
+        document.getElementById(citySelectId).addEventListener('change', () => {
+          document.getElementById(cityInputId).value = document.getElementById(citySelectId).value;
+          setProvinceFromCity(citySelectId, provinceSelectId, provinceInputId);
+        });
+        document.getElementById(provinceSelectId).addEventListener('change', () => {
+          document.getElementById(provinceInputId).value = document.getElementById(provinceSelectId).value;
+        });
+      });
 
       const syncAddressCity = (routeCityId, addressCitySelectId, addressCityInputId) => {
         const city = document.getElementById(routeCityId).value;
