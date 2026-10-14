@@ -3,6 +3,8 @@ const messageInput = document.querySelector('.message-input');
 const sendButton = document.querySelector('.send-btn');
 const messagesContainer = document.querySelector('.messages-container');
 const messageCharacterCount = document.querySelector('#messageCharacterCount');
+const messageSendStatus = document.querySelector('#messageSendStatus');
+let isSending = false;
 
 // Storage helpers as advised during mentoring session - MDN WebDocs
 function getStoredMessages() {
@@ -24,21 +26,21 @@ function getStoredMessages() {
   }
 }
 
-function saveMessage(text, messageType) {
+function saveMessage(text, messageType, timestamp = Date.now()) {
   const currentMessages = getStoredMessages();
-  currentMessages.push({ text: text, messageType: messageType });
+  currentMessages.push({ text: text, messageType: messageType, timestamp: timestamp });
   localStorage.setItem('chatMessages', JSON.stringify(currentMessages));
 }
 
 function loadMessages() {
   const storedMessages = getStoredMessages();
   storedMessages.forEach(function (msg) {
-    addMessage(msg.text, msg.messageType, false);
+    addMessage(msg.text, msg.messageType, false, msg.timestamp);
   });
 }
 
 //Chat functions.
-function addMessage(text, messageType, shouldSave = true) {
+function addMessage(text, messageType, shouldSave = true, timestamp = Date.now()) {
   const message = document.createElement('div');
   const messageContent = document.createElement('div');
   const messageText = document.createElement('p');
@@ -49,7 +51,14 @@ function addMessage(text, messageType, shouldSave = true) {
   messageContent.className = 'message-content';
   messageText.textContent = text;
   messageTime.className = 'time';
-  messageTime.textContent = 'Today · Now';
+  const date = new Date(timestamp);
+  const status = messageType === 'outgoing' ? 'Sent' : 'Delivered';
+  messageTime.textContent = Number.isNaN(date.getTime())
+    ? `${status} · time unavailable`
+    : `${status} · ${new Intl.DateTimeFormat(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }).format(date)}`;
 
   // Put the text and time inside the message, then add it to the chat.
   messageContent.appendChild(messageText);
@@ -67,25 +76,44 @@ function addMessage(text, messageType, shouldSave = true) {
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
   if (shouldSave) {
-    saveMessage(text, messageType);
+    saveMessage(text, messageType, timestamp);
   }
 }
 
-function sendMessage() {
+async function sendMessage() {
   const text = messageInput.value.slice(0, 300).trim();
-  if (text === '') return;
-  addMessage(text, 'outgoing');
-  messageInput.value = '';
+  if (text === '' || isSending) return;
+
+  isSending = true;
+  messageInput.disabled = true;
+  messageSendStatus.textContent = 'Sending…';
+  messageSendStatus.removeAttribute('data-error');
   updateSendButton();
 
-  setTimeout(function () {
-    addMessage('Hello! Your shipment is currently in transit to Cebu and on schedule.', 'incoming');
-  }, 1500);
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    const sentAt = Date.now();
+    saveMessage(text, 'outgoing', sentAt);
+    addMessage(text, 'outgoing', false, sentAt);
+    messageInput.value = '';
+    messageSendStatus.textContent = 'Sent';
 
+    setTimeout(function () {
+      addMessage('Hello! Your shipment is currently in transit to Cebu and on schedule.', 'incoming');
+    }, 1500);
+  } catch (error) {
+    console.error('Unable to save outgoing message:', error);
+    messageSendStatus.textContent = "Couldn't send your message. Please try again.";
+    messageSendStatus.dataset.error = 'true';
+  } finally {
+    isSending = false;
+    messageInput.disabled = false;
+    updateSendButton();
+  }
 }
 
 function updateSendButton() {
-  sendButton.disabled = messageInput.value.trim() === '';
+  sendButton.disabled = isSending || messageInput.value.trim() === '';
   messageCharacterCount.textContent = `${messageInput.value.length} / 300`;
 }
 
@@ -99,7 +127,11 @@ function clearChat() {
 }
 
 sendButton.addEventListener('click', sendMessage);
-messageInput.addEventListener('input', updateSendButton);
+messageInput.addEventListener('input', () => {
+  messageSendStatus.textContent = '';
+  messageSendStatus.removeAttribute('data-error');
+  updateSendButton();
+});
 updateSendButton();
 
 //This code would help load the messages from local storage when the page is loaded.
