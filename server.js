@@ -35,7 +35,7 @@ function ensureDataFileExists() {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
   if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(messages, null, 2), 'utf8');
+    fs.writeFileSync(DATA_FILE, JSON.stringify([], null, 2), 'utf8');
   }
 }
 
@@ -96,7 +96,7 @@ app.post('/api/messages', (req, res) => {
     };
 
     messages.push(newMessage);
-    fs.writeFileSync(DATA_FILE, JSON.stringify(messages));
+    fs.writeFileSync(DATA_FILE, JSON.stringify(messages, null, 2), 'utf8');
 
     res.status(201).json({ 
       message: 'Message saved successfully.',
