@@ -78,8 +78,16 @@ app.post('/api/messages', (req, res) => {
   try {
     const { text, sender, recipient } = req.body;
 
+    // Validation: Reject empty or non-string messages
     if (!text || typeof text !== 'string' || text.trim() === '') {
       return res.status(400).json({ error: 'Message text cannot be empty.' });
+    }
+
+    // Reference: https://expressjs.com/en/4x/api.html#res.status
+    // Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
+    // Reject messages exceeding 500 characters
+    if (text.length > 500) {
+      return res.status(400).json({ error: 'Message exceeds the 500 character limit.' });
     }
 
     ensureDataFileExists();
