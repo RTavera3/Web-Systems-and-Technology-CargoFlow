@@ -1,5 +1,6 @@
 // Reference: https://expressjs.com/en/starter/hello-world/
 // Reference: https://expressjs.com/en/starter/static-files.html
+// Reference: https://expressjs.com/en/4x/api.html#app.get.method
 
 // PLAN: This placeholder tests if the Express server runs on local port 3000.
 // FUTURE WORK: We will add GET /api/messages and POST /api/messages routes here
@@ -67,20 +68,16 @@ app.get('/api/messages', (req, res) => {
     const messages = JSON.parse(fileData || '[]');
     res.json(messages);
   } catch (error) {
-    console.error('Error reading messages:', error);
     res.status(500).json({ error: 'Failed to read messages.' });
   }
 });
 
+
 // POST route: Save a new message to data/messages.json - acccepted 
-// Reference: https://expressjs.com/en/4x/api.html#app.post.method
-// Reference: https://expressjs.com/en/4x/api.html#res.status
-// Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
 app.post('/api/messages', (req, res) => {
   try {
     const { text, sender, recipient } = req.body;
 
-    // Validation check placed safely inside the route handler scope
     if (!text || typeof text !== 'string' || text.trim() === '') {
       return res.status(400).json({ error: 'Message text cannot be empty.' });
     }
@@ -90,9 +87,6 @@ app.post('/api/messages', (req, res) => {
     const fileData = fs.readFileSync(DATA_FILE, 'utf8');
     const messages = JSON.parse(fileData || '[]');
 
-    // Constructs a structured message object with a unique timestamped ID
-    // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now
-    // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
     const newMessage = {
       id: Date.now().toString(),
       sender: sender || 'Shipper',
@@ -100,21 +94,19 @@ app.post('/api/messages', (req, res) => {
       text: text.trim(),
       timestamp: new Date().toISOString()
     };
-    
+
+    messages.push(newMessage);
+    fs.writeFileSync(DATA_FILE, JSON.stringify(messages));
+
+    res.status(201).json({ 
+      message: 'Message saved successfully.',
+      data: newMessage
+    });
   } catch (error) {
     console.error('Error saving message:', error);
     res.status(500).json({ error: 'Failed to save message.' });
   }
 });
-
-    // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
-    // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now
-    const newMessage = {
-      id: Date.now().toString(),
-      ...req.body,
-      timestamp: new Date().toISOString()
-    };
-
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
