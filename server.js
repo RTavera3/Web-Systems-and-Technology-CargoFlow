@@ -47,8 +47,7 @@ app.use(express.json());
 
 // Serve static frontend files (html, css, js) 
 // Reference: https://expressjs.com/en/starter/static-files.html
-const publicPath = path.join(__dirname, 'public');
-app.use(express.static(publicPath));
+app.use(express.static(__dirname));
 
 // Reference: https://expressjs.com/en/4x/api.html#app.get.method
 // Listens for GET requests made to '/api/health' and returns status JSON.
@@ -116,9 +115,7 @@ app.post('/api/messages', (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+
 
 // DELETE route: Clear all messages from data/messages.json
 // Reference: https://expressjs.com/en/4x/api.html#app.delete.method
@@ -134,4 +131,8 @@ app.delete('/api/messages', (req, res) => {
     console.error('Error deleting messages:', error);
     res.status(500).json({ error: 'Failed to delete messages.' });
   }
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
 });
