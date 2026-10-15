@@ -26,21 +26,44 @@ function getStoredMessages() {
   }
 }
 
-function saveMessage(text, messageType, timestamp = Date.now()) {
+function saveMessage(text, messageType, timestamp = Date.now(), status = 'sent', id = createMessageId()) {
   const currentMessages = getStoredMessages();
-  currentMessages.push({ text: text, messageType: messageType, timestamp: timestamp });
+  currentMessages.push({ id, text, messageType, timestamp, status });
+  localStorage.setItem('chatMessages', JSON.stringify(currentMessages));
+  return id;
+}
+
+function createMessageId() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function updateStoredMessageStatus(id, status, timestamp) {
+  const currentMessages = getStoredMessages();
+  const message = currentMessages.find((entry) => entry.id === id);
+  if (!message) {
+    throw new Error('The message could not be found in chat history.');
+  }
+  message.status = status;
+  message.timestamp = timestamp;
   localStorage.setItem('chatMessages', JSON.stringify(currentMessages));
 }
 
 function loadMessages() {
   const storedMessages = getStoredMessages();
   storedMessages.forEach(function (msg) {
-    addMessage(msg.text, msg.messageType, false, msg.timestamp);
+    addMessage(msg.text, msg.messageType, false, msg.timestamp, msg.status || 'sent', msg.id);
   });
 }
 
 //Chat functions.
-function addMessage(text, messageType, shouldSave = true, timestamp = Date.now()) {
+function addMessage(
+  text,
+  messageType,
+  shouldSave = true,
+  timestamp = Date.now(),
+  status = 'sent',
+  id = createMessageId(),
+) {
   const message = document.createElement('div');
   const messageContent = document.createElement('div');
   const messageText = document.createElement('p');
@@ -48,14 +71,23 @@ function addMessage(text, messageType, shouldSave = true, timestamp = Date.now()
 
   // Add the same classes used by the messages already in the HTML.
   message.className = 'message ' + messageType;
+  if (status === 'failed') {
+    message.classList.add('failed');
+  }
+  message.dataset.messageId = id;
+  message.dataset.status = status;
   messageContent.className = 'message-content';
   messageText.textContent = text;
   messageTime.className = 'time';
   const date = new Date(timestamp);
-  const status = messageType === 'outgoing' ? 'Sent' : 'Delivered';
+  const deliveryLabel = status === 'failed'
+    ? 'Failed'
+    : status === 'queued'
+      ? 'Queued'
+      : messageType === 'outgoing' ? 'Sent' : 'Delivered';
   messageTime.textContent = Number.isNaN(date.getTime())
-    ? `${status} · time unavailable`
-    : `${status} · ${new Intl.DateTimeFormat(undefined, {
+    ? `${deliveryLabel} · time unavailable`
+    : `${deliveryLabel} · ${new Intl.DateTimeFormat(undefined, {
         dateStyle: 'medium',
         timeStyle: 'short',
       }).format(date)}`;
@@ -71,13 +103,23 @@ function addMessage(text, messageType, shouldSave = true, timestamp = Date.now()
     message.appendChild(avatar);
   }
 
+  if (messageType === 'outgoing' && status === 'failed') {
+    const retryButton = document.createElement('button');
+    retryButton.type = 'button';
+    retryButton.className = 'message-retry-btn';
+    retryButton.textContent = 'Retry';
+    retryButton.setAttribute('aria-label', 'Retry sending this message');
+    messageContent.appendChild(retryButton);
+  }
+
   message.appendChild(messageContent);
   messagesContainer.appendChild(message);
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
   if (shouldSave) {
-    saveMessage(text, messageType, timestamp);
+    saveMessage(text, messageType, timestamp, status, id);
   }
+  return message;
 }
 
 async function sendMessage() {
@@ -93,22 +135,61 @@ async function sendMessage() {
   try {
     await new Promise((resolve) => setTimeout(resolve, 150));
     const sentAt = Date.now();
-    saveMessage(text, 'outgoing', sentAt);
-    addMessage(text, 'outgoing', false, sentAt);
+    const isDemoFailure = localStorage.getItem('chatDemoFirstFailureShown') !== 'true';
+    if (isDemoFailure) {
+      localStorage.setItem('chatDemoFirstFailureShown', 'true');
+      addMessage(text, 'outgoing', true, sentAt, 'failed');
+      messageSendStatus.textContent = "Couldn't send your message. Retry is available below it.";
+      messageSendStatus.dataset.error = 'true';
+    } else {
+      addMessage(text, 'outgoing', true, sentAt);
+      messageSendStatus.textContent = 'Sent';
+      setTimeout(function () {
+        addMessage('Hello! Your shipment is currently in transit to Cebu and on schedule.', 'incoming');
+      }, 1500);
+    }
     messageInput.value = '';
-    messageSendStatus.textContent = 'Sent';
-
-    setTimeout(function () {
-      addMessage('Hello! Your shipment is currently in transit to Cebu and on schedule.', 'incoming');
-    }, 1500);
   } catch (error) {
     console.error('Unable to save outgoing message:', error);
-    messageSendStatus.textContent = "Couldn't send your message. Please try again.";
+    messageSendStatus.textContent = "Couldn't save your message. Please try again.";
     messageSendStatus.dataset.error = 'true';
   } finally {
     isSending = false;
     messageInput.readOnly = false;
     updateSendButton();
+  }
+}
+
+async function retryMessage(messageElement) {
+  const messageId = messageElement.dataset.messageId;
+  const retryButton = messageElement.querySelector('.message-retry-btn');
+  if (!retryButton || messageElement.dataset.status !== 'failed') return;
+
+  retryButton.disabled = true;
+  retryButton.textContent = 'Retrying…';
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    const sentAt = Date.now();
+    updateStoredMessageStatus(messageId, 'sent', sentAt);
+    messageElement.dataset.status = 'sent';
+    messageElement.classList.remove('failed');
+    messageElement.querySelector('.time').textContent =
+      `Sent · ${new Intl.DateTimeFormat(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }).format(new Date(sentAt))}`;
+    retryButton.remove();
+    messageSendStatus.textContent = 'Sent';
+    messageSendStatus.removeAttribute('data-error');
+    setTimeout(function () {
+      addMessage('Hello! Your shipment is currently in transit to Cebu and on schedule.', 'incoming');
+    }, 1500);
+  } catch (error) {
+    console.error('Unable to retry message:', error);
+    retryButton.disabled = false;
+    retryButton.textContent = 'Retry';
+    messageSendStatus.textContent = "Couldn't retry your message. Please try again.";
+    messageSendStatus.dataset.error = 'true';
   }
 }
 
@@ -127,6 +208,12 @@ function clearChat() {
 }
 
 sendButton.addEventListener('click', sendMessage);
+messagesContainer.addEventListener('click', (event) => {
+  const retryButton = event.target.closest('.message-retry-btn');
+  if (retryButton) {
+    retryMessage(retryButton.closest('.message'));
+  }
+});
 messageInput.addEventListener('input', () => {
   messageSendStatus.textContent = '';
   messageSendStatus.removeAttribute('data-error');

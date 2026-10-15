@@ -1285,6 +1285,31 @@ footer p {
   color: #ffffff;
 }
 
+.outgoing.failed .message-content p {
+  background-color: #8f1d1d;
+  color: #ffffff;
+}
+
+.message-retry-btn {
+  display: block;
+  margin: 6px 0 0 auto;
+  padding: 4px 10px;
+  border: 1px solid #8f1d1d;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #8f1d1d;
+  font: inherit;
+  cursor: pointer;
+}
+
+.message-retry-btn:hover:not(:disabled) {
+  background: #fbe9e9;
+}
+
+.message-retry-btn:disabled {
+  cursor: wait;
+}
+
 .outgoing .time {
   text-align: right;
 }
