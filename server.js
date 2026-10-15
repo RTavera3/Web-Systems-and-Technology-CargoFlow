@@ -1,29 +1,43 @@
-// Reference: https://expressjs.com/en/starter/hello-world/
-// Reference: https://expressjs.com/en/starter/static-files.html
-// Reference: https://expressjs.com/en/4x/api.html#app.get.method
+/**
+ * server.js
+ *
+ * Basic Node.js + Express server for CargoFlow.
+ *
+ * For now it only serves the existing front end (HTML, CSS, JS and
+ * resources) exactly as it is, so the site works the same as before but
+ * runs from http://localhost:3000 instead of opening the HTML files
+ * directly. This also lets js/booking-details.js load
+ * resources/users.json with fetch(), which browsers block on file:// pages.
+ *
+ * Only the front-end folders are served, so files like server.js,
+ * package.json and data/messages.json are not reachable from the browser.
+ *
+ * It also hosts the messages API used by js/messages.js, which saves the
+ * carrier chat in data/messages.json:
+ *   GET    /api/health    server status check
+ *   GET    /api/messages  chat history
+ *   POST   /api/messages  save one message ({ text, sender, recipient })
+ *   DELETE /api/messages  clear the chat history
+ *
+ * Run:  npm install   (first time only)
+ *       npm run dev   (restarts automatically when a file changes)
+ *       npm start
+ */
 
-// PLAN: This placeholder tests if the Express server runs on local port 3000.
-// FUTURE WORK: We will add GET /api/messages and POST /api/messages routes here
-// to read and save chat messages into data/messages.json instead of localStorage.
-
-//Reference:https://expressjs.com/en/resources/middleware/cors/
-
-const express = require('express');
-const cors = require('cors');
-
-const fs = require('fs');
-const path = require('path');
+const express = require("express");
+const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
 
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 
 //Reference: https://nodejs.org/api/path.html#pathjoinpaths
 // Absolute path to data/messages.json
 // Uses path.join() and __dirname to build reliable absolute directory paths on any OS.
-// Locates where messages are saved and where HTML/CSS/JS frontend files live.
+// Locates where messages are saved.
 const DATA_DIR = path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'messages.json');
-const PUBLIC_PATH = path.join(__dirname, 'public');
 
 // Reference: https://nodejs.org/api/fs.html#fsexistssyncpath
 // Reference: https://nodejs.org/api/fs.html#fsmkdirsyncpath-options
@@ -41,23 +55,26 @@ function ensureDataFileExists() {
 
 ensureDataFileExists();
 
+//Reference:https://expressjs.com/en/resources/middleware/cors/
 // Enable CORS and JSON body parsing middleware
 app.use(cors());
 app.use(express.json());
 
-// Serve static frontend files (html, css, js) 
-// Reference: https://expressjs.com/en/starter/static-files.html
-app.use(express.static(__dirname));
+// Front-end folders, served at the same paths the HTML already links to.
+for (const folder of ["css", "js", "pages", "resources"]) {
+  app.use(`/${folder}`, express.static(path.join(__dirname, folder)));
+}
+
+// Home page (the other pages link back to ../index.html).
+app.get(["/", "/index.html"], (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
 
 // Reference: https://expressjs.com/en/4x/api.html#app.get.method
 // Listens for GET requests made to '/api/health' and returns status JSON.
 // Offers a quick endpoint to verify server status.
 app.get('/api/health', (req, res) => {
   res.send({ status: 'OK', message: 'CargoFlow Messaging Server is Running!' });
-});
-
-app.get('/', (req, res) => {
-  res.send('CargoFlow Messaging Server is Running!');
 });
 
 // GET route: Load chat history from data/messages.json
@@ -133,6 +150,11 @@ app.delete('/api/messages', (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+// Anything else is not part of the site.
+app.use((req, res) => {
+  res.status(404).send("Page not found");
+});
+
+app.listen(PORT, () => {
+  console.log(`CargoFlow running on http://localhost:${PORT}`);
 });

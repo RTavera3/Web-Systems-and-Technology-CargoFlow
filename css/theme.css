@@ -25,6 +25,15 @@ body {
   background: #f4f1ea;
 }
 
+/* Width caps that used to be inline style="max-width: …" attributes. */
+.cf-measure {
+  max-width: 60ch;
+}
+
+.cf-narrow {
+  max-width: 480px;
+}
+
 /* Header */
 .navbar-brand span {
   font-weight: bold;

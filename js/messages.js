@@ -2,10 +2,11 @@
  * Connect to Carrier / Messages page.
  *
  * A simulated chat with a carrier ("LBC Express"): every message the user
- * sends gets a canned auto-reply after a short "typing..." delay. There is
- * no backend or real carrier on the other end - chat history is persisted
- * entirely in `localStorage` (key "chatMessages") so it survives a page
- * reload, and can be wiped with the trash-icon "clear chat" control.
+ * sends gets a canned auto-reply after a short "typing..." delay. Chat
+ * history is saved on the server (data/messages.json) through the
+ * /api/messages routes in server.js, so it survives a page reload, and can
+ * be wiped with the trash-icon "clear chat" control. Run the site with
+ * `npm start` so these routes are available.
  */
 
 const API_BASE_URL = 'http://localhost:3000';

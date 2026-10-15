@@ -6,14 +6,16 @@
  *   1. `knownShipments` below - one hardcoded sample shipment
  *      (CF-24810293) with a full fake "in transit" timeline, used for demos
  *      and grading.
- *   2. `localStorage["cargoflow_bookings"]` - real bookings seeded by
- *      js/payment.js when someone completes the booking + payment flow.
+ *   2. Bookings saved by js/payment.js through js/storage.js when someone
+ *      completes the booking + payment flow.
  *      These always render as "Booking Placed" (nothing has actually been
  *      picked up yet in this simulation).
  *
  * Both sources are normalized into the same shape (see `renderShipment`)
  * so one render function can display either.
  */
+
+import { findBooking } from './storage.js';
 
 /**
  * The one hardcoded demo shipment, keyed by tracking code.
@@ -55,11 +57,10 @@ const knownShipments = {
  * @returns {{
  *   route: string, eta: string, status: string, badgeClass: string,
  *   timeline: {label: string, time: string, state: string}[],
- * }|null} null if no booking with that code exists in localStorage.
+ * }|null} null if no booking with that code has been saved.
  */
 function getStoredBooking(code) {
-  const bookings = JSON.parse(localStorage.getItem("cargoflow_bookings") || "{}");
-  const booking = bookings[code];
+  const booking = findBooking(code);
   if (!booking) return null;
 
   const placedAt = new Date(booking.createdAt);
@@ -146,7 +147,7 @@ function renderShipment(code, shipment) {
  *   2. Otherwise, disable the button and show "Searching..." for 600ms
  *      (a fake delay purely for the feel of a real lookup - there is no
  *      actual network request).
- *   3. Look the code up in `knownShipments` first, then in localStorage
+ *   3. Look the code up in `knownShipments` first, then in saved bookings
  *      via `getStoredBooking`. If found, render it; otherwise show the
  *      "not found" message with a hint toward the sample code.
  *   4. Re-enable the button either way.
@@ -186,3 +187,16 @@ form.addEventListener("submit", (event) => {
     trackButton.textContent = "Track";
   }, 600);
 });
+
+/**
+ * Opening this page with a tracking code in the address, for example
+ * trackshipment.html?code=CF-24810293 (the links on the Shipment History
+ * page), fills the code into the search box and runs the search
+ * immediately, so the user does not have to type it again.
+ * requestSubmit() fires the same submit handler as clicking "Track".
+ */
+const codeFromUrl = new URLSearchParams(window.location.search).get("code");
+if (codeFromUrl) {
+  trackingInput.value = codeFromUrl;
+  form.requestSubmit();
+}

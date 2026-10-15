@@ -9,6 +9,7 @@
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 
 </div>
 
@@ -61,12 +62,14 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 |       **HTML5**       |      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" width="48" />      | Markup and page structure (`index.html`)    |
 |       **CSS3**        |       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="48" />       | Styling, layout, and responsive design      |
 | **JavaScript (ES6+)** | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="48" /> | Icon rendering, mobile nav, and route search |
+|  **Node.js + Express** |       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" width="48" />       | Local web server (`server.js`) that serves the site |
 |   **Git & GitHub**    |      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="48" />      | Version control and collaboration           |
 
 </div>
 
-> **Note:** No framework, no build step, and no backend. Plain HTML, CSS, and
-> JavaScript, plus Bootstrap 5 (via CDN) across every page. Shipment
+> **Note:** No framework and no build step. Plain HTML, CSS, and
+> JavaScript, plus Bootstrap 5 (via CDN) across every page. A basic
+> Node.js + Express server (`server.js`) serves the pages; it has no API yet. Shipment
 > tracking uses mock data; carrier messaging persists to `localStorage` in
 > your own browser. Everything else runs entirely client-side.
 
@@ -76,27 +79,29 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 
 ### Prerequisites
 
-- A modern web browser. That's it — no Node.js, no install step.
-- Python 3 (already on macOS/Linux) if you want to serve the site locally
-  instead of opening files directly — recommended, since a couple of pages
-  use relative paths that behave more reliably over `http://` than `file://`.
+- [Node.js](https://nodejs.org/) 20 or newer (LTS recommended). Check with `node -v`.
+- A modern web browser.
 
 ### Run it
 
 ```bash
 git clone https://github.com/RTavera3/Web-Systems-and-Technology-CargoFlow.git
 cd Web-Systems-and-Technology-CargoFlow
-python3 -m http.server 8000
+npm install
+npm run dev
 ```
 
-Then open **http://localhost:8000/index.html**. Any other static server
-works the same way (`npx serve .`, VS Code's "Live Server" extension, etc.) —
-just make sure whatever you use serves the project root, since `index.html`
-loads `css/`, `js/`, and `pages/` with paths relative to it.
+Then open **http://localhost:3000**. `npm run dev` restarts the server when a file
+changes; `npm start` runs it without watching. To use another port, set `PORT`
+(for example `PORT=8080 npm start`).
 
-Opening `index.html` directly via `file://` also works for a quick look, but
-some browsers restrict relative-path loading over `file://` more than others,
-so a local server is the more reliable option.
+The server only serves the front-end folders (`css/`, `js/`, `pages/`, `resources/`)
+and `index.html`, so `server.js`, `package.json` and `node_modules/` are never
+reachable from the browser. Serving over `http://` also lets the booking page load
+`resources/users.json`, which browsers block when the HTML file is opened directly.
+The payment, tracking, history and chat pages also load their scripts as ES modules,
+which browsers only run over `http://`, so open the site through the server rather than
+by double-clicking an HTML file.
 
 ### About the pages
 
@@ -104,8 +109,10 @@ so a local server is the more reliable option.
 a floating "Get a price" quote card, a shipment-tracking widget, a carrier
 CTA, and an About section. Every other page lives under `pages/`:
 `contact.html`, `booking-details.html`, `payment.html`, `messages.html`
-(carrier chat with `localStorage`-backed history), and `trackshipment.html`
-(the full tracking page, separate from the home page's quick widget).
+(carrier chat whose history is saved in the browser via `js/storage.js`), `trackshipment.html`
+(the full tracking page, separate from the home page's quick widget), and
+`history.html` (Shipment History: every active and past booking, with status
+filters, search and sorting; completed bookings appear there automatically).
 
 The design follows the CargoFlow brand palette: deep blue (`#0B3D91`) and
 flow orange (`#FF7A00`), with sand (`#F4F1EA`) as a secondary background.
@@ -116,6 +123,11 @@ and working offline.
 backend, database, or real payment processing. No API keys are needed to run
 it.
 
+**Saved data:** bookings and chat history are kept in the browser's `localStorage`,
+through one shared module, `js/storage.js`. It owns the storage keys, never throws on
+missing or corrupted data, and records a storage version so data saved by an older
+version of the site is upgraded on the next visit.
+
 Fonts load from Google Fonts, which receives normal browser request
 metadata; system sans-serif fallbacks are used when offline.
 
@@ -125,19 +137,24 @@ metadata; system sans-serif fallbacks are used when offline.
 
 ```
 Web-Systems-and-Technology-CargoFlow/
+├── server.js                     # Node.js + Express server that serves the site (npm run dev)
+├── package.json                  # Project info, npm scripts, Express dependency
 ├── index.html                    # Home page: hero, quote form, track widget, carrier CTA, about
 ├── css/
 │   └── theme.css                 # Shared Bootstrap theme overrides for every page (navy/orange brand)
 ├── js/
+│   ├── storage.js                # Shared localStorage module: bookings, chat history, versioning
 │   ├── track.js                  # Home page's quick shipment-tracking widget
 │   ├── trackshipment.js          # Full tracking page logic (pages/trackshipment.html)
+│   ├── history.js                # Shipment History list, filters, search and sort (pages/history.html)
 │   └── messages.js               # Carrier chat logic (pages/messages.html)
 ├── pages/
 │   ├── contact.html              # Contact form
 │   ├── booking-details.html      # Cargo/address details step of the booking flow
 │   ├── payment.html              # Payment step of the booking flow
 │   ├── messages.html             # Carrier messaging UI
-│   └── trackshipment.html        # Full shipment-tracking page
+│   ├── trackshipment.html        # Full shipment-tracking page (accepts ?code=CF-... to search directly)
+│   └── history.html              # Shipment History: active and past bookings
 └── resources/
     └── cargoflow.logo.png        # Brand logo asset
 ```
@@ -153,7 +170,7 @@ build step, router, or bundler is involved.
 1. **Home** — platform overview and quick search
 2. **Book Cargo Space** — reserve space and view shared cost breakdown
 3. **Track Shipment** — see shipment status and timeline
-4. **Shipment History** - for viewing active and past bookings. 
+4. **Shipment History** — view active and past bookings, filter by status, search, and open any one to track it
 5. **Messages** — chat directly with carriers
 
 ---

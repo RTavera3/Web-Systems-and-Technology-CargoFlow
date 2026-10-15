@@ -12,9 +12,11 @@
  *      payment method, and enables only the relevant ones (so a hidden
  *      field's `required` attribute never blocks submission).
  *   3. On successful "payment", generates a booking reference code and
- *      seeds a record into localStorage so pages/trackshipment.html can
- *      look it up later (see js/trackshipment.js).
+ *      saves the booking through js/storage.js so pages/trackshipment.html
+ *      and pages/history.html can show it later.
  */
+
+import { saveBooking } from './storage.js';
 
 /** Parses the booking details carried over in the URL's query string. */
 const paymentParams = new URLSearchParams(window.location.search);
@@ -151,7 +153,7 @@ const updatePaymentFields = () => {
 paymentMethod.addEventListener('change', updatePaymentFields);
 updatePaymentFields(); // Apply once for whichever method is pre-selected on load.
 
-// --- Booking confirmation: generate a code, seed it into localStorage ---
+// --- Booking confirmation: generate a code and save the booking ---
 
 /**
  * Generates a booking reference code in the same "CF-########" shape as
@@ -166,24 +168,23 @@ const generateBookingCode = () => {
 };
 
 /**
- * Saves a minimal booking record into localStorage under
- * "cargoflow_bookings", keyed by its reference code, so
- * pages/trackshipment.html can look it up later (see
- * js/trackshipment.js's `getStoredBooking`). Only the fields the tracking
- * page actually needs are stored - not the full booking summary.
+ * Saves this booking through js/storage.js under its reference code, so the
+ * Track Shipment and My Shipments pages can show it later. Only the fields
+ * those pages use are kept, not the whole booking summary.
  * @param {string} code The reference code to store this booking under.
  */
-const saveBooking = (code) => {
-  const bookings = JSON.parse(localStorage.getItem('cargoflow_bookings') || '{}');
-  bookings[code] = {
+const recordBooking = (code) => {
+  saveBooking(code, {
     from: paymentValue('from'),
     to: paymentValue('to'),
     pickupDate: paymentValue('date'),
     pickupTime: paymentValue('time'),
     paymentMethod: paymentMethod.value,
-    createdAt: new Date().toISOString(),
-  };
-  localStorage.setItem('cargoflow_bookings', JSON.stringify(bookings));
+    weight: paymentParams.get('weight'),
+    cargoType: paymentParams.get('type'),
+    vehicleType: paymentParams.get('vehicleType'),
+    declaredValue: paymentParams.get('declaredValue'),
+  });
 };
 
 /** @type {HTMLFormElement} The payment method + detail fields form. */
@@ -202,7 +203,7 @@ paymentFormEl.addEventListener('submit', (event) => {
     return;
   }
   const bookingCode = generateBookingCode();
-  saveBooking(bookingCode);
+  recordBooking(bookingCode);
   document.getElementById('paymentBookingCode').textContent = bookingCode;
   document.getElementById('paymentSuccess').hidden = false;
 });
