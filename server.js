@@ -93,7 +93,7 @@ app.post('/api/messages', (req, res) => {
       recipient: recipient || 'Carrier',
       text: text.trim(),
       timestamp: new Date().toISOString()
-    };
+    }
 
     messages.push(newMessage);
     fs.writeFileSync(DATA_FILE, JSON.stringify(messages, null, 2), 'utf8');
@@ -110,4 +110,20 @@ app.post('/api/messages', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
+});
+
+// DELETE route: Clear all messages from data/messages.json
+// Reference: https://expressjs.com/en/4x/api.html#app.delete.method
+// Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200
+// Writes an empty JSON array [] to data/messages.json.
+// Clears stored chat history on the server when requested by the frontend.
+app.delete('/api/messages', (req, res) => {
+  try {
+    ensureDataFileExists();
+    fs.writeFileSync(DATA_FILE, JSON.stringify([], null, 2), 'utf8');
+    res.status(200).json({ message: 'All messages deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting messages:', error);
+    res.status(500).json({ error: 'Failed to delete messages.' });
+  }
 });
