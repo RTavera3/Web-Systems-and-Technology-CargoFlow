@@ -2,13 +2,14 @@
  * Connect to Carrier / Messages page.
  *
  * A simulated chat with a carrier ("LBC Express"): every message the user
- * sends gets a canned auto-reply after a short "typing..." delay. There is
- * no backend or real carrier on the other end - chat history is saved in
- * the browser through js/storage.js (key "chatMessages") so it survives a
- * page reload, and can be wiped with the trash-icon "clear chat" control.
+ * sends gets a canned auto-reply after a short "typing..." delay. Chat
+ * history is saved on the server (data/messages.json) through the
+ * /api/messages routes in server.js, so it survives a page reload, and can
+ * be wiped with the trash-icon "clear chat" control. Run the site with
+ * `npm start` so these routes are available.
  */
 
-import { getMessages, addMessage as storeMessage, clearMessages } from './storage.js';
+const API_BASE_URL = 'http://localhost:3000';
 
 // Select the chat elements we need to use.
 /** @type {HTMLInputElement} The message composer text input. */
@@ -31,38 +32,60 @@ function getCurrentFormattedTime() {
 // Storage helpers as advised during mentoring session - MDN WebDocs
 
 /**
- * Reads the saved chat history. js/storage.js returns an empty array when
- * nothing is saved or the saved value is corrupted (and resets it), so a bad
- * value can never stop the rest of this script, such as Enter-to-send, from
- * running.
- * @returns {{text: string, messageType: string, time: string}[]} The saved
- *   messages in send order.
+ * Reads and parses the saved chat history from localStorage.
+ * Deleted the getStoredMessages() function to avoid redundancy since the messages are now fetched from the server.
  */
-function getStoredMessages() {
-  return getMessages();
-}
 
 /**
- * Appends one message to the saved chat history.
+ * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#supplying_options
+ * Appends one message to the saved chat history in localStorage.
  * @param {string} text The message body.
  * @param {string} messageType Either "incoming" (from the carrier) or
  *   "outgoing" (from the user) - matches the CSS class used to style it.
  * @param {string} time Pre-formatted display time for this message.
  */
-function saveMessage(text, messageType, time) {
-  storeMessage({ text: text, messageType: messageType, time: time });
+async function saveMessage(text, messageType) {
+  try {
+    const sender = messageType === 'outgoing' ? 'Shipper' : 'LBC Express';
+    await fetch(`${API_BASE_URL}/api/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: text, sender: sender, recipient: 'Carrier' })
+    });
+  } catch (error) {
+    console.error('Error posting message:', error);
+  }
 }
 
 /**
+ * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
  * Replays every saved message into the chat window on page load, without
  * re-saving them (they're already in storage).
  */
-function loadMessages() {
-  const storedMessages = getStoredMessages();
-  storedMessages.forEach(function (msg) {
-    const msgTime = msg.time || getCurrentFormattedTime();
-    addMessage(msg.text, msg.messageType, false, msgTime);
-  });
+async function loadMessages() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/messages`);
+    if (!response.ok) throw new Error('Failed to load messages.');
+    const messages = await response.json();
+
+    messagesContainer.innerHTML = '';
+    messages.forEach(function (msg) {
+      const displayTime = msg.timestamp
+        ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        : getCurrentFormattedTime();
+
+      const messageType = msg.sender === 'Shipper' ? 'outgoing' : 'incoming';
+      addMessage(msg.text, messageType, false, displayTime);
+    });
+
+    if (messages.length > 0) {
+      updateSidebarPreview(messages[messages.length - 1].text);
+    } else {
+      updateSidebarPreview('No messages yet.');
+    }
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+  }
 }
 
 /**
@@ -74,8 +97,8 @@ function loadMessages() {
 function updateSidebarPreview(latestText) {
   // Finds the preview text in left sidebar conversation item
   const sidebarPreview = document.querySelector('.conversation-item p') ||
-                         document.querySelector('.sidebar p') ||
-                         document.querySelector('aside p');
+    document.querySelector('.sidebar p') ||
+    document.querySelector('aside p');
   if (sidebarPreview) {
     sidebarPreview.textContent = latestText;
   }
@@ -115,13 +138,13 @@ function removeTypingIndicator() {
  * @param {string} messageType "incoming" or "outgoing" - controls bubble
  *   alignment/color and whether an avatar is shown.
  * @param {boolean} [shouldSave=true] Whether to persist this message to
- *   saved history (js/storage.js). Set to false when replaying history on load (via
+ *   localStorage. Set to false when replaying history on load (via
  *   `loadMessages`) so it isn't duplicated in storage.
  * @param {string|null} [formattedTime=null] A pre-formatted time to show
  *   instead of the current time - used when replaying a saved message so
  *   it keeps its original timestamp instead of getting "now".
  */
-function addMessage(text, messageType, shouldSave = true, formattedTime = null) {
+async function addMessage(text, messageType, shouldSave = true, formattedTime = null) {
   const message = document.createElement('div');
   const messageContent = document.createElement('div');
   const messageText = document.createElement('p');
@@ -155,7 +178,7 @@ function addMessage(text, messageType, shouldSave = true, formattedTime = null) 
   updateSidebarPreview(text);
 
   if (shouldSave) {
-    saveMessage(text, messageType, timeToDisplay);
+    await saveMessage(text, messageType);
   }
 }
 
@@ -165,61 +188,85 @@ function addMessage(text, messageType, shouldSave = true, formattedTime = null) 
  * for 1.5s before posting a fixed auto-reply. Does nothing if the input
  * is empty/whitespace-only.
  */
-function sendMessage() {
+async function sendMessage() {
   const text = messageInput.value.trim();
   if (text === '') return;
-  addMessage(text, 'outgoing');
+  await addMessage(text, 'outgoing');
   messageInput.value = '';
 
   showTypingIndicator();
 
-  setTimeout(function () {
+  setTimeout(async function () {
     removeTypingIndicator();
-    addMessage('Hello! Your shipment is currently in transit to Cebu and on schedule.', 'incoming');
+    await addMessage('Hello! Your shipment is currently in transit to Cebu and on schedule.', 'incoming');
   }, 1500);
 
 }
 
 /**
- * Wipes the entire chat history: clears the saved history, empties the chat
+ * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#supplying_options
+ * Wipes the entire chat history: clears localStorage, empties the chat
  * window, and resets the sidebar preview text. Triggered by the trash
  * icon after a confirmation prompt.
  */
-function clearChat() {
-  clearMessages();
-  messagesContainer.innerHTML = '';
+async function clearChat() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/messages`, {
+      method: 'DELETE',
+    });
 
-  const sidebarPreview = document.querySelector('.preview-text');
-  if (sidebarPreview) {
-    sidebarPreview.textContent = 'No messages yet';
+    if (!response.ok) {
+      throw new Error(`Server returned status ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log(result.message);
+
+    // Clear the message container on screen
+    if (messagesContainer) {
+      messagesContainer.innerHTML = '';
+    }
+
+    // Reset the sidebar preview snippet
+    updateSidebarPreview('No messages yet.');
+
+  } catch (error) {
+    console.error('Failed to clear chat:', error);
   }
 }
-
-sendButton.addEventListener('click', sendMessage);
 
 //Event listeners for sending messages and clearing chat history.
 // Send triggers
-if (sendButton) sendButton.addEventListener('click', sendMessage);
-
-// Enter key also sends, same as clicking the send button.
-messageInput.addEventListener('keydown', function (event) {
-  if (event.key === 'Enter') {
-    sendMessage();
+// Event listeners for sending messages and clearing chat history.
+document.addEventListener('DOMContentLoaded', () => {
+  // Send button click trigger
+  if (sendButton) {
+    sendButton.addEventListener('click', sendMessage);
   }
+
+  // Enter key trigger
+  if (messageInput) {
+    messageInput.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+  }
+
+  // Clear Button / Trash Icon Listener
+  const trashIcon = document.querySelector('#clear-btn') ||
+                    document.querySelector('.fa-trash') ||
+                    document.querySelector('button[title*="Delete"]');
+
+  if (trashIcon) {
+    trashIcon.addEventListener('click', function () {
+      if (confirm('Are you sure you want to clear this conversation history?')) {
+        clearChat();
+      }
+    });
+  }
+
+  // Initialize messages on page load
+  loadMessages();
 });
-
-// Clear Button / Trash Icon Listener
-const trashIcon = document.querySelector('.fa-trash') ||
-                  document.querySelector('button[title*="Delete"]') ||
-                  document.querySelector('#clear-btn');
-
-if (trashIcon) {
-  trashIcon.addEventListener('click', function () {
-    if (confirm('Are you sure you want to clear this conversation history?')) {
-      clearChat();
-    }
-  });
-}
-
-// Initialize messages on page load
-loadMessages();

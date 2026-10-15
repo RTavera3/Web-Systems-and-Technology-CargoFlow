@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/RTavera3/Web-Systems-and-Technology-CargoFlow#readme",
   "dependencies": {
+    "cors": "^2.8.6",
     "express": "^5.3.0"
   },
   "engines": {
