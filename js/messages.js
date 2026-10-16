@@ -191,6 +191,13 @@ async function addMessage(text, messageType, shouldSave = true, formattedTime = 
 async function sendMessage() {
   const text = messageInput.value.trim();
   if (text === '') return;
+
+  // Stop sending if message exceeds 500 characters
+  if (text.length > 500) {
+    alert("Message exceeds the 500 character limit.");
+    return;
+  }
+
   await addMessage(text, 'outgoing');
   messageInput.value = '';
 
