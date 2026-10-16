@@ -21,6 +21,8 @@
 
 import { listBookings } from './storage.js';
 
+const API_BASE_URL = 'http://localhost:3000';
+
 /**
  * One shipment row, after normalizing either source.
  * @typedef {Object} Shipment
@@ -133,13 +135,35 @@ function formatPaymentMethod(method) {
   return method && method.trim() ? method : "Not provided";
 }
 
+const API_BASE_URL = 'http://localhost:3000';
+
 /**
- * Reads the bookings saved by js/payment.js. js/storage.js already turns a
- * missing or corrupted value into "no bookings", so this never throws.
- * @returns {Shipment[]}
+ * Reads saved bookings from the Express server (/api/bookings).
+ * Falls back to local storage if the server is unreachable.
+ * @returns {Promise<Shipment[]>}
  */
-function getSavedBookings() {
-  return listBookings().map(({ code, ...booking }) => normalizeBooking(code, booking));
+async function getSavedBookings() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/bookings`);
+    if (!response.ok) throw new Error('Failed to fetch bookings from server.');
+    
+    const serverBookings = await response.json();
+
+    return serverBookings.map((b) => {
+      // Support tracking code whether saved as `id`, `code`, or `trackingCode`
+      const code = b.id || b.code || b.trackingCode || 'CF-UNKNOWN';
+      return normalizeBooking(code, {
+        from: b.from || b.origin || 'Not provided',
+        to: b.to || b.destination || 'Not provided',
+        pickupDate: b.pickupDate || b.date || 'Not provided',
+        paymentMethod: b.paymentMethod || 'Not provided'
+      });
+    });
+  } catch (error) {
+    console.warn('Could not load bookings from server; falling back to local storage.', error);
+    // Fallback to local storage so the page still works offline/disconnected
+    return listBookings().map(({ code, ...booking }) => normalizeBooking(code, booking));
+  }
 }
 
 /**

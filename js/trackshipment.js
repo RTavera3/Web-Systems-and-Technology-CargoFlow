@@ -17,6 +17,9 @@
 
 import { findBooking } from './storage.js';
 
+// will add the API_BASE_URL constant to point to the Express server for fetching messages and bookings
+const API_BASE_URL = 'http://localhost:3000';
+
 /**
  * The one hardcoded demo shipment, keyed by tracking code.
  * @type {Record<string, {
