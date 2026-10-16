@@ -1,43 +1,54 @@
-/**
- * server.js
- *
- * Basic Node.js + Express server for CargoFlow.
- *
- * For now it only serves the existing front end (HTML, CSS, JS and
- * resources) exactly as it is, so the site works the same as before but
- * runs from http://localhost:3000 instead of opening the HTML files
- * directly. This also lets js/booking-details.js load
- * resources/users.json with fetch(), which browsers block on file:// pages.
- *
- * Only the front-end folders are served, so files like server.js,
- * package.json and data/messages.json are not reachable from the browser.
- *
- * It also hosts the messages API used by js/messages.js, which saves the
- * carrier chat in data/messages.json:
- *   GET    /api/health    server status check
- *   GET    /api/messages  chat history
- *   POST   /api/messages  save one message ({ text, sender, recipient })
- *   DELETE /api/messages  clear the chat history
- *
- * Run:  npm install   (first time only)
- *       npm run dev   (restarts automatically when a file changes)
- *       npm start
- */
+// Reference: https://expressjs.com/en/starter/hello-world/
+// Reference: https://expressjs.com/en/starter/static-files.html
+// Reference: https://expressjs.com/en/4x/api.html#app.get.method
 
-const express = require("express");
-const cors = require("cors");
-const fs = require("fs");
-const path = require("path");
+// PLAN: This placeholder tests if the Express server runs on local port 3000.
+// FUTURE WORK: We will add GET /api/messages and POST /api/messages routes here
+// to read and save chat messages into data/messages.json instead of localStorage.
+
+//Reference:https://expressjs.com/en/resources/middleware/cors/
+
+const express = require('express');
+const cors = require('cors');
+
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = 3000;
 
 //Reference: https://nodejs.org/api/path.html#pathjoinpaths
 // Absolute path to data/messages.json
 // Uses path.join() and __dirname to build reliable absolute directory paths on any OS.
-// Locates where messages are saved.
+// Locates where messages are saved and where HTML/CSS/JS frontend files live.
 const DATA_DIR = path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'messages.json');
+const PUBLIC_PATH = path.join(__dirname, 'public');
+
+// Write queue to prevent file write race conditions
+let writeQueue = Promise.resolve();
+
+/**
+ * Write to a temp file first, then rename it.
+ * Prevents file corruption if the server crashes mid-write.
+ */
+function saveJsonAtomic(data) {
+  const tempFile = path.join(DATA_DIR, `messages_${Date.now()}.tmp`);
+  fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf8');
+  fs.renameSync(tempFile, DATA_FILE);
+}
+
+function readMessagesSafe() {
+  ensureDataFileExists();
+  try {
+    const fileData = fs.readFileSync(DATA_FILE, 'utf8');
+    return JSON.parse(fileData || '[]');
+  } catch (err) {
+    console.error('Corrupted JSON file detected. Resetting array:', err);
+    saveJsonAtomic([]);
+    return [];
+  }
+}
 
 // Reference: https://nodejs.org/api/fs.html#fsexistssyncpath
 // Reference: https://nodejs.org/api/fs.html#fsmkdirsyncpath-options
@@ -49,26 +60,19 @@ function ensureDataFileExists() {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
   if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(DATA_FILE, JSON.stringify([], null, 2), 'utf8');
+    saveJsonAtomic([]);
   }
 }
 
 ensureDataFileExists();
 
-//Reference:https://expressjs.com/en/resources/middleware/cors/
 // Enable CORS and JSON body parsing middleware
 app.use(cors());
 app.use(express.json());
 
-// Front-end folders, served at the same paths the HTML already links to.
-for (const folder of ["css", "js", "pages", "resources"]) {
-  app.use(`/${folder}`, express.static(path.join(__dirname, folder)));
-}
-
-// Home page (the other pages link back to ../index.html).
-app.get(["/", "/index.html"], (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
+// Serve static frontend files (html, css, js) 
+// Reference: https://expressjs.com/en/starter/static-files.html
+app.use(express.static(__dirname));
 
 // Reference: https://expressjs.com/en/4x/api.html#app.get.method
 // Listens for GET requests made to '/api/health' and returns status JSON.
@@ -77,11 +81,14 @@ app.get('/api/health', (req, res) => {
   res.send({ status: 'OK', message: 'CargoFlow Messaging Server is Running!' });
 });
 
+app.get('/', (req, res) => {
+  res.send('CargoFlow Messaging Server is Running!');
+});
+
 // GET route: Load chat history from data/messages.json
 app.get('/api/messages', (req, res) => {
   try {
-    const fileData = fs.readFileSync(DATA_FILE, 'utf8');
-    const messages = JSON.parse(fileData || '[]');
+    const messages = readMessagesSafe();
     res.json(messages);
   } catch (error) {
     res.status(500).json({ error: 'Failed to read messages.' });
@@ -90,7 +97,7 @@ app.get('/api/messages', (req, res) => {
 
 
 // POST route: Save a new message to data/messages.json - acccepted 
-app.post('/api/messages', (req, res) => {
+app.post('/api/messages', async (req, res) => {
   try {
     const { text, sender, recipient } = req.body;
 
@@ -106,23 +113,22 @@ app.post('/api/messages', (req, res) => {
       return res.status(400).json({ error: 'Message exceeds the 500 character limit.' });
     }
 
-    ensureDataFileExists();
-
-    const fileData = fs.readFileSync(DATA_FILE, 'utf8');
-    const messages = JSON.parse(fileData || '[]');
-
     const newMessage = {
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
       sender: sender || 'Shipper',
       recipient: recipient || 'Carrier',
       text: text.trim(),
       timestamp: new Date().toISOString()
     }
 
-    messages.push(newMessage);
-    fs.writeFileSync(DATA_FILE, JSON.stringify(messages, null, 2), 'utf8');
+    writeQueue = writeQueue.then(() => {
+      const messages = readMessagesSafe();
+      messages.push(newMessage);
+      saveJsonAtomic(messages);
+    });
+    await writeQueue;
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: 'Message saved successfully.',
       data: newMessage
     });
@@ -132,29 +138,26 @@ app.post('/api/messages', (req, res) => {
   }
 });
 
-
-
 // DELETE route: Clear all messages from data/messages.json
 // Reference: https://expressjs.com/en/4x/api.html#app.delete.method
 // Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200
 // Writes an empty JSON array [] to data/messages.json.
 // Clears stored chat history on the server when requested by the frontend.
-app.delete('/api/messages', (req, res) => {
+app.delete('/api/messages', async (req, res) => {
   try {
-    ensureDataFileExists();
-    fs.writeFileSync(DATA_FILE, JSON.stringify([], null, 2), 'utf8');
-    res.status(200).json({ message: 'All messages deleted successfully.' });
+    writeQueue = writeQueue.then(() => {
+      saveJsonAtomic([]);
+    });
+    await writeQueue;
+    res.status(200).json({
+      message: 'All messages deleted successfully.'
+    });
   } catch (error) {
     console.error('Error deleting messages:', error);
     res.status(500).json({ error: 'Failed to delete messages.' });
   }
 });
 
-// Anything else is not part of the site.
-app.use((req, res) => {
-  res.status(404).send("Page not found");
-});
-
-app.listen(PORT, () => {
-  console.log(`CargoFlow running on http://localhost:${PORT}`);
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
 });

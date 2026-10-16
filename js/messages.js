@@ -19,6 +19,49 @@ const sendButton = document.querySelector('.send-btn');
 /** @type {HTMLElement} Scrollable container holding all message bubbles. */
 const messagesContainer = document.querySelector('.messages-container');
 
+// Screen reader live announcer for accessibility (Task 8)
+let liveAnnouncer = document.getElementById('sr-announcer');
+if (!liveAnnouncer) {
+  liveAnnouncer = document.createElement('div');
+  liveAnnouncer.id = 'sr-announcer';
+  liveAnnouncer.setAttribute('aria-live', 'polite');
+  liveAnnouncer.style.position = 'absolute';
+  liveAnnouncer.style.width = '1px';
+  liveAnnouncer.style.height = '1px';
+  liveAnnouncer.style.overflow = 'hidden';
+  document.body.appendChild(liveAnnouncer);
+}
+
+// Live character counter (Task 6)
+let charCounter = document.getElementById('char-counter');
+if (!charCounter && messageInput && messageInput.parentNode) {
+  charCounter = document.createElement('small');
+  charCounter.id = 'char-counter';
+  charCounter.style.fontSize = '12px';
+  charCounter.style.color = '#666';
+  charCounter.style.marginLeft = '8px';
+  charCounter.textContent = '0 / 500';
+  messageInput.parentNode.appendChild(charCounter);
+}
+
+function announceToScreenReader(text) {
+  if (liveAnnouncer) liveAnnouncer.textContent = text;
+}
+
+function updateCharCounterAndSendState() {
+  if (!messageInput || !sendButton) return;
+  const currentLength = messageInput.value.length;
+  const trimmed = messageInput.value.trim();
+
+  if (charCounter) {
+    charCounter.textContent = `${currentLength} / 500`;
+    charCounter.style.color = currentLength > 500 ? 'red' : '#666';
+  }
+
+  // Disable button if empty or over 500 chars
+  sendButton.disabled = trimmed === '' || currentLength > 500;
+}
+
 /**
  * Gets the current time as a short display string (e.g. "10:30 AM"),
  * stamped onto each message bubble.
