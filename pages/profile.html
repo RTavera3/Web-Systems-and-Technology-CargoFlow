@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Profile | CargoFlow</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+  </head>
+  <body>
+    <header>
+      <a href="../index.html#book" class="brand" aria-label="CargoFlow home">
+        <svg viewBox="0 0 56 56" width="40" height="40" aria-hidden="true">
+          <path d="M5 38V22c0-5 3-8 7-10L33 3v13l-15 6v21Z" fill="#0B3D91" />
+          <path d="m37 3 14 5v14l-14-5ZM23 28l15-6-3-5 16 5-7 15-1-6-20 9Z" fill="#FF7A00" />
+          <path d="m23 44 17-7v12l-17 6Z" fill="#0B3D91" />
+        </svg>
+        <span>Cargo<b>Flow</b></span>
+      </a>
+      <p class="tag">Share the Road. Share the Cost.</p>
+      <nav>
+        <a href="../index.html#book">Book cargo space</a>
+        <a href="trackshipment.html">Track shipment</a>
+        <a href="messages.html">Connect to carrier</a>
+        <a href="profile.html" aria-current="page">Account profile</a>
+        <a href="../index.html#about">About</a>
+        <a href="contact.html">Contact Us</a>
+      </nav>
+    </header>
+
+    <main class="profile-page">
+      <section class="profile-hero" aria-labelledby="profileTitle">
+        <div class="profile-avatar" id="profileAvatar" aria-hidden="true">JD</div>
+        <div class="profile-identity">
+          <p class="eyebrow">CargoFlow account</p>
+          <h1 id="profileTitle">Juan Dela Cruz</h1>
+          <p id="profileAccountType">Individual shipper</p>
+        </div>
+        <div class="profile-account-meta">
+          <span class="profile-status">Prototype account</span>
+          <span>User ID: <strong id="profileUserId">FC00001</strong></span>
+          <span>Member since <strong id="profileMemberSince">—</strong></span>
+        </div>
+      </section>
+
+      <p class="profile-notice">
+        This demo stores your profile and booking records in this browser only. It is not connected to a live account, carrier, or payment service.
+      </p>
+
+      <section class="panel profile-panel" aria-labelledby="detailsHeading">
+        <div class="profile-section-heading">
+          <div>
+            <h2 id="detailsHeading">Account details</h2>
+            <p>Keep your contact and pickup details current for future bookings.</p>
+          </div>
+          <span class="profile-private-note">Payment card details are never saved here.</span>
+        </div>
+        <form id="profileForm" class="profile-form">
+          <div class="profile-form-grid">
+            <label>
+              Full name
+              <input name="name" type="text" autocomplete="name" required />
+            </label>
+            <label>
+              Account type
+              <select name="accountType">
+                <option>Individual shipper</option>
+                <option>Business</option>
+              </select>
+            </label>
+            <label>
+              Business name <span class="optional-label">Optional</span>
+              <input name="companyName" type="text" autocomplete="organization" />
+            </label>
+            <label>
+              Email address
+              <input name="email" type="email" autocomplete="email" placeholder="you@example.com" />
+            </label>
+            <label>
+              Contact number
+              <input name="contact" type="tel" autocomplete="tel" required />
+            </label>
+            <label>
+              Emergency contact <span class="optional-label">Optional</span>
+              <input name="emergencyContact" type="tel" />
+            </label>
+            <label class="profile-form-wide">
+              Street address
+              <input name="streetAddress" type="text" autocomplete="street-address" required />
+            </label>
+            <label>
+              City
+              <input name="city" type="text" autocomplete="address-level2" required />
+            </label>
+            <label>
+              Province
+              <input name="province" type="text" autocomplete="address-level1" required />
+            </label>
+            <label>
+              ZIP code
+              <input name="zipCode" type="text" inputmode="numeric" autocomplete="postal-code" required />
+            </label>
+            <label>
+              Preferred payment method
+              <select name="preferredPayment">
+                <option value="">No preference</option>
+                <option>GCash</option>
+                <option>Credit or debit card</option>
+                <option>Cash on pickup</option>
+              </select>
+            </label>
+            <label>
+              Booking updates
+              <select name="notifications">
+                <option>Email and SMS</option>
+                <option>Email only</option>
+                <option>SMS only</option>
+              </select>
+            </label>
+          </div>
+          <div class="profile-form-actions">
+            <p id="profileSaveStatus" role="status" aria-live="polite"></p>
+            <button type="submit">Save profile</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel profile-panel transaction-panel" aria-labelledby="transactionsHeading">
+        <div class="profile-section-heading">
+          <div>
+            <h2 id="transactionsHeading">Transaction records</h2>
+            <p>Review your current bookings and completed or cancelled shipments.</p>
+          </div>
+          <a class="profile-book-link" href="../index.html#book">＋ New booking</a>
+        </div>
+        <div class="transaction-tabs" role="tablist" aria-label="Transaction status">
+          <button type="button" id="ongoingTab" role="tab" aria-selected="true" aria-controls="ongoingTransactions">Ongoing <span id="ongoingCount">0</span></button>
+          <button type="button" id="pastTab" role="tab" aria-selected="false" aria-controls="pastTransactions" tabindex="-1">Past <span id="pastCount">0</span></button>
+        </div>
+        <div id="ongoingTransactions" role="tabpanel" aria-labelledby="ongoingTab">
+          <div class="transaction-list" id="ongoingList"></div>
+        </div>
+        <div id="pastTransactions" role="tabpanel" aria-labelledby="pastTab" hidden>
+          <div class="transaction-list" id="pastList"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Share space. Move more. &nbsp;·&nbsp; CargoFlow, a student project. Made in the Philippines.</p>
+    </footer>
+    <script src="../js/account.js"></script>
+    <script src="../js/profile.js"></script>
+  </body>
+</html>

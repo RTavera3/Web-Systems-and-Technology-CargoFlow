@@ -766,6 +766,12 @@ legend {
   font-weight: bold;
 }
 
+.success-message[data-error="true"] {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #7f1d1d;
+}
+
 .contact-details {
   background: #fff;
   border: 1px solid #d8d8d8;
@@ -1395,6 +1401,302 @@ footer p {
 .messages-page :focus-visible {
   outline: 3px solid #0b3d91;
   outline-offset: 2px;
+}
+
+/* Account profile */
+.profile-page {
+  max-width: 1120px;
+  margin: 28px auto 56px;
+  padding: 0 20px;
+}
+
+.profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 24px;
+  border-top: 4px solid #ff7a00;
+  background: #f4f1ea;
+}
+
+.profile-avatar {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  place-items: center;
+  border-radius: 50%;
+  background: #0b3d91;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.profile-identity h1 {
+  margin: 0;
+  color: #0b3d91;
+  font-size: 26px;
+}
+
+.profile-identity p {
+  margin: 4px 0 0;
+  color: #444;
+}
+
+.profile-identity .eyebrow {
+  margin: 0 0 4px;
+  color: #555;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.profile-account-meta {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+  margin-left: auto;
+  color: #444;
+  font-size: 13px;
+}
+
+.profile-status {
+  padding: 4px 9px;
+  border-radius: 20px;
+  background: #e2e8f0;
+  color: #26364b;
+  font-weight: 700;
+}
+
+.profile-notice {
+  margin: 14px 0 22px;
+  padding: 10px 14px;
+  border-left: 4px solid #0b3d91;
+  background: #edf2ff;
+  color: #26364b;
+  font-size: 13px;
+}
+
+.profile-panel {
+  padding: 24px;
+  background: #fff;
+}
+
+.profile-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.profile-section-heading h2 {
+  margin: 0 0 5px;
+}
+
+.profile-section-heading p {
+  margin: 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.profile-private-note,
+.optional-label {
+  color: #555;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 20px;
+}
+
+.profile-form-grid label {
+  min-width: 0;
+}
+
+.profile-form-wide {
+  grid-column: 1 / -1;
+}
+
+.profile-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.profile-form-actions p {
+  margin: 0;
+  color: #0b3d36;
+  font-size: 13px;
+}
+
+.profile-form-actions p[data-error="true"] {
+  color: #8f1d1d;
+}
+
+.profile-page :focus-visible {
+  outline: 3px solid #0b3d91;
+  outline-offset: 2px;
+}
+
+.profile-form-actions button,
+.profile-book-link {
+  display: inline-block;
+  padding: 10px 16px;
+  border: 0;
+  background: #0b3d91;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.profile-form-actions button:hover,
+.profile-book-link:hover {
+  background: #082c69;
+  color: #fff;
+}
+
+.profile-book-link {
+  background: #a64b00;
+}
+
+.transaction-panel {
+  margin-top: 22px;
+}
+
+.transaction-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #d4d4d4;
+}
+
+.transaction-tabs button {
+  padding: 10px 14px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: #333;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.transaction-tabs button[aria-selected="true"] {
+  border-bottom-color: #0b3d91;
+  color: #0b3d91;
+}
+
+.transaction-tabs button span {
+  display: inline-block;
+  min-width: 20px;
+  margin-left: 4px;
+  padding: 1px 6px;
+  border-radius: 12px;
+  background: #e8edf5;
+  text-align: center;
+}
+
+.transaction-list {
+  overflow-x: auto;
+}
+
+.transaction-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.transaction-table th,
+.transaction-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #e2e2e2;
+  vertical-align: top;
+}
+
+.transaction-table th {
+  color: #333;
+  white-space: nowrap;
+}
+
+.transaction-status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 14px;
+  background: #e2e8f0;
+  color: #26364b;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-delivered {
+  background: #dcfce7;
+  color: #14532d;
+}
+
+.status-cancelled {
+  background: #fee2e2;
+  color: #7f1d1d;
+}
+
+.transaction-empty {
+  margin: 0;
+  padding: 24px 12px;
+  color: #555;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .profile-page {
+    margin-top: 18px;
+    padding: 0 12px;
+  }
+
+  .profile-hero {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 18px;
+  }
+
+  .profile-identity h1 {
+    font-size: 22px;
+  }
+
+  .profile-account-meta {
+    width: 100%;
+    justify-items: start;
+    margin-left: 82px;
+  }
+
+  .profile-panel {
+    padding: 18px 14px;
+  }
+
+  .profile-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .profile-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-form-wide {
+    grid-column: auto;
+  }
+
+  .profile-form-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
 /* Make the messages page header span the full available width. */

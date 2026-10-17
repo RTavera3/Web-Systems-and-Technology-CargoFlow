@@ -24,6 +24,7 @@
         <a href="../index.html#book">Book cargo space</a>
         <a href="trackshipment.html">Track shipment</a>
         <a href="messages.html">Connect to carrier</a>
+        <a href="profile.html">Account profile</a>
         <a href="../index.html#about">About</a>
         <a href="contact.html">Contact Us</a>
       </nav>
@@ -147,7 +148,8 @@
           </p>
           <button type="submit">Submit Payment</button>
           <p class="success-message" id="paymentSuccess" aria-live="polite" hidden>
-            Payment details submitted. Your booking request is being processed.
+            <span id="paymentSuccessText">Booking submitted. Payment processing is not connected in this prototype.</span>
+            <a href="profile.html" id="profileRecordsLink">View your account profile and records</a>.
           </p>
         </form>
       </section>
@@ -160,6 +162,7 @@
       </p>
     </footer>
 
+    <script src="../js/account.js"></script>
     <script>
       const paymentParams = new URLSearchParams(window.location.search);
       const requiredBookingDetails = [
@@ -223,6 +226,10 @@
         GCash: document.getElementById('gcashDetails'),
         'Credit or debit card': document.getElementById('cardDetails'),
       };
+      const preferredPayment = window.CargoFlowAccount.getProfile().preferredPayment;
+      if (preferredPayment && Array.from(paymentMethod.options).some((option) => option.value === preferredPayment)) {
+        paymentMethod.value = preferredPayment;
+      }
       const gcashQrCode = document.getElementById('gcashQrCode');
       const gcashPaymentData = 'CargoFlow Company | GCash payment';
       gcashQrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(gcashPaymentData)}`;
@@ -243,7 +250,40 @@
 
       document.getElementById('paymentForm').addEventListener('submit', (event) => {
         event.preventDefault();
-        document.getElementById('paymentSuccess').hidden = false;
+        const transaction = {
+          id: `CF-${Date.now().toString().slice(-8)}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
+          createdAt: new Date().toISOString(),
+          status: 'submitted',
+          paymentStatus: 'pending',
+          paymentMethod: paymentMethod.value,
+          route: `${paymentValue('from')} to ${paymentValue('to')}`,
+          shipmentDate: paymentValue('date'),
+          sender: paymentValue('senderName'),
+          receiver: paymentValue('receiverName'),
+          cargoDescription: paymentValue('cargoDescription'),
+          packageCount: paymentValue('packageCount'),
+          declaredValue: paymentValue('declaredValue'),
+          vehicleType: paymentValue('vehicleType'),
+        };
+        try {
+          window.CargoFlowAccount.addTransaction(transaction);
+        } catch (error) {
+          console.error('Unable to save the booking record:', error);
+          const paymentSuccess = document.getElementById('paymentSuccess');
+          document.getElementById('paymentSuccessText').textContent =
+            'Unable to save this booking in this browser. Please try again.';
+          paymentSuccess.dataset.error = 'true';
+          document.getElementById('profileRecordsLink').hidden = true;
+          paymentSuccess.hidden = false;
+          return;
+        }
+        const paymentSuccess = document.getElementById('paymentSuccess');
+        document.getElementById('paymentSuccessText').textContent =
+          'Booking submitted. Payment processing is not connected in this prototype.';
+        document.getElementById('profileRecordsLink').hidden = false;
+        paymentSuccess.removeAttribute('data-error');
+        paymentSuccess.hidden = false;
+        document.querySelector('#paymentForm button[type="submit"]').disabled = true;
       });
     </script>
   </body>

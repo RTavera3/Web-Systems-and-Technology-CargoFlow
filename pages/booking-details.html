@@ -24,6 +24,7 @@
         <a href="../index.html#book">Book cargo space</a>
         <a href="trackshipment.html">Track shipment</a>
         <a href="messages.html">Connect to carrier</a>
+        <a href="profile.html">Account profile</a>
         <a href="../index.html#about">About</a>
         <a href="contact.html">Contact Us</a>
       </nav>
@@ -258,27 +259,27 @@
             <div class="booking-edit-grid">
               <label>
                 Name
-                <input type="text" name="customerName" id="customerName" value="Juan Dela Cruz" readonly required />
+                <input type="text" name="customerName" id="customerName" readonly required />
               </label>
               <label>
                 Contact Number
-                <input type="tel" name="customerContact" id="customerContact" value="0999-123-4567" readonly required />
+                <input type="tel" name="customerContact" id="customerContact" readonly required />
               </label>
               <label>
                 Street Address
-                <input type="text" name="customerAddress" value="123 Rizal Street, Barangay 143" readonly required />
+                <input type="text" name="customerAddress" id="customerAddress" readonly required />
               </label>
               <label>
                 City
-                <input type="text" name="customerCity" value="Quezon City" readonly required />
+                <input type="text" name="customerCity" id="customerCity" readonly required />
               </label>
               <label>
                 Province
-                <input type="text" name="customerProvince" value="Metro Manila" readonly required />
+                <input type="text" name="customerProvince" id="customerProvince" readonly required />
               </label>
               <label>
                 ZIP Code
-                <input type="text" name="customerZip" value="1100" readonly required />
+                <input type="text" name="customerZip" id="customerZip" readonly required />
               </label>
             </div>
           </fieldset>
@@ -295,7 +296,16 @@
       </p>
     </footer>
 
+    <script src="../js/account.js"></script>
     <script>
+      const accountProfile = window.CargoFlowAccount.getProfile();
+      document.getElementById('customerName').value = accountProfile.name;
+      document.getElementById('customerContact').value = accountProfile.contact;
+      document.getElementById('customerAddress').value = accountProfile.streetAddress;
+      document.getElementById('customerCity').value = accountProfile.city;
+      document.getElementById('customerProvince').value = accountProfile.province;
+      document.getElementById('customerZip').value = accountProfile.zipCode;
+
       const bookingParams = new URLSearchParams(window.location.search);
       const requiredBookingFields = ['from', 'to', 'date', 'time', 'weight', 'type'];
       const bookingIsComplete = requiredBookingFields.every(

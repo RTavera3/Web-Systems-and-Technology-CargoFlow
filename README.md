@@ -37,6 +37,7 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 | **Cost Sharing**         | Split transport costs among multiple shippers sharing one truck   |
 | **Cargo Booking**        | Reserve available cargo space in a few clicks                     |
 | **Shipment Tracking**    | Monitor shipment status from pickup to delivery                   |
+| **Account Profile**      | Manage shipper contact details and review local booking records    |
 | **Direct Messaging**     | Communicate with carriers directly inside the platform            |
 | **Capacity Utilization** | Help carriers earn more by filling empty truck space              |
 
@@ -68,7 +69,9 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 > **Note:** No framework, no build step, and no backend. Plain HTML, CSS, and
 > JavaScript, plus Bootstrap 5 (via CDN) on the home page only. Shipment
 > tracking uses mock data; carrier messaging persists to `localStorage` in
-> your own browser. Everything else runs entirely client-side.
+> your own browser. Account details and submitted booking records are also
+> stored in the current browser; payments and shipment status are not
+> connected to a live service.
 
 ---
 
@@ -104,7 +107,8 @@ so a local server is the more reliable option.
 a floating "Get a price" quote card, a shipment-tracking widget, a carrier
 CTA, and an About section. Every other page lives under `pages/`:
 `contact.html`, `booking-details.html`, `payment.html`, `messages.html`
-(carrier chat with `localStorage`-backed history), and `trackshipment.html`
+(carrier chat with `localStorage`-backed history), `profile.html` (local account
+details and ongoing/past booking records), and `trackshipment.html`
 (the full tracking page, separate from the home page's quick widget).
 
 The design follows the CargoFlow brand palette: deep blue (`#0B3D91`) and
@@ -153,7 +157,7 @@ build step, router, or bundler is involved.
 1. **Home** — platform overview and quick search
 2. **Book Cargo Space** — reserve space and view shared cost breakdown
 3. **Track Shipment** — see shipment status and timeline
-4. **Shipment History** - for viewing active and past bookings. 
+4. **Account Profile & Shipment History** — manage shipper details and review ongoing and past booking records
 5. **Messages** — chat directly with carriers
 
 ---
