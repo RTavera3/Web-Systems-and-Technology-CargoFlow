@@ -145,9 +145,12 @@ form.addEventListener("submit", async (event) => {
     const shipment = await getShipment(enteredCode);
     renderShipment(enteredCode, shipment);
   } catch (error) {
-    // Until bookings are stored on the server, fall back to
-    // bookings saved in this browser.
-    const booking = error.status === 404 ? getStoredBooking(enteredCode) : null;
+    // Until bookings are stored on the server, fall back to bookings saved
+    // in this browser: when the server doesn't know the code (404), and
+    // when it can't be reached at all (no status), so they still show.
+    const booking = error.status === 404 || error.status === undefined
+      ? getStoredBooking(enteredCode)
+      : null;
 
     if (booking) {
       renderShipment(enteredCode, booking);

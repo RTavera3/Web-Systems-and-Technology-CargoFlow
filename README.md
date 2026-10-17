@@ -102,6 +102,7 @@ Then open **http://localhost:3000**. The terminal shows
 | ------------- | ------------------------------------------------------------------------ |
 | `npm start`   | Runs the server (`node server.js`)                                       |
 | `npm run dev` | Runs the server and restarts it whenever a file changes (`node --watch`) |
+| `npm test`    | Runs the API tests in `test/` (`node --test`, with Supertest)            |
 
 To check the backend is running, open **http://localhost:3000/api/health**.
 Stop the server with `Ctrl + C`.
@@ -160,7 +161,8 @@ metadata; system sans-serif fallbacks are used when offline.
 The Express server in `server.js` exposes a small REST API under `/api`. Requests
 and responses are JSON. The Messages page (`js/messages.js`) uses it to load, send
 and clear the carrier chat, so the conversation is the same in every browser that
-opens the site and is still there after the server restarts.
+opens the site and is still there after the server restarts. The Track Shipment
+page (`js/trackshipment.js`, through `js/api.js`) uses it to look up a tracking code.
 
 | Method   | Route           | What it does                                 | Success response |
 | -------- | --------------- | -------------------------------------------- | ---------------- |
@@ -168,6 +170,21 @@ opens the site and is still there after the server restarts.
 | `GET`    | `/api/messages` | Returns the whole chat history, oldest first | `200` an array of messages |
 | `POST`   | `/api/messages` | Saves one new message                        | `201` `{ "message": "Message saved successfully.", "data": { ...the saved message } }` |
 | `DELETE` | `/api/messages` | Deletes every message                        | `200` `{ "message": "All messages deleted successfully." }` |
+| `GET`    | `/api/shipments/:code` | Returns one shipment's route, ETA, status and timeline | `200` `{ "code": "CF-24810293", "route": "Manila → Cebu", "eta": ..., "status": "In Transit", "badgeClass": ..., "timeline": [ ... ] }` |
+
+### Tracking a shipment
+
+`GET /api/shipments/:code` takes a tracking code such as `CF-24810293`. Case and
+surrounding spaces don't matter. For now the server only knows the demo shipment in
+`lib/shipments.js`. Bookings made on the site are still saved in the browser, so when
+the server answers `404`, or can't be reached, the Track Shipment page looks the code
+up among this browser's saved bookings instead.
+
+| Situation                                        | Status | Response body |
+| ------------------------------------------------ | ------ | ------------- |
+| No code (`/api/shipments/`)                      | `400`  | `{ "error": "Tracking code is required." }` |
+| Code isn't `CF-` plus 4-12 letters or digits     | `400`  | `{ "error": "Tracking code must look like CF-24810293." }` |
+| Well-formed code the server doesn't know         | `404`  | `{ "error": "No shipment found for that tracking number." }` |
 
 ### Sending a message
 
@@ -212,7 +229,14 @@ curl -X POST http://localhost:3000/api/messages \
   -H "Content-Type: application/json" \
   -d '{"text":"Hello from curl"}'
 curl -X DELETE http://localhost:3000/api/messages
+curl http://localhost:3000/api/shipments/CF-24810293
 ```
+
+### Tests
+
+`npm test` runs the tests in `test/` with Node's built-in test runner. They use
+[Supertest](https://github.com/ladjs/supertest) to call the API without starting the
+server, so nothing needs to be running first.
 
 ### Where the data lives
 
@@ -228,7 +252,13 @@ each write. To reset the chat, use the trash icon on the Messages page, call
 ```
 Web-Systems-and-Technology-CargoFlow/
 ├── server.js                     # Express backend: serves the site and the /api routes
-├── package.json                  # Project info, npm scripts (start, dev), Express and CORS
+├── package.json                  # Project info, npm scripts (start, dev, test), Express and CORS
+├── routes/
+│   └── shipments.js              # GET /api/shipments/:code
+├── lib/
+│   └── shipments.js              # Shipment data the tracking route looks up (demo shipment for now)
+├── test/
+│   └── shipments.test.js         # API tests for the shipments route (npm test)
 ├── data/
 │   └── messages.json             # Chat history saved by the messages API (created if missing)
 ├── index.html                    # Home page: hero, quote form, track widget, carrier CTA, about
@@ -238,6 +268,7 @@ Web-Systems-and-Technology-CargoFlow/
 │   ├── storage.js                # Shared localStorage module for bookings and the profile, with versioning
 │   ├── track.js                  # Home page's quick shipment-tracking widget
 │   ├── trackshipment.js          # Full tracking page logic (pages/trackshipment.html)
+│   ├── api.js                    # Fetch helper for the shipments API
 │   ├── history.js                # Shipment History list, filters, search and sort (pages/history.html)
 │   ├── profile.js                # Account Profile form (pages/profile.html)
 │   └── messages.js               # Carrier chat: loads, sends and clears messages through the API

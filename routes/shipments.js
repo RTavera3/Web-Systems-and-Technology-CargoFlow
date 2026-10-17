@@ -3,8 +3,8 @@ const { findShipment } = require("../lib/shipments");
 
 const router = express.Router();
 
-// Assumed format: "CF-" plus 4-12 letters or digits. Adjust once we see
-// what code format payment.js generates.
+// "CF-" plus 4-12 letters or digits. js/payment.js generates "CF-" plus
+// 8 digits (e.g. CF-04829371), which this accepts.
 const CODE_PATTERN = /^CF-[A-Z0-9]{4,12}$/;
 
 router.get("/", (req, res) => {
