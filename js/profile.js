@@ -1,189 +1,88 @@
+/**
+ * Account Profile page.
+ *
+ * Shows and edits the shipper's account details. They are saved through
+ * js/storage.js (in this browser only; there are no real accounts) and
+ * reused elsewhere:
+ *   - js/booking-details.js fills step 4's "Account Owner Details" with them.
+ *   - js/payment.js starts on the preferred payment method.
+ * Bookings themselves are listed on pages/history.html, so this page only
+ * links there with a count.
+ */
+
+import { getProfile, listBookings, saveProfile } from './storage.js';
+
+/** @type {HTMLFormElement} */
 const profileForm = document.getElementById('profileForm');
+/** @type {HTMLElement} "Profile saved" / error line next to the Save button. */
 const profileSaveStatus = document.getElementById('profileSaveStatus');
+
+/** Profile fields edited by the form, matching each control's `name`. */
 const profileFields = [
-  'name',
-  'accountType',
-  'companyName',
-  'email',
-  'contact',
-  'streetAddress',
-  'city',
-  'province',
-  'zipCode',
-  'emergencyContact',
-  'preferredPayment',
-  'notifications',
+  'name', 'accountType', 'companyName', 'email', 'contact', 'emergencyContact',
+  'streetAddress', 'city', 'province', 'zipCode', 'preferredPayment', 'notifications',
 ];
-const accountProfile = window.CargoFlowAccount.getProfile();
-if (!accountProfile.memberSince) {
-  accountProfile.memberSince = new Intl.DateTimeFormat(undefined, {
-    month: 'short',
-    year: 'numeric',
-  }).format(new Date());
-  window.CargoFlowAccount.saveProfile(accountProfile);
+
+const profile = getProfile();
+
+// Record the first visit as the "member since" date.
+if (!profile.memberSince) {
+  profile.memberSince = new Date().toISOString();
+  saveProfile(profile);
 }
 
-profileFields.forEach((name) => {
-  profileForm.elements[name].value = accountProfile[name] || '';
-});
-document.getElementById('profileUserId').textContent = accountProfile.userId;
-document.getElementById('profileMemberSince').textContent = accountProfile.memberSince;
-
-function updateProfileIdentity(profile) {
-  const name = profile.name.trim();
-  document.getElementById('profileTitle').textContent = name;
+/**
+ * Updates the summary card (avatar initials, name, account type) from a
+ * profile.
+ * @param {import('./storage.js').AccountProfile} details
+ */
+const renderSummary = (details) => {
+  const name = details.name.trim();
+  document.getElementById('profileName').textContent = name;
   document.getElementById('profileAccountType').textContent =
-    profile.accountType === 'Business' && profile.companyName
-      ? `${profile.companyName} · Business`
-      : profile.accountType;
+    details.accountType === 'Business' && details.companyName
+      ? `${details.companyName} · Business`
+      : details.accountType;
   document.getElementById('profileAvatar').textContent = name
     .split(/\s+/)
     .slice(0, 2)
-    .map((part) => part[0])
+    .map((part) => part[0] ?? '')
     .join('')
     .toUpperCase();
-}
+};
 
-updateProfileIdentity(accountProfile);
+profileFields.forEach((field) => {
+  profileForm.elements[field].value = profile[field] ?? '';
+});
+document.getElementById('profileUserId').textContent = profile.userId;
+const memberSince = new Date(profile.memberSince);
+document.getElementById('profileMemberSince').textContent = Number.isNaN(memberSince.getTime())
+  ? profile.memberSince
+  : new Intl.DateTimeFormat(undefined, { month: 'short', year: 'numeric' }).format(memberSince);
+document.getElementById('profileBookingCount').textContent = String(listBookings().length);
+renderSummary(profile);
 
 profileForm.addEventListener('submit', (event) => {
   event.preventDefault();
-  const updatedProfile = { ...accountProfile };
-  profileFields.forEach((name) => {
-    updatedProfile[name] = profileForm.elements[name].value.trim();
+  if (!profileForm.checkValidity()) {
+    profileForm.classList.add('was-validated');
+    profileSaveStatus.textContent = '';
+    return;
+  }
+  profileFields.forEach((field) => {
+    profile[field] = profileForm.elements[field].value.trim();
   });
-  try {
-    window.CargoFlowAccount.saveProfile(updatedProfile);
-    Object.assign(accountProfile, updatedProfile);
-    updateProfileIdentity(accountProfile);
+  if (saveProfile(profile)) {
+    renderSummary(profile);
     profileSaveStatus.textContent = 'Profile saved in this browser.';
-    profileSaveStatus.removeAttribute('data-error');
-  } catch (error) {
-    console.error('Unable to save account profile:', error);
+    profileSaveStatus.classList.remove('text-danger');
+  } else {
     profileSaveStatus.textContent = 'Unable to save your profile in this browser. Please try again.';
-    profileSaveStatus.dataset.error = 'true';
+    profileSaveStatus.classList.add('text-danger');
   }
 });
 
-function createCell(text) {
-  const cell = document.createElement('td');
-  cell.textContent = text || '—';
-  return cell;
-}
-
-function createTransactionRow(transaction) {
-  const row = document.createElement('tr');
-  const reference = document.createElement('strong');
-  reference.textContent = transaction.id || 'Booking';
-  const referenceCell = document.createElement('td');
-  referenceCell.append(reference);
-
-  const routeCell = createCell(transaction.route);
-  const detailsCell = document.createElement('td');
-  detailsCell.textContent = `${transaction.sender || accountProfile.name} → ${transaction.receiver || 'Receiver'}`;
-  const cargoCell = document.createElement('td');
-  const declaredValue = Number(transaction.declaredValue);
-  const formattedValue = Number.isFinite(declaredValue)
-    ? new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(declaredValue)
-    : 'Value not provided';
-  cargoCell.textContent = [
-    transaction.cargoDescription,
-    transaction.packageCount ? `${transaction.packageCount} package(s)` : '',
-    `Declared ${formattedValue}`,
-  ].filter(Boolean).join(' · ');
-
-  const date = transaction.shipmentDate
-    ? new Date(`${transaction.shipmentDate}T00:00:00`)
-    : new Date(transaction.createdAt);
-  const dateCell = createCell(Number.isNaN(date.getTime())
-    ? 'Date unavailable'
-    : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date));
-
-  const statusCell = document.createElement('td');
-  const statusBadge = document.createElement('span');
-  statusBadge.className = `transaction-status status-${transaction.status || 'submitted'}`;
-  statusBadge.textContent = transaction.status === 'delivered'
-    ? 'Delivered'
-    : transaction.status === 'cancelled'
-      ? 'Cancelled'
-      : 'Booking submitted';
-  statusCell.append(statusBadge);
-
-  const paymentCell = createCell(
-    transaction.paymentStatus === 'paid'
-      ? 'Paid'
-      : transaction.paymentMethod
-        ? `${transaction.paymentMethod} · pending`
-        : 'Pending',
-  );
-  row.append(referenceCell, routeCell, detailsCell, cargoCell, dateCell, statusCell, paymentCell);
-  return row;
-}
-
-function renderTransactions() {
-  const transactions = window.CargoFlowAccount.getTransactions();
-  const ongoing = transactions.filter(
-    (transaction) => !['delivered', 'cancelled'].includes(transaction.status),
-  );
-  const past = transactions.filter(
-    (transaction) => ['delivered', 'cancelled'].includes(transaction.status),
-  );
-  document.getElementById('ongoingCount').textContent = ongoing.length;
-  document.getElementById('pastCount').textContent = past.length;
-
-  [
-    [document.getElementById('ongoingList'), ongoing, 'No ongoing bookings yet. Your submitted bookings will appear here.'],
-    [document.getElementById('pastList'), past, 'Completed and cancelled bookings will appear here.'],
-  ].forEach(([container, records, emptyMessage]) => {
-    container.replaceChildren();
-    if (!records.length) {
-      const empty = document.createElement('p');
-      empty.className = 'transaction-empty';
-      empty.textContent = emptyMessage;
-      container.append(empty);
-      return;
-    }
-
-    const table = document.createElement('table');
-    table.className = 'transaction-table';
-    const header = document.createElement('thead');
-    const headerRow = document.createElement('tr');
-    ['Booking', 'Route', 'Sender → Receiver', 'Cargo details', 'Ship date', 'Status', 'Payment'].forEach((label) => {
-      const cell = document.createElement('th');
-      cell.scope = 'col';
-      cell.textContent = label;
-      headerRow.append(cell);
-    });
-    header.append(headerRow);
-    const body = document.createElement('tbody');
-    records.forEach((transaction) => body.append(createTransactionRow(transaction)));
-    table.append(header, body);
-    container.append(table);
-  });
-}
-
-const transactionTabs = [
-  [document.getElementById('ongoingTab'), document.getElementById('ongoingTransactions')],
-  [document.getElementById('pastTab'), document.getElementById('pastTransactions')],
-];
-transactionTabs.forEach(([tab]) => {
-  tab.addEventListener('click', () => {
-    transactionTabs.forEach(([otherTab, panel]) => {
-      const selected = otherTab === tab;
-      otherTab.setAttribute('aria-selected', String(selected));
-      otherTab.tabIndex = selected ? 0 : -1;
-      panel.hidden = !selected;
-    });
-  });
-  tab.addEventListener('keydown', (event) => {
-    if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
-    event.preventDefault();
-    const currentIndex = transactionTabs.findIndex(([item]) => item === tab);
-    const direction = event.key === 'ArrowRight' ? 1 : -1;
-    const next = transactionTabs[(currentIndex + direction + transactionTabs.length) % transactionTabs.length][0];
-    next.focus();
-    next.click();
-  });
+// Clear the "saved" message once the form is edited again.
+profileForm.addEventListener('input', () => {
+  profileSaveStatus.textContent = '';
 });
-
-renderTransactions();
