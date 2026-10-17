@@ -1,52 +1,24 @@
 /**
  * Track Shipment page.
  *
- * There is no backend, so tracking results come from two sources, checked
- * in order:
- *   1. `knownShipments` below - one hardcoded sample shipment
- *      (CF-24810293) with a full fake "in transit" timeline, used for demos
- *      and grading.
- *   2. Bookings saved by js/payment.js through js/storage.js when someone
- *      completes the booking + payment flow.
- *      These always render as "Booking Placed" (nothing has actually been
- *      picked up yet in this simulation).
- *
- * Both sources are normalized into the same shape (see `renderShipment`)
- * so one render function can display either.
+ * tracking results come from 
+ * GET /api/shipments/:code via api.js, 
+ * with a fallback to bookings saved in this browser.
  */
 
 import { findBooking } from './storage.js';
+import { getShipment } from './api.js';
+
+
 
 /**
- * The one hardcoded demo shipment, keyed by tracking code.
- * @type {Record<string, {
- *   route: string,
- *   eta: string,
- *   status: string,
- *   badgeClass: string,
- *   timeline: {label: string, time: string, state: string}[],
- * }>}
- */
-const knownShipments = {
-  "CF-24810293": {
-    route: "Manila &rarr; Cebu",
-    eta: "Sept 15, 2026",
-    status: "In Transit",
-    badgeClass: "cf-badge-transit",
-    timeline: [
-      { label: "Order Placed", time: "Sept 10, 8:00 AM", state: "is-done" },
-      { label: "Picked Up", time: "Sept 10, 2:30 PM", state: "is-done" },
-      { label: "In Transit", time: "Sept 12, 9:15 AM", state: "is-current" },
-      { label: "Out for Delivery", time: "Estimated Sept 15", state: "is-upcoming" },
-      { label: "Delivered", time: "Estimated Sept 15", state: "is-upcoming" },
-    ],
-  },
-};
-
-/**
- * Looks up a tracking code among the real bookings saved by
- * js/payment.js, and if found, builds the same "shipment" shape that
- * `knownShipments` entries use so `renderShipment` can display it.
+ * Looks up a tracking code among the bookings saved in this browser by
+ * js/payment.js (through js/storage.js). If one is found, it builds the
+ * same shape the server returns from GET /api/shipments/:code, so
+ * `renderShipment` can display either one.
+ *
+ * This is only the fallback. The server is asked first, and this runs
+ * when the server answers 404 for a code it doesn't know.
  *
  * Because a booking has only just been paid for (never actually picked
  * up), the timeline always shows step 1 ("Order Placed") as done, the
@@ -72,7 +44,7 @@ function getStoredBooking(code) {
   });
 
   return {
-    route: `${booking.from} &rarr; ${booking.to}`,
+    route: `${booking.from} → ${booking.to}`,
     eta: `${booking.pickupDate} (pending pickup)`,
     status: "Booking Placed",
     badgeClass: "cf-badge-placed",
@@ -101,38 +73,40 @@ const trackButton = form.querySelector("button[type='submit']");
 
 /**
  * Fills in and reveals the shipment summary card + delivery timeline for
- * a found shipment (from either `knownShipments` or `getStoredBooking`).
+ * a found shipment (from the server's response or from `getStoredBooking`).
  *
- * `summaryRoute` is set with `innerHTML` (not `textContent`) because the
- * route string contains an `&rarr;` HTML entity for the arrow between
- * cities; the timeline `<li>` markup is rebuilt from scratch every call so
- * it always matches the given shipment's own step count/labels/state,
- * rather than trying to patch the 5 sample `<li>`s already in the HTML.
- *
- * @param {string} code The tracking code, used for display only.
- * @param {{
- *   route: string, eta: string, status: string, badgeClass: string,
- *   timeline: {label: string, time: string, state: string}[],
- * }} shipment
+ * Every value is inserted with `textContent` and `createElement`, never
+ * `innerHTML`, so booking data (city names, dates) can't inject HTML
+ * into the page.
  */
 function renderShipment(code, shipment) {
   summaryCode.textContent = code;
   summaryTrackingId.textContent = code;
-  summaryRoute.innerHTML = shipment.route;
+  summaryRoute.textContent = shipment.route;
   summaryEta.textContent = shipment.eta;
   summaryBadge.textContent = shipment.status;
   summaryBadge.className = `badge ${shipment.badgeClass} fs-6 mb-3`;
 
-  timelineList.innerHTML = shipment.timeline
-    .map(
-      (step) => `
-        <li class="cf-step ${step.state}">
-          <span class="cf-step-dot"></span>
-          <p class="cf-step-label">${step.label}</p>
-          <p class="cf-step-time">${step.time}</p>
-        </li>`,
-    )
-    .join("");
+  timelineList.replaceChildren(
+    ...shipment.timeline.map((step) => {
+      const li = document.createElement("li");
+      li.className = `cf-step ${step.state}`;
+
+      const dot = document.createElement("span");
+      dot.className = "cf-step-dot";
+
+      const label = document.createElement("p");
+      label.className = "cf-step-label";
+      label.textContent = step.label;
+
+      const time = document.createElement("p");
+      time.className = "cf-step-time";
+      time.textContent = step.time;
+
+      li.append(dot, label, time);
+      return li;
+    }),
+  );
 
   summarySection.hidden = false;
   timelineSection.hidden = false;
@@ -143,49 +117,52 @@ function renderShipment(code, shipment) {
  * Handles the tracking search form's submit event.
  *
  * Flow:
- *   1. Empty input -> show a "please enter a code" message and stop.
- *   2. Otherwise, disable the button and show "Searching..." for 600ms
- *      (a fake delay purely for the feel of a real lookup - there is no
- *      actual network request).
- *   3. Look the code up in `knownShipments` first, then in saved bookings
- *      via `getStoredBooking`. If found, render it; otherwise show the
- *      "not found" message with a hint toward the sample code.
- *   4. Re-enable the button either way.
+ *  1. Empty input -> shows a message, then the button shows “Searching...”, 
+ *  getShipment() is called, the result is rendered or an error message is shown, 
+ *  and the button is re-enabled.
  */
-form.addEventListener("submit", (event) => {
+function showMessage(text) {
+  summarySection.hidden = true;
+  timelineSection.hidden = true;
+  notFoundMessage.hidden = false;
+  notFoundMessage.textContent = text;
+}
+
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const enteredCode = trackingInput.value.trim().toUpperCase();
 
-  // Empty input — show a distinct message, skip the fake "search"
   if (enteredCode === "") {
-    summarySection.hidden = true;
-    timelineSection.hidden = true;
-    notFoundMessage.hidden = false;
-    notFoundMessage.textContent = "Please enter a tracking number.";
+    showMessage("Please enter a tracking number.");
     return;
   }
 
-  // Brief fake loading state for realism
   trackButton.disabled = true;
   trackButton.textContent = "Searching...";
 
-  setTimeout(() => {
-    const shipment = knownShipments[enteredCode] || getStoredBooking(enteredCode);
+  try {
+    const shipment = await getShipment(enteredCode);
+    renderShipment(enteredCode, shipment);
+  } catch (error) {
+    // Until bookings are stored on the server, fall back to bookings saved
+    // in this browser: when the server doesn't know the code (404), and
+    // when it can't be reached at all (no status), so they still show.
+    const booking = error.status === 404 || error.status === undefined
+      ? getStoredBooking(enteredCode)
+      : null;
 
-    if (shipment) {
-      renderShipment(enteredCode, shipment);
+    if (booking) {
+      renderShipment(enteredCode, booking);
+    } else if (error.status === 400 || error.status === 404) {
+      showMessage(error.message);
     } else {
-      summarySection.hidden = true;
-      timelineSection.hidden = true;
-      notFoundMessage.hidden = false;
-      notFoundMessage.innerHTML =
-        'No shipment found for that tracking number. Try <strong>CF-24810293</strong> for a sample result.';
+      showMessage("Could not reach the server. Please try again.");
     }
-
+  } finally {
     trackButton.disabled = false;
     trackButton.textContent = "Track";
-  }, 600);
+  }
 });
 
 /**

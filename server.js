@@ -150,11 +150,18 @@ app.delete('/api/messages', (req, res) => {
   }
 });
 
+const shipmentsRouter = require("./routes/shipments");
+app.use("/api/shipments", shipmentsRouter);
+
 // Anything else is not part of the site.
 app.use((req, res) => {
   res.status(404).send("Page not found");
 });
 
-app.listen(PORT, () => {
-  console.log(`CargoFlow running on http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`CargoFlow running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
