@@ -10,6 +10,9 @@
  *     tracking code, e.g. { "CF-04829371": { from, to, ... } }.
  *   - Chat messages: saved and cleared by js/messages.js. Stored under
  *     "chatMessages" as an array of { text, messageType, time }.
+ *   - Account profile: edited on pages/profile.html (js/profile.js), read by
+ *     js/booking-details.js and js/payment.js to prefill the account owner
+ *     and payment method. Stored under "cargoflow_profile" as one object.
  *
  * There is no backend, so everything stays in this browser. Reads never
  * throw: a missing, blocked (private mode) or corrupted value comes back as
@@ -28,6 +31,7 @@ export const STORAGE_VERSION = 1;
 export const KEYS = Object.freeze({
   bookings: 'cargoflow_bookings',
   messages: 'chatMessages',
+  profile: 'cargoflow_profile',
   version: 'cargoflow_storage_version',
 });
 
@@ -221,4 +225,63 @@ export function addMessage(message) {
 /** Deletes the saved chat history. */
 export function clearMessages() {
   remove(KEYS.messages);
+}
+
+// --- Account profile ----------------------------------------------------------
+
+/**
+ * The shipper's account details. There are no real accounts, so this is a
+ * single profile per browser.
+ * @typedef {Object} AccountProfile
+ * @property {string} userId
+ * @property {string} name
+ * @property {string} accountType       "Individual shipper" or "Business".
+ * @property {string} companyName
+ * @property {string} email
+ * @property {string} contact
+ * @property {string} streetAddress
+ * @property {string} city
+ * @property {string} province
+ * @property {string} zipCode
+ * @property {string} emergencyContact
+ * @property {string} preferredPayment  "" for no preference, else a payment method.
+ * @property {string} notifications     How booking updates are sent.
+ * @property {string} memberSince       ISO timestamp of the first visit to the profile page.
+ */
+
+/** The demo account used until the profile is edited. */
+export const DEFAULT_PROFILE = Object.freeze({
+  userId: 'BC0001',
+  name: 'Juan Dela Cruz',
+  accountType: 'Individual shipper',
+  companyName: '',
+  email: '',
+  contact: '0999-123-4567',
+  streetAddress: '123 Rizal Street, Barangay 143',
+  city: 'Quezon City',
+  province: 'Metro Manila',
+  zipCode: '1100',
+  emergencyContact: '',
+  preferredPayment: '',
+  notifications: 'Email and SMS',
+  memberSince: '',
+});
+
+/**
+ * The saved account profile, with any missing field filled from
+ * DEFAULT_PROFILE.
+ * @returns {AccountProfile}
+ */
+export function getProfile() {
+  const saved = readJson(KEYS.profile, {});
+  return { ...DEFAULT_PROFILE, ...(isPlainObject(saved) ? saved : {}) };
+}
+
+/**
+ * Saves the account profile.
+ * @param {AccountProfile} profile
+ * @returns {boolean} false if it could not be saved.
+ */
+export function saveProfile(profile) {
+  return writeJson(KEYS.profile, { ...DEFAULT_PROFILE, ...profile });
 }

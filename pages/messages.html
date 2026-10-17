@@ -43,6 +43,7 @@
             <li class="nav-item"><a class="nav-link" href="trackshipment.html">Track shipment</a></li>
             <li class="nav-item"><a class="nav-link" href="history.html">My shipments</a></li>
             <li class="nav-item"><a class="nav-link active" aria-current="page" href="messages.html">Connect to carrier</a></li>
+            <li class="nav-item"><a class="nav-link" href="profile.html">Account profile</a></li>
             <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
             <li class="nav-item"><a class="nav-link" href="contact.html">Contact Us</a></li>
           </ul>
@@ -110,12 +111,16 @@
           </div>
 
           <!-- Chat messages are rendered by js/messages.js's loadMessages(). -->
-          <div class="messages-container"></div>
+          <div class="messages-container" role="log" aria-live="polite" aria-label="Chat messages"></div>
 
           <div class="chat-input-area">
-            <input class="message-input" type="text" placeholder="Type a message..." aria-label="Message text" maxlength="500">
-            <button class="send-btn" type="button" aria-label="Send message">➤</button>
+            <div class="message-compose-field">
+              <input class="message-input" type="text" placeholder="Type a message..." aria-label="Message text" maxlength="500" aria-describedby="messageCharacterCount">
+              <span class="message-character-count" id="messageCharacterCount">0 / 500</span>
+            </div>
+            <button class="send-btn" type="button" aria-label="Send message" disabled>➤</button>
           </div>
+          <p class="message-send-status" id="messageSendStatus" role="status" aria-live="polite"></p>
         </section>
       </div>
     </main>
