@@ -19,7 +19,8 @@
  * single render function can display them.
  */
 
-import { listBookings } from './storage.js';
+/** Where the CargoFlow server runs. Same as js/messages.js. */
+const API_BASE_URL = 'http://localhost:3000';
 
 /**
  * One shipment row, after normalizing either source.
@@ -98,23 +99,21 @@ const statusBadgeClass = {
 };
 
 /**
- * Converts one booking saved by js/payment.js into a Shipment row.
+ * Converts one booking from the server (GET /api/bookings) into a Shipment row.
  *
- * payment.js stores only `from`, `to`, `pickupDate`, `pickupTime`,
- * `paymentMethod` and `createdAt`, and fills any missing form value with
- * "Not provided". It does not store a price, so `cost` is null and the
- * table shows a dash instead of a made-up number.
+ * The server saves every field from the booking form, including `code`,
+ * `date` and `paymentMethod`. It does not save a price, so `cost` is null
+ * and the table shows a dash instead of a made-up number.
  *
- * @param {string} code The booking's tracking code.
- * @param {{from: string, to: string, pickupDate: string, paymentMethod: string}} booking
+ * @param {{code: string, from: string, to: string, date: string, paymentMethod: string}} booking
  * @returns {Shipment}
  */
-function normalizeBooking(code, booking) {
+function normalizeBooking(booking) {
   return {
-    code,
+    code: booking.code,
     from: booking.from,
     to: booking.to,
-    pickupDate: booking.pickupDate,
+    pickupDate: booking.date,
     payment: formatPaymentMethod(booking.paymentMethod),
     cost: null,
     status: "Booking Placed",
@@ -134,13 +133,26 @@ function formatPaymentMethod(method) {
 }
 
 /**
- * Reads the bookings saved by js/payment.js. js/storage.js already turns a
- * missing or corrupted value into "no bookings", so this never throws.
- * @returns {Shipment[]}
+ * Loads the saved bookings from the server. If the server can't be reached,
+ * the page still works and shows only the sample shipments.
+ * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+ * @returns {Promise<Shipment[]>}
  */
-function getSavedBookings() {
-  return listBookings().map(({ code, ...booking }) => normalizeBooking(code, booking));
+async function getSavedBookings() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/bookings`);
+    if (!response.ok) throw new Error(`Server returned status ${response.status}`);
+    const bookings = await response.json();
+    return bookings.map(normalizeBooking);
+  } catch (error) {
+    console.error('Error loading bookings:', error);
+    return [];
+  }
 }
+
+// Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await#top_level_await
+// Waits for the bookings before the page builds the table below.
+const savedBookings = await getSavedBookings();
 
 /**
  * Every shipment shown on the page: saved bookings first, then the samples.
@@ -148,7 +160,6 @@ function getSavedBookings() {
  * code never appears twice.
  * @type {Shipment[]}
  */
-const savedBookings = getSavedBookings();
 const savedCodes = new Set(savedBookings.map((s) => s.code));
 const allShipments = [...savedBookings, ...sampleShipments.filter((s) => !savedCodes.has(s.code))];
 
@@ -256,7 +267,7 @@ function buildRow(shipment) {
   costCell.className = "text-end";
   costCell.textContent = formatPeso(shipment.cost);
   if (shipment.cost === null) {
-    costCell.title = "Price not saved for bookings made on this device";
+    costCell.title = "Price not saved for this booking";
   }
 
   const statusCell = document.createElement("td");
