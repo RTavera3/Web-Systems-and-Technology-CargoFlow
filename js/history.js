@@ -114,12 +114,12 @@ const statusBadgeClass = {
 function normalizeBooking(code, booking) {
   return {
     code,
-    from: booking.from,
-    to: booking.to,
-    pickupDate: booking.pickupDate,
-    payment: formatPaymentMethod(booking.paymentMethod),
-    cost: null,
-    status: "Booking Placed",
+    from: booking.from || booking.origin || 'Not provided',
+    to: booking.to || booking.destination || 'Not provided',
+    pickupDate: booking.pickupDate || booking.date || 'Not provided',
+    payment: formatPaymentMethod(booking.paymentMethod || booking.payment),
+    cost: booking.cost ?? null,
+    status: booking.status || "Booking Placed",
     trackable: true,
   };
 }
@@ -134,8 +134,6 @@ function normalizeBooking(code, booking) {
 function formatPaymentMethod(method) {
   return method && method.trim() ? method : "Not provided";
 }
-
-const API_BASE_URL = 'http://localhost:3000';
 
 /**
  * Reads saved bookings from the Express server (/api/bookings).
@@ -152,12 +150,7 @@ async function getSavedBookings() {
     return serverBookings.map((b) => {
       // Support tracking code whether saved as `id`, `code`, or `trackingCode`
       const code = b.id || b.code || b.trackingCode || 'CF-UNKNOWN';
-      return normalizeBooking(code, {
-        from: b.from || b.origin || 'Not provided',
-        to: b.to || b.destination || 'Not provided',
-        pickupDate: b.pickupDate || b.date || 'Not provided',
-        paymentMethod: b.paymentMethod || 'Not provided'
-      });
+      return normalizeBooking(code, b);
     });
   } catch (error) {
     console.warn('Could not load bookings from server; falling back to local storage.', error);
@@ -172,9 +165,6 @@ async function getSavedBookings() {
  * code never appears twice.
  * @type {Shipment[]}
  */
-const savedBookings = getSavedBookings();
-const savedCodes = new Set(savedBookings.map((s) => s.code));
-const allShipments = [...savedBookings, ...sampleShipments.filter((s) => !savedCodes.has(s.code))];
 
 // --- Page elements ---
 const rowsEl = document.getElementById("history-rows");
@@ -285,7 +275,7 @@ function buildRow(shipment) {
 
   const statusCell = document.createElement("td");
   const badge = document.createElement("span");
-  badge.className = `badge ${statusBadgeClass[shipment.status]}`;
+  badge.className = `badge ${statusBadgeClass[shipment.status] || 'cf-badge-placed'}`;
   badge.textContent = shipment.status;
   statusCell.appendChild(badge);
 
@@ -352,5 +342,28 @@ filterButtons.forEach((button) => {
 searchEl.addEventListener("input", render);
 sortEl.addEventListener("change", render);
 
-renderStats();
-render();
+// Change `allShipments` to a mutable array initialized asynchronously
+let allShipments = [];
+
+/**
+ * Initializes history data by fetching server bookings first,
+ * merging them with sample data, and rendering the UI.
+ */
+async function initHistory() {
+  const savedBookings = await getSavedBookings();
+  const savedCodes = new Set(savedBookings.map((s) => s.code));
+
+  // Merge server bookings with sample demo shipments (avoiding duplicates)
+  allShipments = [...savedBookings, ...sampleShipments.filter((s) => !savedCodes.has(s.code))];
+
+  renderStats();
+  render();
+}
+
+// Start async initialization on page load
+// Ensure DOM elements are fully loaded before rendering
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initHistory);
+} else {
+  initHistory();
+}

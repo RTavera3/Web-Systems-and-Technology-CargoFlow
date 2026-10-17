@@ -47,46 +47,81 @@ const knownShipments = {
 };
 
 /**
- * Looks up a tracking code among the real bookings saved by
- * js/payment.js, and if found, builds the same "shipment" shape that
- * `knownShipments` entries use so `renderShipment` can display it.
- *
- * Because a booking has only just been paid for (never actually picked
- * up), the timeline always shows step 1 ("Order Placed") as done, the
- * scheduled pickup date/time as the next (upcoming) step, and everything
- * after that as "Pending pickup".
+ * Looks up a tracking code from the Express server (/api/bookings), and if found,
+ * builds the same "shipment" shape that `knownShipments` entries use.
+ * Falls back to local storage if the server is unreachable.
  *
  * @param {string} code Tracking code, already trimmed/uppercased.
- * @returns {{
- *   route: string, eta: string, status: string, badgeClass: string,
- *   timeline: {label: string, time: string, state: string}[],
- * }|null} null if no booking with that code has been saved.
+ * @returns {Promise<Object|null>}
  */
-function getStoredBooking(code) {
-  const booking = findBooking(code);
-  if (!booking) return null;
+async function getStoredBooking(code) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/bookings`);
+    if (!response.ok) throw new Error('Failed to fetch bookings from server.');
+    
+    const bookings = await response.json();
+    const booking = bookings.find((b) => {
+      const bCode = (b.id || b.code || b.trackingCode || '').toUpperCase();
+      return bCode === code;
+    });
 
-  const placedAt = new Date(booking.createdAt);
-  const placedLabel = placedAt.toLocaleString("en-PH", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+    if (!booking) return null;
 
-  return {
-    route: `${booking.from} &rarr; ${booking.to}`,
-    eta: `${booking.pickupDate} (pending pickup)`,
-    status: "Booking Placed",
-    badgeClass: "cf-badge-placed",
-    timeline: [
-      { label: "Order Placed", time: placedLabel, state: "is-done" },
-      { label: "Picked Up", time: `Scheduled ${booking.pickupDate}, ${booking.pickupTime}`, state: "is-upcoming" },
-      { label: "In Transit", time: "Pending pickup", state: "is-upcoming" },
-      { label: "Out for Delivery", time: "Pending pickup", state: "is-upcoming" },
-      { label: "Delivered", time: "Pending pickup", state: "is-upcoming" },
-    ],
-  };
+    const placedAt = new Date(booking.createdAt || Date.now());
+    const placedLabel = placedAt.toLocaleString("en-PH", {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+
+    const fromCity = booking.from || booking.origin || 'Not provided';
+    const toCity = booking.to || booking.destination || 'Not provided';
+    const pickupDate = booking.pickupDate || booking.date || 'Not provided';
+    const pickupTime = booking.pickupTime || booking.time || '';
+
+    return {
+      route: `${fromCity} &rarr; ${toCity}`,
+      eta: `${pickupDate} (pending pickup)`,
+      status: booking.status || "Booking Placed",
+      badgeClass: booking.status === "In Transit" ? "cf-badge-transit" : "cf-badge-placed",
+      timeline: [
+        { label: "Order Placed", time: placedLabel, state: "is-done" },
+        { label: "Picked Up", time: `Scheduled ${pickupDate}${pickupTime ? ', ' + pickupTime : ''}`, state: "is-upcoming" },
+        { label: "In Transit", time: "Pending pickup", state: "is-upcoming" },
+        { label: "Out for Delivery", time: "Pending pickup", state: "is-upcoming" },
+        { label: "Delivered", time: "Pending pickup", state: "is-upcoming" },
+      ],
+    };
+  } catch (error) {
+    console.warn('Could not fetch booking from server; falling back to local storage.', error);
+    
+    // Fallback to local storage
+    const localBooking = findBooking(code);
+    if (!localBooking) return null;
+
+    const placedAt = new Date(localBooking.createdAt);
+    const placedLabel = placedAt.toLocaleString("en-PH", {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+
+    return {
+      route: `${localBooking.from} &rarr; ${localBooking.to}`,
+      eta: `${localBooking.pickupDate} (pending pickup)`,
+      status: "Booking Placed",
+      badgeClass: "cf-badge-placed",
+      timeline: [
+        { label: "Order Placed", time: placedLabel, state: "is-done" },
+        { label: "Picked Up", time: `Scheduled ${localBooking.pickupDate}, ${localBooking.pickupTime}`, state: "is-upcoming" },
+        { label: "In Transit", time: "Pending pickup", state: "is-upcoming" },
+        { label: "Out for Delivery", time: "Pending pickup", state: "is-upcoming" },
+        { label: "Delivered", time: "Pending pickup", state: "is-upcoming" },
+      ],
+    };
+  }
 }
 
 const form = document.getElementById("track-form");
@@ -173,8 +208,8 @@ form.addEventListener("submit", (event) => {
   trackButton.disabled = true;
   trackButton.textContent = "Searching...";
 
-  setTimeout(() => {
-    const shipment = knownShipments[enteredCode] || getStoredBooking(enteredCode);
+  setTimeout(async () => {
+    const shipment = knownShipments[enteredCode] || await getStoredBooking(enteredCode);
 
     if (shipment) {
       renderShipment(enteredCode, shipment);
