@@ -214,7 +214,7 @@ and saves it:
 | -------------------------------------------- | ------ | ------------- |
 | `text` missing, not a string, or only spaces | `400`  | `{ "error": "Message text cannot be empty." }` |
 | `text` longer than 500 characters            | `400`  | `{ "error": "Message exceeds the 500 character limit." }` |
-| Request body is not valid JSON               | `400`  | Express's default error page |
+| Request body is not valid JSON               | `400`  | `{ "error": "Invalid JSON" }` |
 | The messages file can't be read or written   | `500`  | `{ "error": "Failed to read messages." }` (or `save` / `delete`) |
 | Any other path                               | `404`  | `Page not found` |
 

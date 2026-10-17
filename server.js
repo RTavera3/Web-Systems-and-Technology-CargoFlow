@@ -158,6 +158,17 @@ app.use((req, res) => {
   res.status(404).send("Page not found");
 });
 
+// Reference: https://expressjs.com/en/guide/error-handling.html
+// express.json() throws when a request body isn't valid JSON. Answer with a
+// JSON error like the rest of the API instead of Express's default HTML page.
+// Any other error goes on to Express's default handler.
+app.use((err, req, res, next) => {
+  if (err.type === "entity.parse.failed" && !res.headersSent) {
+    return res.status(400).json({ error: "Invalid JSON" });
+  }
+  next(err);
+});
+
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`CargoFlow running on http://localhost:${PORT}`);
