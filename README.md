@@ -39,6 +39,7 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 | **Cost Sharing**         | Split transport costs among multiple shippers sharing one truck   |
 | **Cargo Booking**        | Reserve available cargo space in a few clicks                     |
 | **Shipment Tracking**    | Monitor shipment status from pickup to delivery                   |
+| **Account Profile**      | Keep your shipper details; they prefill new bookings              |
 | **Direct Messaging**     | Chat with carriers; history is saved on the server through the messages API |
 | **Capacity Utilization** | Help carriers earn more by filling empty truck space              |
 
@@ -73,7 +74,8 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 > backend (`server.js`) serves the pages and a REST API for carrier messages, which
 > it stores in `data/messages.json` so chat history survives page reloads, server
 > restarts and other browsers. See [Backend API](#backend-api). Shipment tracking
-> uses mock data, and bookings are still saved in the browser's `localStorage`.
+> uses mock data, and bookings and the account profile are still saved in the
+> browser's `localStorage`.
 
 ---
 
@@ -123,9 +125,11 @@ a floating "Get a price" quote card, a shipment-tracking widget, a carrier
 CTA, and an About section. Every other page lives under `pages/`:
 `contact.html`, `booking-details.html`, `payment.html`, `messages.html`
 (carrier chat whose history is saved on the server through the [messages API](#backend-api)), `trackshipment.html`
-(the full tracking page, separate from the home page's quick widget), and
+(the full tracking page, separate from the home page's quick widget),
 `history.html` (Shipment History: every active and past booking, with status
-filters, search and sorting; completed bookings appear there automatically).
+filters, search and sorting; completed bookings appear there automatically), and
+`profile.html` (Account Profile: the shipper's details, saved in this browser and
+used to prefill the booking form and preferred payment method).
 
 The design follows the CargoFlow brand palette: deep blue (`#0B3D91`) and
 flow orange (`#FF7A00`), with sand (`#F4F1EA`) as a secondary background.
@@ -231,10 +235,11 @@ Web-Systems-and-Technology-CargoFlow/
 ├── css/
 │   └── theme.css                 # Shared Bootstrap theme overrides for every page (navy/orange brand)
 ├── js/
-│   ├── storage.js                # Shared localStorage module for bookings, with versioning
+│   ├── storage.js                # Shared localStorage module for bookings and the profile, with versioning
 │   ├── track.js                  # Home page's quick shipment-tracking widget
 │   ├── trackshipment.js          # Full tracking page logic (pages/trackshipment.html)
 │   ├── history.js                # Shipment History list, filters, search and sort (pages/history.html)
+│   ├── profile.js                # Account Profile form (pages/profile.html)
 │   └── messages.js               # Carrier chat: loads, sends and clears messages through the API
 ├── pages/
 │   ├── contact.html              # Contact form
@@ -242,7 +247,8 @@ Web-Systems-and-Technology-CargoFlow/
 │   ├── payment.html              # Payment step of the booking flow
 │   ├── messages.html             # Carrier messaging UI
 │   ├── trackshipment.html        # Full shipment-tracking page (accepts ?code=CF-... to search directly)
-│   └── history.html              # Shipment History: active and past bookings
+│   ├── history.html              # Shipment History: active and past bookings
+│   └── profile.html              # Account Profile: shipper details used to prefill bookings
 └── resources/
     └── cargoflow.logo.png        # Brand logo asset
 ```
@@ -259,7 +265,8 @@ build step, router, or bundler is involved.
 2. **Book Cargo Space** — reserve space and view shared cost breakdown
 3. **Track Shipment** — see shipment status and timeline
 4. **Shipment History** — view active and past bookings, filter by status, search, and open any one to track it
-5. **Messages** — chat directly with carriers; history is saved on the server
+5. **Account Profile** — manage shipper details used to prefill bookings
+6. **Messages** — chat directly with carriers; history is saved on the server
 
 ---
 

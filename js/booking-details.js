@@ -11,12 +11,14 @@
  *      city/province without the user re-selecting it.
  *   3. Sender/Receiver "User ID" auto-fill: looks a typed ID up against
  *      resources/users.json and fills in that person's saved details.
- *   4. Digits-only validation for package count / declared value.
- *   5. Vehicle capacity guidance (warns if cargo weight exceeds the
+ *   4. Account owner details (step 4): filled in from the account profile
+ *      saved on pages/profile.html (js/storage.js).
+ *   5. Digits-only validation for package count / declared value.
+ *   6. Vehicle capacity guidance (warns if cargo weight exceeds the
  *      selected vehicle's limit).
- *   6. Wizard navigation: shows one step at a time, validates the current
+ *   7. Wizard navigation: shows one step at a time, validates the current
  *      step before advancing, and drives the step-indicator circles.
- *   7. A final past-time check right before the step 1 -> 2 transition and
+ *   8. A final past-time check right before the step 1 -> 2 transition and
  *      on submit, since the wizard can legitimately sit open past the
  *      originally-chosen pickup time.
  *
@@ -353,6 +355,29 @@ fetch('../resources/users.json')
       document.getElementById(statusId).textContent = 'User records could not be loaded.';
       document.getElementById(statusId).classList.add('is-error');
     });
+  });
+
+// --- Step 4 (Review): account owner details from the saved profile ---
+
+// This file is a classic script, so the storage module is loaded with a
+// dynamic import. If it fails, the demo values already in the HTML stay.
+import('./storage.js')
+  .then(({ getProfile }) => {
+    const profile = getProfile();
+    const ownerFields = {
+      customerName: profile.name,
+      customerContact: profile.contact,
+      customerAddress: profile.streetAddress,
+      customerCity: profile.city,
+      customerProvince: profile.province,
+      customerZip: profile.zipCode,
+    };
+    Object.entries(ownerFields).forEach(([id, value]) => {
+      if (value) document.getElementById(id).value = value;
+    });
+  })
+  .catch((error) => {
+    console.warn('Account profile could not be loaded; using the demo account.', error);
   });
 
 // --- Step 3 (Shipment): digits-only validation ---

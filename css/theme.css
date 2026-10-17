@@ -601,6 +601,66 @@ body {
   background-color: #e96d00;
 }
 
+.send-btn:disabled {
+  background-color: #c9c9c9;
+  cursor: not-allowed;
+}
+
+/* Composer: the input and its "0 / 500" counter, filled in by js/messages.js. */
+.message-compose-field {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.message-character-count {
+  align-self: flex-end;
+  font-size: 11px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.message-send-status {
+  min-height: 1.5em;
+  margin: 0;
+  padding: 0 20px 10px;
+  font-size: 13px;
+  color: #555;
+  background-color: #fafafa;
+}
+
+.message-send-status.is-error {
+  color: #b02a37;
+}
+
+/* An outgoing message the server could not save, with its Retry button. */
+.message.failed .message-content p {
+  background-color: #fff;
+  color: #333;
+  border: 1px dashed #b02a37;
+}
+
+.message.failed .time {
+  color: #b02a37;
+}
+
+.message-retry-btn {
+  display: block;
+  margin: 4px 0 0 auto;
+  padding: 2px 10px;
+  border: 1px solid #b02a37;
+  border-radius: 4px;
+  background: #fff;
+  color: #b02a37;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.message-retry-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
 /* Booking details page (pages/booking-details.html) — vehicle-guidance is
    toggled by the page's own inline <script> via classList.add/remove,
    so the class names stay unprefixed and unchanged. */
@@ -699,4 +759,36 @@ body {
   .booking-step-indicator li {
     font-size: 11px;
   }
+}
+
+/* Account profile page (pages/profile.html) */
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--cf-navy);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.profile-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+
+.profile-meta dt {
+  font-size: 12px;
+  font-weight: 400;
+  color: #666;
+}
+
+.profile-meta dd {
+  margin: 0;
+  font-weight: 700;
 }
