@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "test": "node --test"
   },
   "repository": {
     "type": "git",
@@ -24,5 +25,8 @@
   "engines": {
     "node": ">=20"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "supertest": "^7.3.1"
+  }
 }
