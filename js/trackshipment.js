@@ -4,12 +4,30 @@
  * tracking results come from 
  * GET /api/shipments/:code via api.js, 
  * with a fallback to bookings saved in this browser.
+ * 
+ * GET  /api/bookings  - returns every saved booking 
+ * (used by history.html and trackshipment.html)
  */
 
-import { findBooking } from './storage.js';
-import { getShipment } from './api.js';
+/** Where the CargoFlow server runs. */
+const API_BASE_URL = 'http://localhost:3000';
 
-
+/** The one hardcoded demo shipment, keyed by tracking code. */
+const knownShipments = {
+  "CF-24810293": {
+    route: "Manila → Cebu",
+    eta: "Sept 15, 2026",
+    status: "In Transit",
+    badgeClass: "cf-badge-transit",
+    timeline: [
+      { label: "Order Placed", time: "Sept 10, 8:00 AM", state: "is-done" },
+      { label: "Picked Up", time: "Sept 10, 2:30 PM", state: "is-done" },
+      { label: "In Transit", time: "Sept 12, 9:15 AM", state: "is-current" },
+      { label: "Out for Delivery", time: "Estimated Sept 15", state: "is-upcoming" },
+      { label: "Delivered", time: "Estimated Sept 15", state: "is-upcoming" },
+    ],
+  },
+};
 
 /**
  * Looks up a tracking code among the bookings saved in this browser by
@@ -31,8 +49,12 @@ import { getShipment } from './api.js';
  *   timeline: {label: string, time: string, state: string}[],
  * }|null} null if no booking with that code has been saved.
  */
-function getStoredBooking(code) {
-  const booking = findBooking(code);
+async function getStoredBooking(code) {
+  const response = await fetch(`${API_BASE_URL}/api/bookings`);
+  if (!response.ok) throw new Error(`Server returned status ${response.status}`);
+  const bookings = await response.json();
+
+  const booking = bookings.find((b) => b.code === code);
   if (!booking) return null;
 
   const placedAt = new Date(booking.createdAt);
@@ -45,12 +67,12 @@ function getStoredBooking(code) {
 
   return {
     route: `${booking.from} → ${booking.to}`,
-    eta: `${booking.pickupDate} (pending pickup)`,
+    eta: `${booking.date} (pending pickup)`,
     status: "Booking Placed",
     badgeClass: "cf-badge-placed",
     timeline: [
       { label: "Order Placed", time: placedLabel, state: "is-done" },
-      { label: "Picked Up", time: `Scheduled ${booking.pickupDate}, ${booking.pickupTime}`, state: "is-upcoming" },
+      { label: "Picked Up", time: `Scheduled ${booking.date}, ${booking.time}`, state: "is-upcoming" },
       { label: "In Transit", time: "Pending pickup", state: "is-upcoming" },
       { label: "Out for Delivery", time: "Pending pickup", state: "is-upcoming" },
       { label: "Delivered", time: "Pending pickup", state: "is-upcoming" },
@@ -134,7 +156,10 @@ form.addEventListener("submit", async (event) => {
   const enteredCode = trackingInput.value.trim().toUpperCase();
 
   if (enteredCode === "") {
-    showMessage("Please enter a tracking number.");
+    summarySection.hidden = true;
+    timelineSection.hidden = true;
+    notFoundMessage.hidden = false;
+    notFoundMessage.textContent = "Please enter a tracking number.";
     return;
   }
 
@@ -142,24 +167,25 @@ form.addEventListener("submit", async (event) => {
   trackButton.textContent = "Searching...";
 
   try {
-    const shipment = await getShipment(enteredCode);
-    renderShipment(enteredCode, shipment);
-  } catch (error) {
-    // Until bookings are stored on the server, fall back to bookings saved
-    // in this browser: when the server doesn't know the code (404), and
-    // when it can't be reached at all (no status), so they still show.
-    const booking = error.status === 404 || error.status === undefined
-      ? getStoredBooking(enteredCode)
-      : null;
+    const shipment = knownShipments[enteredCode] || (await getStoredBooking(enteredCode));
 
-    if (booking) {
-      renderShipment(enteredCode, booking);
-    } else if (error.status === 400 || error.status === 404) {
-      showMessage(error.message);
+    if (shipment) {
+      renderShipment(enteredCode, shipment);
     } else {
-      showMessage("Could not reach the server. Please try again.");
+      summarySection.hidden = true;
+      timelineSection.hidden = true;
+      notFoundMessage.hidden = false;
+      notFoundMessage.innerHTML =
+        'No shipment found for that tracking number. Try <strong>CF-24810293</strong> for a sample result.';
     }
+  } catch (error) {
+    console.error("Error loading bookings:", error);
+    summarySection.hidden = true;
+    timelineSection.hidden = true;
+    notFoundMessage.hidden = false;
+    notFoundMessage.textContent = "Could not reach the server. Please make sure it is running and try again.";
   } finally {
+    // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch#the_finally_block
     trackButton.disabled = false;
     trackButton.textContent = "Track";
   }

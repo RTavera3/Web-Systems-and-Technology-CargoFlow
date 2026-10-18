@@ -11,12 +11,15 @@
  *   2. Shows/hides the GCash vs. card detail fields based on the chosen
  *      payment method, and enables only the relevant ones (so a hidden
  *      field's `required` attribute never blocks submission).
- *   3. On successful "payment", generates a booking reference code and
- *      saves the booking through js/storage.js so pages/trackshipment.html
- *      and pages/history.html can show it later.
+ *   3. On successful "payment", sends the booking to the server
+ *      (POST /api/bookings), which creates the tracking code and saves it
+ *      in data/bookings.json so pages/history.html can show it later.
  */
 
-import { getProfile, saveBooking } from './storage.js';
+import { getProfile } from './storage.js';
+
+// Where the CargoFlow server runs.
+const API_BASE_URL = 'http://localhost:3000';
 
 /** Parses the booking details carried over in the URL's query string. */
 const paymentParams = new URLSearchParams(window.location.search);
@@ -161,55 +164,62 @@ updatePaymentFields(); // Apply once for whichever method is pre-selected on loa
 
 // --- Booking confirmation: generate a code and save the booking ---
 
-/**
- * Generates a booking reference code in the same "CF-########" shape as
- * the site's one hardcoded sample tracking number, using 8 random digits.
- * Not guaranteed unique against past bookings, but collisions are
- * astronomically unlikely for a class-project demo (1 in 100 million).
- * @returns {string} e.g. "CF-04829371"
- */
-const generateBookingCode = () => {
-  const digits = String(Math.floor(Math.random() * 1e8)).padStart(8, '0');
-  return `CF-${digits}`;
-};
-
-/**
- * Saves this booking through js/storage.js under its reference code, so the
- * Track Shipment and My Shipments pages can show it later. Only the fields
- * those pages use are kept, not the whole booking summary.
- * @param {string} code The reference code to store this booking under.
- */
-const recordBooking = (code) => {
-  saveBooking(code, {
-    from: paymentValue('from'),
-    to: paymentValue('to'),
-    pickupDate: paymentValue('date'),
-    pickupTime: paymentValue('time'),
-    paymentMethod: paymentMethod.value,
-    weight: paymentParams.get('weight'),
-    cargoType: paymentParams.get('type'),
-    vehicleType: paymentParams.get('vehicleType'),
-    declaredValue: paymentParams.get('declaredValue'),
-  });
-};
-
 /** @type {HTMLFormElement} The payment method + detail fields form. */
 const paymentFormEl = document.getElementById('paymentForm');
 
 /**
- * Handles the payment form's submit event. There is no real payment
- * processor, so a "successful" submission just means every visible,
- * required field passed validation - at that point we generate a booking
- * code, persist it, display it, and show the success message.
+ * Sends the booking to the server (POST /api/bookings in routes/bookings.js).
+ * The server checks the fields, creates the tracking code, saves the booking
+ * in data/bookings.json, and sends the saved booking back.
+ *
+ * Only the booking details from the URL and the payment METHOD are sent.
+ * Card numbers and GCash details are never sent or saved.
+ *
+ * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#supplying_options
+ * Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries
+ * @returns {Promise<{code: string}>} The saved booking, including its code.
  */
-paymentFormEl.addEventListener('submit', (event) => {
+async function createBooking() {
+  const booking = Object.fromEntries(paymentParams);
+  booking.paymentMethod = paymentMethod.value;
+
+  const response = await fetch(`${API_BASE_URL}/api/bookings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(booking),
+  });
+
+  // Reference: https://developer.mozilla.org/en-US/docs/Web/API/Response/ok
+  if (!response.ok) {
+    throw new Error(`Server returned status ${response.status}`);
+  }
+  return response.json();
+}
+
+/**
+ * Handles the payment form's submit event. There is no real payment
+ * processor, so a "successful" payment means every visible, required field
+ * passed validation. The booking is then saved on the server, and the code
+ * the server created is shown to the user.
+ */
+paymentFormEl.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!paymentFormEl.checkValidity()) {
     paymentFormEl.classList.add('was-validated');
     return;
   }
-  const bookingCode = generateBookingCode();
-  recordBooking(bookingCode);
-  document.getElementById('paymentBookingCode').textContent = bookingCode;
-  document.getElementById('paymentSuccess').hidden = false;
+
+  // Disable the button so a double-click doesn't create two bookings.
+  const submitButton = paymentFormEl.querySelector('button[type="submit"]');
+  if (submitButton) submitButton.disabled = true;
+
+  try {
+    const booking = await createBooking();
+    document.getElementById('paymentBookingCode').textContent = booking.code;
+    document.getElementById('paymentSuccess').hidden = false;
+  } catch (error) {
+    console.error('Error saving booking:', error);
+    alert('Your booking could not be saved. Please make sure the server is running and try again.');
+    if (submitButton) submitButton.disabled = false;
+  }
 });
