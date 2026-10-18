@@ -19,6 +19,10 @@
  *   POST   /api/messages  save one message ({ text, sender, recipient })
  *   DELETE /api/messages  clear the chat history
  *
+ * Bookings are checked before they are saved in data/bookings.json
+ * (routes/bookings.js, lib/bookings.js):
+ *   POST   /api/bookings  save one booking, or 400 listing what's wrong
+ *
  * Run:  npm install   (first time only)
  *       npm run dev   (restarts automatically when a file changes)
  *       npm start
@@ -152,6 +156,9 @@ app.delete('/api/messages', (req, res) => {
 
 const shipmentsRouter = require("./routes/shipments");
 app.use("/api/shipments", shipmentsRouter);
+
+const bookingsRouter = require("./routes/bookings");
+app.use("/api/bookings", bookingsRouter);
 
 // Anything else is not part of the site.
 app.use((req, res) => {
