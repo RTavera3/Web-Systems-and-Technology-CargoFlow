@@ -71,11 +71,12 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 
 > **Note:** No front-end framework and no build step. Plain HTML, CSS, and
 > JavaScript, plus Bootstrap 5 (via CDN) across every page. A Node.js + Express
-> backend (`server.js`) serves the pages and a REST API for carrier messages, which
-> it stores in `data/messages.json` so chat history survives page reloads, server
-> restarts and other browsers. See [Backend API](#backend-api). Shipment tracking
-> uses mock data, and bookings and the account profile are still saved in the
-> browser's `localStorage`.
+> backend (`server.js`, with one Express router per resource in `routes/`) serves
+> the pages and a REST API. Carrier messages are saved in `data/messages.json` and
+> bookings in `data/bookings.json`, so both survive page reloads, server restarts
+> and other browsers. The server checks every booking, makes its tracking code and
+> answers every tracking lookup. See [Backend API](#backend-api). Only the account
+> profile is still saved in the browser's `localStorage`.
 
 ---
 
@@ -107,9 +108,8 @@ Then open **http://localhost:3000**. The terminal shows
 To check the backend is running, open **http://localhost:3000/api/health**.
 Stop the server with `Ctrl + C`.
 
-Keep the default port 3000 when using the chat: `js/messages.js` calls the API at
-`http://localhost:3000`. The other pages work on any port (for example
-`PORT=8080 npm start`).
+Every page calls the API with relative URLs (`/api/...`), so the site works on any
+port, for example `PORT=8080 npm start`.
 
 The server only serves the front-end folders (`css/`, `js/`, `pages/`, `resources/`)
 and `index.html`, so `server.js`, `package.json`, `node_modules/` and the saved
@@ -146,10 +146,13 @@ run it.
 
 - **Chat messages** are saved on the server in `data/messages.json` through the
   [messages API](#backend-api). The server creates the file if it is missing.
-- **Bookings** are kept in the browser's `localStorage`, through one shared module,
-  `js/storage.js`. It owns the storage keys, never throws on missing or corrupted
-  data, and records a storage version so data saved by an older version of the site
-  is upgraded on the next visit.
+- **Bookings** are checked and saved on the server in `data/bookings.json` through
+  [`POST /api/bookings`](#bookings). My Shipments and the profile's booking count read
+  them from `GET /api/bookings`, and Track Shipment from `GET /api/shipments/:code`.
+- **The account profile** is kept in the browser's `localStorage`, through
+  `js/storage.js`. It never throws on missing or corrupted data, and records a
+  storage version so data saved by an older version of the site is upgraded on the
+  next visit.
 
 Fonts load from Google Fonts, which receives normal browser request
 metadata; system sans-serif fallbacks are used when offline.
@@ -158,11 +161,12 @@ metadata; system sans-serif fallbacks are used when offline.
 
 ## Backend API
 
-The Express server in `server.js` exposes a small REST API under `/api`. Requests
-and responses are JSON. The Messages page (`js/messages.js`) uses it to load, send
-and clear the carrier chat, so the conversation is the same in every browser that
-opens the site and is still there after the server restarts. The Track Shipment
-page (`js/trackshipment.js`, through `js/api.js`) uses it to look up a tracking code.
+The Express server in `server.js` exposes a small REST API under `/api`, with one
+`express.Router()` per resource in `routes/` (`messages.js`, `bookings.js`,
+`shipments.js`). Requests and responses are JSON. The Messages page
+(`js/messages.js`) loads, sends and clears the carrier chat through it. The Payment,
+My Shipments, Profile and Track Shipment pages save, list and track bookings
+through it (`js/api.js`).
 
 | Method   | Route           | What it does                                 | Success response |
 | -------- | --------------- | -------------------------------------------- | ---------------- |
@@ -170,21 +174,75 @@ page (`js/trackshipment.js`, through `js/api.js`) uses it to look up a tracking 
 | `GET`    | `/api/messages` | Returns the whole chat history, oldest first | `200` an array of messages |
 | `POST`   | `/api/messages` | Saves one new message                        | `201` `{ "message": "Message saved successfully.", "data": { ...the saved message } }` |
 | `DELETE` | `/api/messages` | Deletes every message                        | `200` `{ "message": "All messages deleted successfully." }` |
+| `GET`    | `/api/bookings` | Lists every booking, newest first, summary fields only | `200` `[ { "code", "from", "to", "date", "time", "paymentMethod", "status", "createdAt" } ]` |
+| `POST`   | `/api/bookings` | Checks one booking, makes its code and saves it | `201` `{ "message": "Booking saved.", "data": { "code": "CF-12345678", ...the saved booking } }` |
 | `GET`    | `/api/shipments/:code` | Returns one shipment's route, ETA, status and timeline | `200` `{ "code": "CF-24810293", "route": "Manila → Cebu", "eta": ..., "status": "In Transit", "badgeClass": ..., "timeline": [ ... ] }` |
 
 ### Tracking a shipment
 
 `GET /api/shipments/:code` takes a tracking code such as `CF-24810293`. Case and
-surrounding spaces don't matter. For now the server only knows the demo shipment in
-`lib/shipments.js`. Bookings made on the site are still saved in the browser, so when
-the server answers `404`, or can't be reached, the Track Shipment page looks the code
-up among this browser's saved bookings instead.
+surrounding spaces don't matter. The server looks the code up in the demo shipment
+(`lib/shipments.js`) and then in the saved bookings, and builds the timeline itself.
+A booking shows "Order Placed" as done and the scheduled pickup as the next step.
 
 | Situation                                        | Status | Response body |
 | ------------------------------------------------ | ------ | ------------- |
 | No code (`/api/shipments/`)                      | `400`  | `{ "error": "Tracking code is required." }` |
 | Code isn't `CF-` plus 4-12 letters or digits     | `400`  | `{ "error": "Tracking code must look like CF-24810293." }` |
-| Well-formed code the server doesn't know         | `404`  | `{ "error": "No shipment found for that tracking number." }` |
+| Well-formed code with no shipment or booking     | `404`  | `{ "error": "No shipment found for that tracking number." }` |
+
+### Bookings
+
+The Payment page (`js/payment.js`) sends the booking form's fields and the payment
+method to `POST /api/bookings`. The browser checks the form too, but the API can be
+called directly, so the server checks again (`lib/bookings.js`), then makes the
+tracking code itself:
+
+```json
+{
+  "from": "Manila", "to": "Cebu", "date": "2026-12-01", "time": "09:00",
+  "weight": "100", "type": "General goods", "vehicleType": "Van",
+  "senderName": "Juan Dela Cruz", "senderContact": "09171234567",
+  "pickupAddress": "123 Rizal St", "pickupCity": "Manila", "pickupProvince": "Metro Manila", "pickupZip": "1000",
+  "receiverName": "Maria Santos", "receiverContact": "09181234567",
+  "dropoffAddress": "45 Osmena Blvd", "dropoffCity": "Cebu City", "dropoffProvince": "Cebu", "dropoffZip": "6000",
+  "cargoDescription": "Boxes of books", "packageCount": "3", "declaredValue": "5000",
+  "paymentMethod": "GCash"
+}
+```
+
+| Field | Rule |
+| ----- | ---- |
+| All of the above | Required, as text or a number (never an object or a list), at most 500 characters |
+| `from`, `to` | Must be different cities |
+| `date`, `time` | `YYYY-MM-DD` and `HH:MM`, a real date, and later than now (server time) |
+| `weight` | A number of kg above 0 and up to 50,000 |
+| `packageCount` | A whole number, 1 or more |
+| `declaredValue` | A number, 0 or more |
+| `paymentMethod` | `GCash`, `Credit or debit card` or `Cash on pickup` |
+
+The form's optional fields (user IDs, special instructions, the fragile and loading
+checkboxes, and the account owner's details) are saved too. **Anything else is
+dropped**, including a `code` or `status` sent by the browser: the server makes the
+code (`CF-` plus 8 digits, never one already used) and sets the status to
+`Booking Placed`. Bookings are saved one at a time, so two arriving together can't
+overwrite each other.
+
+A booking that breaks a rule gets `400` with the first problem in `error` and every
+problem in `errors`:
+
+```json
+{
+  "error": "Pickup must be in the future.",
+  "errors": [{ "field": "time", "message": "Pickup must be in the future." }]
+}
+```
+
+The Payment page shows that message and doesn't confirm the booking. If the server
+can't be reached, it says so instead.
+
+`GET /api/bookings` lists the bookings for My Shipments with summary fields only:
+no names, phone numbers or addresses leave the server.
 
 ### Sending a message
 
@@ -230,20 +288,27 @@ curl -X POST http://localhost:3000/api/messages \
   -d '{"text":"Hello from curl"}'
 curl -X DELETE http://localhost:3000/api/messages
 curl http://localhost:3000/api/shipments/CF-24810293
+curl http://localhost:3000/api/bookings
+curl -X POST http://localhost:3000/api/bookings \
+  -H "Content-Type: application/json" \
+  -d '{"from":"Manila","to":"Cebu","date":"2020-01-01","time":"09:00","weight":100,"paymentMethod":"GCash"}'
 ```
 
 ### Tests
 
 `npm test` runs the tests in `test/` with Node's built-in test runner. They use
 [Supertest](https://github.com/ladjs/supertest) to call the API without starting the
-server, so nothing needs to be running first.
+server, so nothing needs to be running first. The booking tests save to a temporary
+file (`BOOKINGS_FILE`), not `data/bookings.json`.
 
 ### Where the data lives
 
-Messages are stored in `data/messages.json` as a JSON array. If the folder or file
-is missing, the server creates it with an empty array (`[]`) at startup and before
-each write. To reset the chat, use the trash icon on the Messages page, call
-`DELETE /api/messages`, or stop the server and replace the file's contents with `[]`.
+Messages are stored in `data/messages.json` as a JSON array. A missing file reads as
+no messages, and the folder and file are created on the next write. To reset the
+chat, use the trash icon on the Messages page, call `DELETE /api/messages`, or stop the server and replace the file's contents with `[]`.
+
+Bookings are stored in `data/bookings.json` as an object keyed by booking code. The
+file is created on the first booking and isn't committed (it's in `.gitignore`).
 
 ---
 
@@ -254,21 +319,27 @@ Web-Systems-and-Technology-CargoFlow/
 ├── server.js                     # Express backend: serves the site and the /api routes
 ├── package.json                  # Project info, npm scripts (start, dev, test), Express and CORS
 ├── routes/
-│   └── shipments.js              # GET /api/shipments/:code
+│   ├── bookings.js               # GET and POST /api/bookings (Express router)
+│   ├── messages.js               # GET, POST and DELETE /api/messages (Express router)
+│   └── shipments.js              # GET /api/shipments/:code: demo shipment or a saved booking
 ├── lib/
+│   ├── bookings.js               # Booking rules, saved fields, data/bookings.json, tracking timeline
 │   └── shipments.js              # Shipment data the tracking route looks up (demo shipment for now)
 ├── test/
+│   ├── bookings.test.js          # API tests for bookings and tracking a saved booking (npm test)
+│   ├── errors.test.js            # API tests for the JSON error handler
 │   └── shipments.test.js         # API tests for the shipments route (npm test)
 ├── data/
-│   └── messages.json             # Chat history saved by the messages API (created if missing)
+│   ├── bookings.json             # Bookings saved by the bookings API (created on first booking, not committed)
+│   └── messages.json             # Chat history saved by the messages API (created on first message if missing)
 ├── index.html                    # Home page: hero, quote form, track widget, carrier CTA, about
 ├── css/
 │   └── theme.css                 # Shared Bootstrap theme overrides for every page (navy/orange brand)
 ├── js/
-│   ├── storage.js                # Shared localStorage module for bookings and the profile, with versioning
+│   ├── storage.js                # localStorage module for the account profile (its old booking helpers are unused)
 │   ├── track.js                  # Home page's quick shipment-tracking widget
 │   ├── trackshipment.js          # Full tracking page logic (pages/trackshipment.html)
-│   ├── api.js                    # Fetch helper for the shipments API
+│   ├── api.js                    # The browser's calls to the bookings and shipments APIs (relative URLs)
 │   ├── history.js                # Shipment History list, filters, search and sort (pages/history.html)
 │   ├── profile.js                # Account Profile form (pages/profile.html)
 │   └── messages.js               # Carrier chat: loads, sends and clears messages through the API

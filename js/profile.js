@@ -10,7 +10,8 @@
  * links there with a count.
  */
 
-import { getProfile, listBookings, saveProfile } from './storage.js';
+import { getProfile, saveProfile } from './storage.js';
+import { listBookings } from './api.js';
 
 /** @type {HTMLFormElement} */
 const profileForm = document.getElementById('profileForm');
@@ -59,7 +60,11 @@ const memberSince = new Date(profile.memberSince);
 document.getElementById('profileMemberSince').textContent = Number.isNaN(memberSince.getTime())
   ? profile.memberSince
   : new Intl.DateTimeFormat(undefined, { month: 'short', year: 'numeric' }).format(memberSince);
-document.getElementById('profileBookingCount').textContent = String(listBookings().length);
+// Bookings are saved on the Express server (GET /api/bookings).
+const bookingCountEl = document.getElementById('profileBookingCount');
+listBookings()
+  .then((bookings) => { bookingCountEl.textContent = String(bookings.length); })
+  .catch(() => { bookingCountEl.textContent = '-'; });
 renderSummary(profile);
 
 profileForm.addEventListener('submit', (event) => {

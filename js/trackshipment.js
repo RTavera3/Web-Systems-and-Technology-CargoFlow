@@ -1,84 +1,13 @@
 /**
  * Track Shipment page.
  *
- * tracking results come from 
- * GET /api/shipments/:code via api.js, 
- * with a fallback to bookings saved in this browser.
- * 
- * GET  /api/bookings  - returns every saved booking 
- * (used by history.html and trackshipment.html)
+ * Every tracking result comes from the Express server, GET
+ * /api/shipments/:code (routes/shipments.js) through js/api.js. The server
+ * looks the code up in the demo shipment and in the bookings saved through
+ * POST /api/bookings, and builds the timeline, so this page only shows it.
  */
 
-/** Where the CargoFlow server runs. */
-const API_BASE_URL = 'http://localhost:3000';
-
-/** The one hardcoded demo shipment, keyed by tracking code. */
-const knownShipments = {
-  "CF-24810293": {
-    route: "Manila → Cebu",
-    eta: "Sept 15, 2026",
-    status: "In Transit",
-    badgeClass: "cf-badge-transit",
-    timeline: [
-      { label: "Order Placed", time: "Sept 10, 8:00 AM", state: "is-done" },
-      { label: "Picked Up", time: "Sept 10, 2:30 PM", state: "is-done" },
-      { label: "In Transit", time: "Sept 12, 9:15 AM", state: "is-current" },
-      { label: "Out for Delivery", time: "Estimated Sept 15", state: "is-upcoming" },
-      { label: "Delivered", time: "Estimated Sept 15", state: "is-upcoming" },
-    ],
-  },
-};
-
-/**
- * Looks up a tracking code among the bookings saved in this browser by
- * js/payment.js (through js/storage.js). If one is found, it builds the
- * same shape the server returns from GET /api/shipments/:code, so
- * `renderShipment` can display either one.
- *
- * This is only the fallback. The server is asked first, and this runs
- * when the server answers 404 for a code it doesn't know.
- *
- * Because a booking has only just been paid for (never actually picked
- * up), the timeline always shows step 1 ("Order Placed") as done, the
- * scheduled pickup date/time as the next (upcoming) step, and everything
- * after that as "Pending pickup".
- *
- * @param {string} code Tracking code, already trimmed/uppercased.
- * @returns {{
- *   route: string, eta: string, status: string, badgeClass: string,
- *   timeline: {label: string, time: string, state: string}[],
- * }|null} null if no booking with that code has been saved.
- */
-async function getStoredBooking(code) {
-  const response = await fetch(`${API_BASE_URL}/api/bookings`);
-  if (!response.ok) throw new Error(`Server returned status ${response.status}`);
-  const bookings = await response.json();
-
-  const booking = bookings.find((b) => b.code === code);
-  if (!booking) return null;
-
-  const placedAt = new Date(booking.createdAt);
-  const placedLabel = placedAt.toLocaleString("en-PH", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-
-  return {
-    route: `${booking.from} → ${booking.to}`,
-    eta: `${booking.date} (pending pickup)`,
-    status: "Booking Placed",
-    badgeClass: "cf-badge-placed",
-    timeline: [
-      { label: "Order Placed", time: placedLabel, state: "is-done" },
-      { label: "Picked Up", time: `Scheduled ${booking.date}, ${booking.time}`, state: "is-upcoming" },
-      { label: "In Transit", time: "Pending pickup", state: "is-upcoming" },
-      { label: "Out for Delivery", time: "Pending pickup", state: "is-upcoming" },
-      { label: "Delivered", time: "Pending pickup", state: "is-upcoming" },
-    ],
-  };
-}
+import { getShipment } from './api.js';
 
 const form = document.getElementById("track-form");
 const summarySection = document.getElementById("summary");
@@ -95,7 +24,7 @@ const trackButton = form.querySelector("button[type='submit']");
 
 /**
  * Fills in and reveals the shipment summary card + delivery timeline for
- * a found shipment (from the server's response or from `getStoredBooking`).
+ * a found shipment from the server's response.
  *
  * Every value is inserted with `textContent` and `createElement`, never
  * `innerHTML`, so booking data (city names, dates) can't inject HTML
@@ -156,10 +85,7 @@ form.addEventListener("submit", async (event) => {
   const enteredCode = trackingInput.value.trim().toUpperCase();
 
   if (enteredCode === "") {
-    summarySection.hidden = true;
-    timelineSection.hidden = true;
-    notFoundMessage.hidden = false;
-    notFoundMessage.textContent = "Please enter a tracking number.";
+    showMessage("Please enter a tracking number.");
     return;
   }
 
@@ -167,25 +93,16 @@ form.addEventListener("submit", async (event) => {
   trackButton.textContent = "Searching...";
 
   try {
-    const shipment = knownShipments[enteredCode] || (await getStoredBooking(enteredCode));
-
-    if (shipment) {
-      renderShipment(enteredCode, shipment);
-    } else {
-      summarySection.hidden = true;
-      timelineSection.hidden = true;
-      notFoundMessage.hidden = false;
-      notFoundMessage.innerHTML =
-        'No shipment found for that tracking number. Try <strong>CF-24810293</strong> for a sample result.';
-    }
+    const shipment = await getShipment(enteredCode);
+    renderShipment(enteredCode, shipment);
   } catch (error) {
-    console.error("Error loading bookings:", error);
-    summarySection.hidden = true;
-    timelineSection.hidden = true;
-    notFoundMessage.hidden = false;
-    notFoundMessage.textContent = "Could not reach the server. Please make sure it is running and try again.";
+    // 400: not a valid code. 404: no shipment or booking has it.
+    if (error.status === 400 || error.status === 404) {
+      showMessage(error.message);
+    } else {
+      showMessage("Could not reach the server. Please make sure it is running and try again.");
+    }
   } finally {
-    // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch#the_finally_block
     trackButton.disabled = false;
     trackButton.textContent = "Track";
   }

@@ -19,8 +19,7 @@
  * single render function can display them.
  */
 
-/** Where the CargoFlow server runs. Same as js/messages.js. */
-const API_BASE_URL = 'http://localhost:3000';
+import { listBookings } from './api.js';
 
 /**
  * One shipment row, after normalizing either source.
@@ -116,7 +115,7 @@ function normalizeBooking(booking) {
     pickupDate: booking.date,
     payment: formatPaymentMethod(booking.paymentMethod),
     cost: null,
-    status: "Booking Placed",
+    status: booking.status || "Booking Placed",
     trackable: true,
   };
 }
@@ -133,16 +132,14 @@ function formatPaymentMethod(method) {
 }
 
 /**
- * Loads the saved bookings from the server. If the server can't be reached,
- * the page still works and shows only the sample shipments.
- * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+ * Loads the saved bookings from the Express server (GET /api/bookings
+ * through js/api.js). If the server can't be reached, the page still works
+ * and shows only the sample shipments.
  * @returns {Promise<Shipment[]>}
  */
 async function getSavedBookings() {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/bookings`);
-    if (!response.ok) throw new Error(`Server returned status ${response.status}`);
-    const bookings = await response.json();
+    const bookings = await listBookings();
     return bookings.map(normalizeBooking);
   } catch (error) {
     console.error('Error loading bookings:', error);

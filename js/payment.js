@@ -1,8 +1,7 @@
 /**
  * Payment page.
  *
- * There is no backend and no session/database, so this page is entirely
- * driven by the URL's query string, which booking-details.html's form
+ * This page is driven by the URL's query string, which booking-details.html's form
  * (method="get") populates when the booking wizard is submitted - see
  * js/booking-details.js. This script:
  *
@@ -11,15 +10,14 @@
  *   2. Shows/hides the GCash vs. card detail fields based on the chosen
  *      payment method, and enables only the relevant ones (so a hidden
  *      field's `required` attribute never blocks submission).
- *   3. On successful "payment", sends the booking to the server
- *      (POST /api/bookings), which creates the tracking code and saves it
- *      in data/bookings.json so pages/history.html can show it later.
+ *   3. On successful "payment", sends the booking to the Express server
+ *      (POST /api/bookings through js/api.js). The server checks it, makes
+ *      the tracking code and saves it in data/bookings.json, so
+ *      pages/trackshipment.html and pages/history.html can show it later.
  */
 
 import { getProfile } from './storage.js';
-
-// Where the CargoFlow server runs.
-const API_BASE_URL = 'http://localhost:3000';
+import { createBooking } from './api.js';
 
 /** Parses the booking details carried over in the URL's query string. */
 const paymentParams = new URLSearchParams(window.location.search);
@@ -162,38 +160,26 @@ if (preferredPayment && [...paymentMethod.options].some((option) => option.value
 paymentMethod.addEventListener('change', updatePaymentFields);
 updatePaymentFields(); // Apply once for whichever method is pre-selected on load.
 
-// --- Booking confirmation: generate a code and save the booking ---
+// --- Booking confirmation: save the booking on the server ---
+
+/** @type {HTMLElement} Shows why the server turned the booking down. */
+const paymentErrorEl = document.getElementById('paymentError');
 
 /** @type {HTMLFormElement} The payment method + detail fields form. */
 const paymentFormEl = document.getElementById('paymentForm');
 
 /**
- * Sends the booking to the server (POST /api/bookings in routes/bookings.js).
- * The server checks the fields, creates the tracking code, saves the booking
- * in data/bookings.json, and sends the saved booking back.
+ * The booking sent to POST /api/bookings: the booking details from the URL
+ * and the payment METHOD. Card numbers and GCash details are never sent.
+ * The server keeps only the booking form's fields (lib/bookings.js).
  *
- * Only the booking details from the URL and the payment METHOD are sent.
- * Card numbers and GCash details are never sent or saved.
- *
- * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#supplying_options
  * Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries
- * @returns {Promise<{code: string}>} The saved booking, including its code.
+ * @returns {Object}
  */
-async function createBooking() {
+function bookingToSend() {
   const booking = Object.fromEntries(paymentParams);
   booking.paymentMethod = paymentMethod.value;
-
-  const response = await fetch(`${API_BASE_URL}/api/bookings`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(booking),
-  });
-
-  // Reference: https://developer.mozilla.org/en-US/docs/Web/API/Response/ok
-  if (!response.ok) {
-    throw new Error(`Server returned status ${response.status}`);
-  }
-  return response.json();
+  return booking;
 }
 
 /**
@@ -211,15 +197,24 @@ paymentFormEl.addEventListener('submit', async (event) => {
 
   // Disable the button so a double-click doesn't create two bookings.
   const submitButton = paymentFormEl.querySelector('button[type="submit"]');
-  if (submitButton) submitButton.disabled = true;
+  submitButton.disabled = true;
+  paymentErrorEl.hidden = true;
 
   try {
-    const booking = await createBooking();
+    const { data: booking } = await createBooking(bookingToSend());
     document.getElementById('paymentBookingCode').textContent = booking.code;
     document.getElementById('paymentSuccess').hidden = false;
   } catch (error) {
+    // A 400 means the booking itself is wrong (e.g. the pickup time passed
+    // while this page was open): show the server's reason. Without a status
+    // the server couldn't be reached.
     console.error('Error saving booking:', error);
-    alert('Your booking could not be saved. Please make sure the server is running and try again.');
-    if (submitButton) submitButton.disabled = false;
+    paymentErrorEl.textContent = error.status === 400
+      ? `${error.message} Go back to the booking details to fix it.`
+      : error.status === undefined
+        ? 'Could not reach the server. Please make sure it is running and try again.'
+        : 'Could not save the booking. Please try again.';
+    paymentErrorEl.hidden = false;
+    submitButton.disabled = false;
   }
 });

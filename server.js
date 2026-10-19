@@ -12,6 +12,15 @@
  * Only the front-end folders are served, so files like server.js,
  * package.json and data/messages.json are not reachable from the browser.
  *
+ * The API is split into Express routers in routes/, each mounted below:
+ *   GET    /api/health            server status check
+ *   GET    /api/messages          chat history            (routes/messages.js)
+ *   POST   /api/messages          save one message
+ *   DELETE /api/messages          clear the chat history
+ *   GET    /api/bookings          every booking, summary fields only (routes/bookings.js)
+ *   POST   /api/bookings          check and save one booking; the server makes its code
+ *   GET    /api/shipments/:code   one shipment's tracking details   (routes/shipments.js)
+ *
  * Run:  npm install   (first time only)
  *       npm run dev   (restarts automatically when a file changes)
  *       npm start
@@ -19,7 +28,6 @@
 
 const express = require("express");
 const cors = require("cors");
-const fs = require("fs");
 const path = require("path");
 
 const bookingsRouter = require("./routes/bookings");
