@@ -8,9 +8,9 @@
  * Track Shipment page only ever asks this one route.
  */
 
-const express = require("express");
-const { findShipment } = require("../lib/shipments");
-const { readBookings, bookingToShipment } = require("../lib/bookings");
+import express from "express";
+import { findShipment } from "../lib/shipments.js";
+import { readBookings, bookingToShipment } from "../lib/bookings.js";
 
 const router = express.Router();
 
@@ -45,4 +45,4 @@ router.get("/:code", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

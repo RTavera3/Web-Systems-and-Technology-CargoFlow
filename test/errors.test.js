@@ -1,7 +1,7 @@
-const { test } = require("node:test");
-const assert = require("node:assert/strict");
-const request = require("supertest");
-const app = require("../server");
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import request from "supertest";
+import app from "../server.js";
 
 test("rejects a body that is not valid JSON with 400 and a JSON error", async () => {
   for (const body of ["{ text: 'no quotes' }", '{"text": "cut off', "not json at all"]) {

@@ -14,16 +14,16 @@
  *   Express API (req.body, res.json, res.status): https://expressjs.com/en/api.html
  */
 
-const express = require("express");
-const {
+import express from "express";
+import {
   validateBooking,
   cleanBooking,
   readBookings,
   saveBookings,
   newBookingCode,
   bookingSummary,
-} = require("../lib/bookings");
-const { findShipment } = require("../lib/shipments");
+} from "../lib/bookings.js";
+import { findShipment } from "../lib/shipments.js";
 
 const router = express.Router();
 
@@ -95,4 +95,4 @@ router.post("/", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -12,9 +12,13 @@
  *   Node.js path.join: https://nodejs.org/api/path.html#pathjoinpaths
  */
 
-const express = require('express');
-const fs = require('fs/promises');
-const path = require('path');
+import express from 'express';
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// ES modules have no __dirname; build it from this file's URL.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const router = express.Router();
 
@@ -103,4 +107,4 @@ router.delete('/', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
