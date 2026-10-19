@@ -9,7 +9,9 @@
  * `npm start` so these routes are available.
  */
 
-const API_BASE_URL = 'http://localhost:3000';
+// Express serves this page too, so the API is on the same host and port:
+// relative URLs work wherever the server runs, not only localhost:3000.
+const API_BASE_URL = '';
 
 /** Longest message the server accepts (see POST /api/messages in server.js). */
 const MAX_MESSAGE_LENGTH = 500;

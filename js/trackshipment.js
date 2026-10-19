@@ -1,62 +1,13 @@
 /**
  * Track Shipment page.
  *
- * tracking results come from 
- * GET /api/shipments/:code via api.js, 
- * with a fallback to bookings saved in this browser.
+ * Every tracking result comes from the Express server, GET
+ * /api/shipments/:code (routes/shipments.js) through js/api.js. The server
+ * looks the code up in the demo shipment and in the bookings saved through
+ * POST /api/bookings, and builds the timeline, so this page only shows it.
  */
 
-import { findBooking } from './storage.js';
 import { getShipment } from './api.js';
-
-
-
-/**
- * Looks up a tracking code among the bookings saved in this browser by
- * js/payment.js (through js/storage.js). If one is found, it builds the
- * same shape the server returns from GET /api/shipments/:code, so
- * `renderShipment` can display either one.
- *
- * This is only the fallback. The server is asked first, and this runs
- * when the server answers 404 for a code it doesn't know.
- *
- * Because a booking has only just been paid for (never actually picked
- * up), the timeline always shows step 1 ("Order Placed") as done, the
- * scheduled pickup date/time as the next (upcoming) step, and everything
- * after that as "Pending pickup".
- *
- * @param {string} code Tracking code, already trimmed/uppercased.
- * @returns {{
- *   route: string, eta: string, status: string, badgeClass: string,
- *   timeline: {label: string, time: string, state: string}[],
- * }|null} null if no booking with that code has been saved.
- */
-function getStoredBooking(code) {
-  const booking = findBooking(code);
-  if (!booking) return null;
-
-  const placedAt = new Date(booking.createdAt);
-  const placedLabel = placedAt.toLocaleString("en-PH", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-
-  return {
-    route: `${booking.from} → ${booking.to}`,
-    eta: `${booking.pickupDate} (pending pickup)`,
-    status: "Booking Placed",
-    badgeClass: "cf-badge-placed",
-    timeline: [
-      { label: "Order Placed", time: placedLabel, state: "is-done" },
-      { label: "Picked Up", time: `Scheduled ${booking.pickupDate}, ${booking.pickupTime}`, state: "is-upcoming" },
-      { label: "In Transit", time: "Pending pickup", state: "is-upcoming" },
-      { label: "Out for Delivery", time: "Pending pickup", state: "is-upcoming" },
-      { label: "Delivered", time: "Pending pickup", state: "is-upcoming" },
-    ],
-  };
-}
 
 const form = document.getElementById("track-form");
 const summarySection = document.getElementById("summary");
@@ -73,7 +24,7 @@ const trackButton = form.querySelector("button[type='submit']");
 
 /**
  * Fills in and reveals the shipment summary card + delivery timeline for
- * a found shipment (from the server's response or from `getStoredBooking`).
+ * a found shipment from the server's response.
  *
  * Every value is inserted with `textContent` and `createElement`, never
  * `innerHTML`, so booking data (city names, dates) can't inject HTML
@@ -145,19 +96,11 @@ form.addEventListener("submit", async (event) => {
     const shipment = await getShipment(enteredCode);
     renderShipment(enteredCode, shipment);
   } catch (error) {
-    // Until bookings are stored on the server, fall back to bookings saved
-    // in this browser: when the server doesn't know the code (404), and
-    // when it can't be reached at all (no status), so they still show.
-    const booking = error.status === 404 || error.status === undefined
-      ? getStoredBooking(enteredCode)
-      : null;
-
-    if (booking) {
-      renderShipment(enteredCode, booking);
-    } else if (error.status === 400 || error.status === 404) {
+    // 400: not a valid code. 404: no shipment or booking has it.
+    if (error.status === 400 || error.status === 404) {
       showMessage(error.message);
     } else {
-      showMessage("Could not reach the server. Please try again.");
+      showMessage("Could not reach the server. Please make sure it is running and try again.");
     }
   } finally {
     trackButton.disabled = false;

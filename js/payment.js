@@ -1,8 +1,7 @@
 /**
  * Payment page.
  *
- * There is no session or database, so this page is driven by the URL's
- * query string, which booking-details.html's form
+ * This page is driven by the URL's query string, which booking-details.html's form
  * (method="get") populates when the booking wizard is submitted - see
  * js/booking-details.js. This script:
  *
@@ -11,14 +10,14 @@
  *   2. Shows/hides the GCash vs. card detail fields based on the chosen
  *      payment method, and enables only the relevant ones (so a hidden
  *      field's `required` attribute never blocks submission).
- *   3. On successful "payment", generates a booking reference code, sends
- *      the booking to POST /api/bookings to be checked and saved, and
- *      saves it through js/storage.js so pages/trackshipment.html
- *      and pages/history.html can show it later.
+ *   3. On successful "payment", sends the booking to the Express server
+ *      (POST /api/bookings through js/api.js). The server checks it, makes
+ *      the tracking code and saves it in data/bookings.json, so
+ *      pages/trackshipment.html and pages/history.html can show it later.
  */
 
-import { getProfile, saveBooking } from './storage.js';
-import { saveBookingOnServer } from './api.js';
+import { getProfile } from './storage.js';
+import { createBooking } from './api.js';
 
 /** Parses the booking details carried over in the URL's query string. */
 const paymentParams = new URLSearchParams(window.location.search);
@@ -161,36 +160,7 @@ if (preferredPayment && [...paymentMethod.options].some((option) => option.value
 paymentMethod.addEventListener('change', updatePaymentFields);
 updatePaymentFields(); // Apply once for whichever method is pre-selected on load.
 
-// --- Booking confirmation: generate a code and save the booking ---
-
-/**
- * Generates a booking reference code in the same "CF-########" shape as
- * the site's one hardcoded sample tracking number, using 8 random digits.
- * Not guaranteed unique against past bookings, but collisions are
- * astronomically unlikely for a class-project demo (1 in 100 million).
- * @returns {string} e.g. "CF-04829371"
- */
-const generateBookingCode = () => {
-  const digits = String(Math.floor(Math.random() * 1e8)).padStart(8, '0');
-  return `CF-${digits}`;
-};
-
-/**
- * The fields of this booking that are saved. Only the fields the Track
- * Shipment and My Shipments pages use are kept, not the whole summary.
- * @returns {Object}
- */
-const bookingToSave = () => ({
-  from: paymentValue('from'),
-  to: paymentValue('to'),
-  pickupDate: paymentValue('date'),
-  pickupTime: paymentValue('time'),
-  paymentMethod: paymentMethod.value,
-  weight: paymentParams.get('weight'),
-  cargoType: paymentParams.get('type'),
-  vehicleType: paymentParams.get('vehicleType'),
-  declaredValue: paymentParams.get('declaredValue'),
-});
+// --- Booking confirmation: save the booking on the server ---
 
 /** @type {HTMLElement} Shows why the server turned the booking down. */
 const paymentErrorEl = document.getElementById('paymentError');
@@ -199,10 +169,24 @@ const paymentErrorEl = document.getElementById('paymentError');
 const paymentFormEl = document.getElementById('paymentForm');
 
 /**
+ * The booking sent to POST /api/bookings: the booking details from the URL
+ * and the payment METHOD. Card numbers and GCash details are never sent.
+ * The server keeps only the booking form's fields (lib/bookings.js).
+ *
+ * Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries
+ * @returns {Object}
+ */
+function bookingToSend() {
+  const booking = Object.fromEntries(paymentParams);
+  booking.paymentMethod = paymentMethod.value;
+  return booking;
+}
+
+/**
  * Handles the payment form's submit event. There is no real payment
- * processor, so a "successful" submission just means every visible,
- * required field passed validation - at that point we generate a booking
- * code, persist it, display it, and show the success message.
+ * processor, so a "successful" payment means every visible, required field
+ * passed validation. The booking is then saved on the server, and the code
+ * the server created is shown to the user.
  */
 paymentFormEl.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -210,31 +194,27 @@ paymentFormEl.addEventListener('submit', async (event) => {
     paymentFormEl.classList.add('was-validated');
     return;
   }
+
+  // Disable the button so a double-click doesn't create two bookings.
   const submitButton = paymentFormEl.querySelector('button[type="submit"]');
   submitButton.disabled = true;
   paymentErrorEl.hidden = true;
 
-  const bookingCode = generateBookingCode();
-  const booking = bookingToSave();
   try {
-    // The server checks the booking again (lib/bookings.js) and saves it.
-    await saveBookingOnServer({ code: bookingCode, ...booking });
+    const { data: booking } = await createBooking(bookingToSend());
+    document.getElementById('paymentBookingCode').textContent = booking.code;
+    document.getElementById('paymentSuccess').hidden = false;
   } catch (error) {
-    // A 400 means the booking itself is wrong (e.g. the pickup time has
-    // passed while this page was open): show why and don't confirm it.
-    // With no status the server couldn't be reached, so the booking is
-    // still kept in this browser below, like before.
-    if (error.status !== undefined) {
-      paymentErrorEl.textContent = error.status === 400
-        ? `${error.message} Go back to the booking details to fix it.`
+    // A 400 means the booking itself is wrong (e.g. the pickup time passed
+    // while this page was open): show the server's reason. Without a status
+    // the server couldn't be reached.
+    console.error('Error saving booking:', error);
+    paymentErrorEl.textContent = error.status === 400
+      ? `${error.message} Go back to the booking details to fix it.`
+      : error.status === undefined
+        ? 'Could not reach the server. Please make sure it is running and try again.'
         : 'Could not save the booking. Please try again.';
-      paymentErrorEl.hidden = false;
-      submitButton.disabled = false;
-      return;
-    }
+    paymentErrorEl.hidden = false;
+    submitButton.disabled = false;
   }
-  // Track Shipment and My Shipments still read bookings from this browser.
-  saveBooking(bookingCode, booking);
-  document.getElementById('paymentBookingCode').textContent = bookingCode;
-  document.getElementById('paymentSuccess').hidden = false;
 });

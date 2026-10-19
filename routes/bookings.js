@@ -1,48 +1,95 @@
+/**
+ * Booking routes, mounted in server.js at /api/bookings.
+ *
+ *   GET  /api/bookings  - every saved booking, summary fields only (used by
+ *                         history.html and the profile's booking count)
+ *   POST /api/bookings  - checks and saves a new booking; the server makes
+ *                         its tracking code and sends the booking back
+ *
+ * The rules, the saved fields and data/bookings.json are in lib/bookings.js.
+ * One booking is tracked through GET /api/shipments/:code (routes/shipments.js).
+ *
+ * References:
+ *   Express routing and express.Router: https://expressjs.com/en/guide/routing.html#express-router
+ *   Express API (req.body, res.json, res.status): https://expressjs.com/en/api.html
+ */
+
 const express = require("express");
-const fs = require("fs");
-const path = require("path");
-const { validateBooking, cleanBooking } = require("../lib/bookings");
+const {
+  validateBooking,
+  cleanBooking,
+  readBookings,
+  saveBookings,
+  newBookingCode,
+  bookingSummary,
+} = require("../lib/bookings");
+const { findShipment } = require("../lib/shipments");
 
 const router = express.Router();
 
-// Tests point BOOKINGS_FILE at a temporary file so they don't touch real data.
-const bookingsFile = () =>
-  process.env.BOOKINGS_FILE || path.join(__dirname, "..", "data", "bookings.json");
-
-function readBookings() {
-  try {
-    const bookings = JSON.parse(fs.readFileSync(bookingsFile(), "utf8") || "{}");
-    return bookings && typeof bookings === "object" && !Array.isArray(bookings) ? bookings : {};
-  } catch (error) {
-    if (error.code === "ENOENT") return {};
-    throw error;
-  }
+// Saves run one at a time. Each save reads the whole file and writes it back,
+// so two bookings arriving together could otherwise overwrite each other.
+let saving = Promise.resolve();
+function oneAtATime(task) {
+  const run = saving.then(task);
+  saving = run.catch(() => {});
+  return run;
 }
 
-// POST /api/bookings: check a booking and save it under its code.
-// 400 lists every problem; the first one is also in "error", like the other routes.
-router.post("/", (req, res) => {
+/**
+ * GET /api/bookings - every saved booking, newest first. Only the fields
+ * My Shipments shows: no names, phone numbers or addresses.
+ * Reference: https://expressjs.com/en/api.html#res.json
+ */
+router.get("/", async (req, res) => {
+  try {
+    const bookings = await readBookings();
+    const list = Object.entries(bookings)
+      .map(([code, booking]) => bookingSummary(code, booking))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    res.json(list);
+  } catch (error) {
+    console.error("Error reading bookings:", error);
+    res.status(500).json({ error: "Failed to read bookings." });
+  }
+});
+
+/**
+ * POST /api/bookings - checks the booking, makes its tracking code, saves
+ * it, and returns it with status 201 (Created). A booking that breaks a
+ * rule gets 400 with the first problem in "error" and every problem in
+ * "errors". Any code or status sent by the browser is ignored.
+ * Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/400
+ */
+router.post("/", async (req, res) => {
   const errors = validateBooking(req.body);
   if (errors.length) {
     return res.status(400).json({ error: errors[0].message, errors });
   }
 
   try {
-    const booking = cleanBooking(req.body);
-    const bookings = readBookings();
+    const saved = await oneAtATime(async () => {
+      const bookings = await readBookings();
 
-    if (bookings[booking.code]) {
-      return res.status(409).json({ error: "A booking with that code already exists." });
-    }
+      // Never reuse a saved code or the demo shipment's code.
+      let code;
+      do {
+        code = newBookingCode(bookings);
+      } while (findShipment(code));
 
-    const { code, ...details } = booking;
-    bookings[code] = { ...details, createdAt: new Date().toISOString() };
+      bookings[code] = {
+        ...cleanBooking(req.body),
+        status: "Booking Placed",
+        createdAt: new Date().toISOString(),
+      };
+      await saveBookings(bookings);
+      return { code, ...bookings[code] };
+    });
 
-    fs.mkdirSync(path.dirname(bookingsFile()), { recursive: true });
-    fs.writeFileSync(bookingsFile(), JSON.stringify(bookings, null, 2), "utf8");
-
-    res.status(201).json({ message: "Booking saved.", data: { code, ...bookings[code] } });
+    // Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/201
+    res.status(201).json({ message: "Booking saved.", data: saved });
   } catch (error) {
+    // Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/500
     console.error("Error saving booking:", error);
     res.status(500).json({ error: "Failed to save booking." });
   }

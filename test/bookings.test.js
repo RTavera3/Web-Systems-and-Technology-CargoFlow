@@ -20,42 +20,57 @@ const tomorrow = () => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
+// What js/payment.js sends: the booking form's fields plus the payment method.
 const validBooking = (overrides = {}) => ({
-  code: "CF-12345678",
-  from: "Manila",
-  to: "Cebu",
-  pickupDate: tomorrow(),
-  pickupTime: "09:00",
-  weight: "100",
-  cargoType: "General goods",
-  vehicleType: "Van",
-  declaredValue: "5000",
-  paymentMethod: "GCash",
+  from: "Manila", to: "Cebu", date: tomorrow(), time: "09:00", weight: "100", type: "General goods",
+  senderUserId: "BC0001", senderName: "Juan Dela Cruz", senderContact: "09171234567",
+  pickupAddress: "123 Rizal St", pickupCity: "Manila", pickupProvince: "Metro Manila", pickupZip: "1000",
+  receiverUserId: "BC0002", receiverName: "Maria Santos", receiverContact: "09181234567",
+  dropoffAddress: "45 Osmena Blvd", dropoffCity: "Cebu City", dropoffProvince: "Cebu", dropoffZip: "6000",
+  cargoDescription: "Boxes of books", packageCount: "3", declaredValue: "5000", vehicleType: "Van",
+  customerName: "Juan Dela Cruz", paymentMethod: "GCash",
   ...overrides,
 });
 
 const post = (body) => request(app).post("/api/bookings").send(body);
-
 const fieldsOf = (res) => res.body.errors.map((e) => e.field);
+const saved = () => JSON.parse(fs.readFileSync(process.env.BOOKINGS_FILE, "utf8"));
 
-test("saves a valid booking with 201", async () => {
+test("saves a valid booking with 201 and a code made by the server", async () => {
   const res = await post(validBooking());
 
   assert.equal(res.status, 201);
-  assert.equal(res.body.data.code, "CF-12345678");
-  assert.equal(res.body.data.weight, 100);
-  assert.equal(res.body.data.declaredValue, 5000);
-  assert.ok(res.body.data.createdAt);
-
-  const saved = JSON.parse(fs.readFileSync(process.env.BOOKINGS_FILE, "utf8"));
-  assert.equal(saved["CF-12345678"].from, "Manila");
+  const booking = res.body.data;
+  assert.match(booking.code, /^CF-\d{8}$/);
+  assert.equal(booking.status, "Booking Placed");
+  assert.equal(booking.weight, 100);
+  assert.equal(booking.packageCount, 3);
+  assert.equal(booking.declaredValue, 5000);
+  assert.ok(booking.createdAt);
+  assert.equal(saved()[booking.code].receiverName, "Maria Santos");
 });
 
-test("drops fields that aren't part of a booking", async () => {
-  const res = await post(validBooking({ isAdmin: true }));
+test("ignores a code, status or any other field sent by the browser", async () => {
+  const res = await post(validBooking({ code: "CF-24810293", status: "Delivered", cardNumber: "4111111111111111" }));
 
   assert.equal(res.status, 201);
-  assert.equal("isAdmin" in res.body.data, false);
+  assert.notEqual(res.body.data.code, "CF-24810293", "the demo shipment's code is never reused");
+  assert.equal(res.body.data.status, "Booking Placed");
+  assert.equal("cardNumber" in res.body.data, false);
+  assert.equal(JSON.stringify(saved()).includes("4111"), false);
+});
+
+test("every booking gets its own code", async () => {
+  const codes = new Set();
+  for (let i = 0; i < 5; i++) codes.add((await post(validBooking())).body.data.code);
+  assert.equal(codes.size, 5);
+  assert.equal(Object.keys(saved()).length, 5);
+});
+
+test("saves bookings sent at the same time without losing any", async () => {
+  const results = await Promise.all(Array.from({ length: 8 }, () => post(validBooking())));
+  assert.ok(results.every((r) => r.status === 201));
+  assert.equal(Object.keys(saved()).length, 8);
 });
 
 test("rejects missing required fields and lists each one", async () => {
@@ -64,50 +79,42 @@ test("rejects missing required fields and lists each one", async () => {
   assert.equal(res.status, 400);
   assert.match(res.headers["content-type"], /json/);
   assert.equal(typeof res.body.error, "string");
-  assert.deepEqual(fieldsOf(res).sort(), ["code", "from", "paymentMethod", "pickupDate", "pickupTime", "to", "weight"]);
+  assert.ok(fieldsOf(res).includes("from"));
+  assert.ok(fieldsOf(res).includes("paymentMethod"));
+  assert.ok(fieldsOf(res).includes("receiverContact"));
 });
 
 test("rejects a body that isn't an object", async () => {
   const res = await post([validBooking()]);
-
   assert.equal(res.status, 400);
   assert.deepEqual(fieldsOf(res), ["body"]);
 });
 
-test("rejects codes that aren't CF- plus 8 digits", async () => {
-  for (const code of ["12345678", "CF-1234", "CF-ABCDEFGH", "XX-12345678"]) {
-    const res = await post(validBooking({ code }));
-    assert.equal(res.status, 400, code);
-    assert.deepEqual(fieldsOf(res), ["code"], code);
+test("rejects objects or lists in place of text", async () => {
+  for (const value of [{ $gt: "" }, ["Manila"]]) {
+    const res = await post(validBooking({ from: value }));
+    assert.equal(res.status, 400);
+    assert.deepEqual(fieldsOf(res), ["from"]);
   }
 });
 
-test("accepts a lowercase code and saves it uppercase", async () => {
-  const res = await post(validBooking({ code: " cf-87654321 " }));
-
-  assert.equal(res.status, 201);
-  assert.equal(res.body.data.code, "CF-87654321");
-});
-
 test("rejects a pickup in the past", async () => {
-  const res = await post(validBooking({ pickupDate: "2020-01-01" }));
-
+  const res = await post(validBooking({ date: "2020-01-01" }));
   assert.equal(res.status, 400);
   assert.equal(res.body.error, "Pickup must be in the future.");
 });
 
 test("rejects a pickup earlier today", () => {
   const now = new Date(2026, 9, 18, 10, 0);
-  const errors = validateBooking(validBooking({ pickupDate: "2026-10-18", pickupTime: "09:30" }), now);
-
-  assert.deepEqual(errors.map((e) => e.field), ["pickupTime"]);
-  assert.deepEqual(validateBooking(validBooking({ pickupDate: "2026-10-18", pickupTime: "10:30" }), now), []);
+  const errors = validateBooking(validBooking({ date: "2026-10-18", time: "09:30" }), now);
+  assert.deepEqual(errors.map((e) => e.field), ["time"]);
+  assert.deepEqual(validateBooking(validBooking({ date: "2026-10-18", time: "10:30" }), now), []);
 });
 
 test("rejects badly formed and impossible dates and times", async () => {
-  for (const [pickupDate, pickupTime] of [["01/12/2030", "09:00"], ["2030-02-30", "09:00"], [tomorrow(), "25:00"], [tomorrow(), "9am"]]) {
-    const res = await post(validBooking({ pickupDate, pickupTime }));
-    assert.equal(res.status, 400, `${pickupDate} ${pickupTime}`);
+  for (const [date, time] of [["01/12/2030", "09:00"], ["2030-02-30", "09:00"], [tomorrow(), "25:00"], [tomorrow(), "9am"]]) {
+    const res = await post(validBooking({ date, time }));
+    assert.equal(res.status, 400, `${date} ${time}`);
   }
 });
 
@@ -119,33 +126,51 @@ test("rejects zero, negative, non-numeric and too-heavy weights", async () => {
   }
 });
 
-test("rejects a negative declared value", async () => {
-  const res = await post(validBooking({ declaredValue: -1 }));
-
-  assert.equal(res.status, 400);
-  assert.deepEqual(fieldsOf(res), ["declaredValue"]);
+test("rejects a bad package count and a negative declared value", async () => {
+  for (const packageCount of [0, 1.5, "many"]) {
+    assert.deepEqual(fieldsOf(await post(validBooking({ packageCount }))), ["packageCount"], String(packageCount));
+  }
+  assert.deepEqual(fieldsOf(await post(validBooking({ declaredValue: -1 }))), ["declaredValue"]);
 });
 
 test("rejects the same pickup and drop-off city", async () => {
-  const res = await post(validBooking({ to: "Manila" }));
-
-  assert.equal(res.status, 400);
-  assert.deepEqual(fieldsOf(res), ["to"]);
+  assert.deepEqual(fieldsOf(await post(validBooking({ to: "Manila" }))), ["to"]);
 });
 
 test("rejects an unknown payment method", async () => {
-  const res = await post(validBooking({ paymentMethod: "Bitcoin" }));
-
-  assert.equal(res.status, 400);
-  assert.deepEqual(fieldsOf(res), ["paymentMethod"]);
+  assert.deepEqual(fieldsOf(await post(validBooking({ paymentMethod: "Bitcoin" }))), ["paymentMethod"]);
 });
 
-test("rejects a code that is already booked with 409", async () => {
-  assert.equal((await post(validBooking())).status, 201);
-  const res = await post(validBooking());
+test("lists bookings newest first with no personal details", async () => {
+  const first = (await post(validBooking({ to: "Davao" }))).body.data;
+  const second = (await post(validBooking({ to: "Iloilo" }))).body.data;
 
-  assert.equal(res.status, 409);
-  assert.ok(res.body.error);
+  const res = await request(app).get("/api/bookings");
+  assert.equal(res.status, 200);
+  assert.deepEqual(res.body.map((b) => b.code), [second.code, first.code]);
+  assert.deepEqual(Object.keys(res.body[0]).sort(),
+    ["code", "createdAt", "date", "from", "paymentMethod", "status", "time", "to"]);
+  assert.equal(JSON.stringify(res.body).includes("Maria Santos"), false);
+  assert.equal(JSON.stringify(res.body).includes("0918"), false);
+});
+
+test("lists nothing when there are no bookings yet", async () => {
+  const res = await request(app).get("/api/bookings");
+  assert.equal(res.status, 200);
+  assert.deepEqual(res.body, []);
+});
+
+test("a saved booking can be tracked through GET /api/shipments/:code", async () => {
+  const { code } = (await post(validBooking())).body.data;
+
+  const res = await request(app).get(`/api/shipments/${code.toLowerCase()}`);
+  assert.equal(res.status, 200);
+  assert.equal(res.body.code, code);
+  assert.equal(res.body.route, "Manila → Cebu");
+  assert.equal(res.body.status, "Booking Placed");
+  assert.equal(res.body.timeline.length, 5);
+  assert.equal(res.body.timeline[0].state, "is-done");
+  assert.equal(JSON.stringify(res.body).includes("Maria Santos"), false);
 });
 
 test("bad JSON still gets the JSON 400 from the error handler", async () => {
