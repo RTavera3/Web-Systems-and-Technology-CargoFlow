@@ -32,7 +32,7 @@ import { listBookings } from './api.js';
  * @property {number|null} cost    The shipper's share of the trip cost in
  *                                 pesos, or null if not known (bookings
  *                                 saved by payment.js do not store a price).
- * @property {"Booking Placed"|"In Transit"|"Delivered"} status
+ * @property {"Booking Placed"|"Picked Up"|"In Transit"|"Out for Delivery"|"Delivered"} status
  * @property {boolean} trackable   True if the Track Shipment page can show
  *                                 this code (the demo code and saved bookings).
  */
@@ -93,7 +93,9 @@ const sampleShipments = [
  */
 const statusBadgeClass = {
   "Booking Placed": "cf-badge-placed",
+  "Picked Up": "cf-badge-transit",
   "In Transit": "cf-badge-transit",
+  "Out for Delivery": "cf-badge-transit",
   Delivered: "cf-badge-delivered",
 };
 
