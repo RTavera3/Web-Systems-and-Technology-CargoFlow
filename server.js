@@ -26,13 +26,20 @@
  *       npm start
  */
 
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
+// ES modules ("type": "module" in package.json): import/export instead of
+// require/module.exports. Reference: https://nodejs.org/api/esm.html
+import express from "express";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 
-const bookingsRouter = require("./routes/bookings");
-const messagesRouter = require("./routes/messages");
-const shipmentsRouter = require("./routes/shipments");
+import bookingsRouter from "./routes/bookings.js";
+import messagesRouter from "./routes/messages.js";
+import shipmentsRouter from "./routes/shipments.js";
+
+// ES modules have no __dirname; build it from this file's URL.
+// Reference: https://nodejs.org/api/esm.html#importmetaurl
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -81,10 +88,12 @@ app.use((err, req, res, next) => {
   next(err);
 });
 
-if (require.main === module) {
+// Start listening only when run directly (npm start / npm run dev), not when
+// the tests import the app.
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   app.listen(PORT, () => {
     console.log(`CargoFlow running on http://localhost:${PORT}`);
   });
 }
 
-module.exports = app;
+export default app;

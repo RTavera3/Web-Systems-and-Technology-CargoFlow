@@ -1,7 +1,7 @@
-const { test } = require("node:test");
-const assert = require("node:assert/strict");
-const request = require("supertest");
-const app = require("../server");
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import request from "supertest";
+import app from "../server.js";
 
 test("returns the demo shipment for a valid code", async () => {
   const res = await request(app).get("/api/shipments/CF-24810293");

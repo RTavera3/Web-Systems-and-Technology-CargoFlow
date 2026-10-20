@@ -119,6 +119,10 @@ The payment, tracking, history and chat pages also load their scripts as ES modu
 which browsers only run over `http://`, so open the site through the server rather than
 by double-clicking an HTML file.
 
+The server is written as ES modules too: `package.json` sets `"type": "module"`, so
+`server.js`, `routes/`, `lib/` and `test/` use `import` / `export` rather than
+`require` / `module.exports`, and relative imports include the `.js` extension.
+
 ### About the pages
 
 `index.html` (project root) is the Home page — Bootstrap 5 navbar, hero with

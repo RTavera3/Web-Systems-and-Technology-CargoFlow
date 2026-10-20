@@ -1,16 +1,18 @@
-const { test, beforeEach, after } = require("node:test");
-const assert = require("node:assert/strict");
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
-const request = require("supertest");
+import { test, beforeEach, after } from "node:test";
+import assert from "node:assert/strict";
+import fs from "fs";
+import os from "os";
+import path from "path";
+import request from "supertest";
+import app from "../server.js";
+import { validateBooking } from "../lib/bookings.js";
 
-// Save bookings in a temporary file, not data/bookings.json.
+// Save bookings in a temporary file, not data/bookings.json. Imports load
+// before this line runs, which is fine: lib/bookings.js reads BOOKINGS_FILE
+// each time it saves, not when it loads.
 const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "cargoflow-bookings-"));
 process.env.BOOKINGS_FILE = path.join(tmpDir, "bookings.json");
 
-const app = require("../server");
-const { validateBooking } = require("../lib/bookings");
 
 beforeEach(() => fs.rmSync(process.env.BOOKINGS_FILE, { force: true }));
 after(() => fs.rmSync(tmpDir, { recursive: true, force: true }));
