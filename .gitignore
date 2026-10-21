@@ -3,3 +3,5 @@ node_modules/
 data/bookings.json
 data/contact-messages.json
 data/profile.json
+data/*.corrupt-*
+data/.*.tmp
