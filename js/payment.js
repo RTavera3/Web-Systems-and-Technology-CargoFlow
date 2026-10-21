@@ -16,8 +16,7 @@
  *      pages/trackshipment.html and pages/history.html can show it later.
  */
 
-import { getProfile } from './storage.js';
-import { createBooking } from './api.js';
+import { createBooking, getProfile } from './api.js';
 
 /** Parses the booking details carried over in the URL's query string. */
 const paymentParams = new URLSearchParams(window.location.search);
@@ -151,14 +150,19 @@ const updatePaymentFields = () => {
   document.getElementById('cashPaymentNote').hidden = paymentMethod.value !== 'Cash on pickup';
 };
 
-// Start on the preferred payment method from the account profile, if any.
-const { preferredPayment } = getProfile();
-if (preferredPayment && [...paymentMethod.options].some((option) => option.value === preferredPayment)) {
-  paymentMethod.value = preferredPayment;
-}
-
 paymentMethod.addEventListener('change', updatePaymentFields);
 updatePaymentFields(); // Apply once for whichever method is pre-selected on load.
+
+// Start on the preferred payment method from the account profile, if any.
+// If the profile can't be loaded, the page keeps its default method.
+getProfile()
+  .then(({ preferredPayment }) => {
+    if (preferredPayment && [...paymentMethod.options].some((option) => option.value === preferredPayment)) {
+      paymentMethod.value = preferredPayment;
+      updatePaymentFields();
+    }
+  })
+  .catch((error) => console.warn('Account profile could not be loaded.', error));
 
 // --- Booking confirmation: save the booking on the server ---
 

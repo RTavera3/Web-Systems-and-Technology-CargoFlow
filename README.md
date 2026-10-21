@@ -75,8 +75,10 @@ Shipping in the Philippines is expensive — especially for small businesses tha
 > the pages and a REST API. Carrier messages are saved in `data/messages.json` and
 > bookings in `data/bookings.json`, so both survive page reloads, server restarts
 > and other browsers. The server checks every booking, makes its tracking code and
-> answers every tracking lookup. See [Backend API](#backend-api). Only the account
-> profile is still saved in the browser's `localStorage`.
+> answers every tracking lookup. The contact form, the booking form's user lookup
+> and the account profile go through it too, so nothing is kept in the browser's
+> `localStorage`. Every script, on the server and in the browser, is an ES module
+> (`import`/`export`, no CommonJS). See [Backend API](#backend-api).
 
 ---
 
@@ -153,10 +155,13 @@ run it.
 - **Bookings** are checked and saved on the server in `data/bookings.json` through
   [`POST /api/bookings`](#bookings). My Shipments and the profile's booking count read
   them from `GET /api/bookings`, and Track Shipment from `GET /api/shipments/:code`.
-- **The account profile** is kept in the browser's `localStorage`, through
-  `js/storage.js`. It never throws on missing or corrupted data, and records a
-  storage version so data saved by an older version of the site is upgraded on the
-  next visit.
+- **The account profile** is saved on the server in `data/profile.json` through
+  `GET` and `PUT /api/profile`. Until it is first saved, the demo account is used.
+- **Contact form messages** are checked and saved in `data/contact-messages.json`
+  through `POST /api/contact`.
+- **Users** for the booking form's User ID lookup are in `data/users.json`. The
+  browser can't load that file: `GET /api/users` gives every user's ID and name, and
+  `GET /api/users/:id` one user's details.
 
 Fonts load from Google Fonts, which receives normal browser request
 metadata; system sans-serif fallbacks are used when offline.
@@ -167,7 +172,7 @@ metadata; system sans-serif fallbacks are used when offline.
 
 The Express server in `server.js` exposes a small REST API under `/api`, with one
 `express.Router()` per resource in `routes/` (`messages.js`, `bookings.js`,
-`shipments.js`). Requests and responses are JSON. The Messages page
+`shipments.js`, `contact.js`, `profile.js`, `users.js`). Requests and responses are JSON. The Messages page
 (`js/messages.js`) loads, sends and clears the carrier chat through it. The Payment,
 My Shipments, Profile and Track Shipment pages save, list and track bookings
 through it (`js/api.js`).
@@ -181,6 +186,11 @@ through it (`js/api.js`).
 | `GET`    | `/api/bookings` | Lists every booking, newest first, summary fields only | `200` `[ { "code", "from", "to", "date", "time", "paymentMethod", "status", "createdAt" } ]` |
 | `POST`   | `/api/bookings` | Checks one booking, makes its code and saves it | `201` `{ "message": "Booking saved.", "data": { "code": "CF-12345678", ...the saved booking } }` |
 | `GET`    | `/api/shipments/:code` | Returns one shipment's route, ETA, status and timeline | `200` `{ "code": "CF-24810293", "route": "Manila → Cebu", "eta": ..., "status": "In Transit", "badgeClass": ..., "timeline": [ ... ] }` |
+| `POST`   | `/api/contact`  | Checks and saves one contact form message (`name`, `email`, `message`) | `201` `{ "message": "Message sent.", "data": { "id": ... } }` |
+| `GET`    | `/api/profile`  | Returns the account profile (the demo account until it is saved) | `200` the profile |
+| `PUT`    | `/api/profile`  | Checks and saves the account profile          | `200` the saved profile |
+| `GET`    | `/api/users`    | Lists every user's ID and name               | `200` `[ { "userId": "BC0001", "name": "Juan Dela Cruz" } ]` |
+| `GET`    | `/api/users/:id` | Returns one user's saved details            | `200` `{ "userId", "name", "contactNumber", "streetAddress", "city", "province", "zipCode" }` |
 
 ### Tracking a shipment
 
@@ -302,8 +312,8 @@ curl -X POST http://localhost:3000/api/bookings \
 
 `npm test` runs the tests in `test/` with Node's built-in test runner. They use
 [Supertest](https://github.com/ladjs/supertest) to call the API without starting the
-server, so nothing needs to be running first. The booking tests save to a temporary
-file (`BOOKINGS_FILE`), not `data/bookings.json`.
+server, so nothing needs to be running first. The tests save to temporary files
+(`BOOKINGS_FILE`, `CONTACT_FILE`, `PROFILE_FILE`, `USERS_FILE`), never to `data/`.
 
 ### Where the data lives
 
@@ -324,26 +334,35 @@ Web-Systems-and-Technology-CargoFlow/
 ├── package.json                  # Project info, npm scripts (start, dev, test), Express and CORS
 ├── routes/
 │   ├── bookings.js               # GET and POST /api/bookings (Express router)
+│   ├── contact.js                # POST /api/contact: the contact form (Express router)
 │   ├── messages.js               # GET, POST and DELETE /api/messages (Express router)
-│   └── shipments.js              # GET /api/shipments/:code: demo shipment or a saved booking
+│   ├── profile.js                # GET and PUT /api/profile: the account profile (Express router)
+│   ├── shipments.js              # GET /api/shipments/:code: demo shipment or a saved booking
+│   └── users.js                  # GET /api/users and /api/users/:id: the booking form's user lookup
 ├── lib/
 │   ├── bookings.js               # Booking rules, saved fields, data/bookings.json, tracking timeline
+│   ├── json-store.js             # Reading and saving the JSON files in data/ for the newer routes
 │   └── shipments.js              # Shipment data the tracking route looks up (demo shipment for now)
 ├── test/
 │   ├── bookings.test.js          # API tests for bookings and tracking a saved booking (npm test)
 │   ├── errors.test.js            # API tests for the JSON error handler
-│   └── shipments.test.js         # API tests for the shipments route (npm test)
+│   ├── shipments.test.js         # API tests for the shipments route (npm test)
+│   ├── contact.test.js           # API tests for the contact route
+│   ├── profile.test.js           # API tests for the profile route
+│   └── users.test.js             # API tests for the users route
 ├── data/
 │   ├── bookings.json             # Bookings saved by the bookings API (created on first booking, not committed)
-│   └── messages.json             # Chat history saved by the messages API (created on first message if missing)
+│   ├── contact-messages.json     # Contact form messages (created on the first message, not committed)
+│   ├── messages.json             # Chat history saved by the messages API (created on first message if missing)
+│   ├── profile.json              # The account profile (created on the first save, not committed)
+│   └── users.json                # Users for the booking form's User ID lookup
 ├── index.html                    # Home page: hero, quote form, track widget, carrier CTA, about
 ├── css/
 │   └── theme.css                 # Shared Bootstrap theme overrides for every page (navy/orange brand)
 ├── js/
-│   ├── storage.js                # localStorage module for the account profile (its old booking helpers are unused)
-│   ├── track.js                  # Home page's quick shipment-tracking widget
+│   ├── track.js                  # Home page's quick shipment-tracking widget (GET /api/shipments/:code)
 │   ├── trackshipment.js          # Full tracking page logic (pages/trackshipment.html)
-│   ├── api.js                    # The browser's calls to the bookings and shipments APIs (relative URLs)
+│   ├── api.js                    # The browser's calls to the API: bookings, shipments, users, contact, profile
 │   ├── history.js                # Shipment History list, filters, search and sort (pages/history.html)
 │   ├── profile.js                # Account Profile form (pages/profile.html)
 │   └── messages.js               # Carrier chat: loads, sends and clears messages through the API

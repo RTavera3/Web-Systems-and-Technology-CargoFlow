@@ -6,11 +6,10 @@
  * For now it only serves the existing front end (HTML, CSS, JS and
  * resources) exactly as it is, so the site works the same as before but
  * runs from http://localhost:3000 instead of opening the HTML files
- * directly. This also lets js/booking-details.js load
- * resources/users.json with fetch(), which browsers block on file:// pages.
+ * directly.
  *
  * Only the front-end folders are served, so files like server.js,
- * package.json and data/messages.json are not reachable from the browser.
+ * package.json and everything in data/ are not reachable from the browser.
  *
  * The API is split into Express routers in routes/, each mounted below:
  *   GET    /api/health            server status check
@@ -20,6 +19,11 @@
  *   GET    /api/bookings          every booking, summary fields only (routes/bookings.js)
  *   POST   /api/bookings          check and save one booking; the server makes its code
  *   GET    /api/shipments/:code   one shipment's tracking details   (routes/shipments.js)
+ *   POST   /api/contact           save a contact form message      (routes/contact.js)
+ *   GET    /api/profile           the account profile              (routes/profile.js)
+ *   PUT    /api/profile           save the account profile
+ *   GET    /api/users             every user's ID and name         (routes/users.js)
+ *   GET    /api/users/:id         one user's saved details
  *
  * Run:  npm install   (first time only)
  *       npm run dev   (restarts automatically when a file changes)
@@ -34,8 +38,11 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import bookingsRouter from "./routes/bookings.js";
+import contactRouter from "./routes/contact.js";
 import messagesRouter from "./routes/messages.js";
+import profileRouter from "./routes/profile.js";
 import shipmentsRouter from "./routes/shipments.js";
+import usersRouter from "./routes/users.js";
 
 // ES modules have no __dirname; build it from this file's URL.
 // Reference: https://nodejs.org/api/esm.html#importmetaurl
@@ -69,8 +76,11 @@ app.get('/api/health', (req, res) => {
 // Reference: https://expressjs.com/en/guide/routing.html#express-router
 // API routes. Each router handles everything under its path.
 app.use("/api/bookings", bookingsRouter);
+app.use("/api/contact", contactRouter);
 app.use("/api/messages", messagesRouter);
+app.use("/api/profile", profileRouter);
 app.use("/api/shipments", shipmentsRouter);
+app.use("/api/users", usersRouter);
 
 // Anything else is not part of the site.
 app.use((req, res) => {
