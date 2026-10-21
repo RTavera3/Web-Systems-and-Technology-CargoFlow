@@ -185,6 +185,7 @@ through it (`js/api.js`).
 | `DELETE` | `/api/messages` | Deletes every message                        | `200` `{ "message": "All messages deleted successfully." }` |
 | `GET`    | `/api/bookings` | Lists every booking, newest first, summary fields only | `200` `[ { "code", "from", "to", "date", "time", "paymentMethod", "status", "createdAt" } ]` |
 | `POST`   | `/api/bookings` | Checks one booking, makes its code and saves it | `201` `{ "message": "Booking saved.", "data": { "code": "CF-12345678", ...the saved booking } }` |
+| `PATCH`  | `/api/bookings/:code/status` | Moves a booking to its next delivery step and records when | `200` `{ "message": "Booking is now \"Picked Up\".", "data": { ...summary, "statusHistory": [ { "status", "at" } ] } }` |
 | `GET`    | `/api/shipments/:code` | Returns one shipment's route, ETA, status and timeline | `200` `{ "code": "CF-24810293", "route": "Manila → Cebu", "eta": ..., "status": "In Transit", "badgeClass": ..., "timeline": [ ... ] }` |
 | `POST`   | `/api/contact`  | Checks and saves one contact form message (`name`, `email`, `message`) | `201` `{ "message": "Message sent.", "data": { "id": ... } }` |
 | `GET`    | `/api/profile`  | Returns the account profile (the demo account until it is saved) | `200` the profile |
@@ -258,6 +259,36 @@ can't be reached, it says so instead.
 `GET /api/bookings` lists the bookings for My Shipments with summary fields only:
 no names, phone numbers or addresses leave the server.
 
+### Moving a shipment along
+
+Every booking starts at **Booking Placed** and moves through the same steps, one at
+a time:
+
+**Booking Placed → Picked Up → In Transit → Out for Delivery → Delivered**
+
+Send the next step to `PATCH /api/bookings/:code/status`:
+
+```json
+{ "status": "Picked Up" }
+```
+
+The server saves the new status with the time it happened in `statusHistory`. The
+Track Shipment timeline then shows each step reached with its time and the latest
+one as current, and the badge and estimated delivery change with it. My Shipments
+shows the new status and can filter by it.
+
+| Situation | Status | Response body |
+| --- | --- | --- |
+| The next step | `200` | `{ "message": "Booking is now \"Picked Up\".", "data": { ... } }` |
+| Skipping a step, going back, repeating one, or anything after Delivered | `409` | `{ "error": "Booking is \"Booking Placed\", so it can't move to \"In Transit\"; the next step is \"Picked Up\"." }` |
+| `status` missing or not one of the five steps | `400` | `{ "error": "status must be one of: Booking Placed, Picked Up, In Transit, Out for Delivery, Delivered." }` |
+| Code not shaped like `CF-12345678` | `400` | `{ "error": "Booking code must look like CF-12345678." }` |
+| No booking has that code (the demo shipment `CF-24810293` included) | `404` | `{ "error": "No booking found for that code." }` |
+
+Naming the step, rather than asking to "advance", means a request sent twice (a
+double click, a retry) moves the booking only once. There are no accounts yet, so
+like the rest of the API this endpoint is open; a carrier sign-in would guard it.
+
 ### Sending a message
 
 Request body for `POST /api/messages`:
@@ -306,6 +337,9 @@ curl http://localhost:3000/api/bookings
 curl -X POST http://localhost:3000/api/bookings \
   -H "Content-Type: application/json" \
   -d '{"from":"Manila","to":"Cebu","date":"2020-01-01","time":"09:00","weight":100,"paymentMethod":"GCash"}'
+curl -X PATCH http://localhost:3000/api/bookings/CF-12345678/status \
+  -H "Content-Type: application/json" \
+  -d '{"status":"Picked Up"}'
 ```
 
 ### Tests
@@ -333,14 +367,14 @@ Web-Systems-and-Technology-CargoFlow/
 ├── server.js                     # Express backend: serves the site and the /api routes
 ├── package.json                  # Project info, npm scripts (start, dev, test), Express and CORS
 ├── routes/
-│   ├── bookings.js               # GET and POST /api/bookings (Express router)
+│   ├── bookings.js               # GET and POST /api/bookings, PATCH .../:code/status (Express router)
 │   ├── contact.js                # POST /api/contact: the contact form (Express router)
 │   ├── messages.js               # GET, POST and DELETE /api/messages (Express router)
 │   ├── profile.js                # GET and PUT /api/profile: the account profile (Express router)
 │   ├── shipments.js              # GET /api/shipments/:code: demo shipment or a saved booking
 │   └── users.js                  # GET /api/users and /api/users/:id: the booking form's user lookup
 ├── lib/
-│   ├── bookings.js               # Booking rules, saved fields, data/bookings.json, tracking timeline
+│   ├── bookings.js               # Booking rules, delivery steps, data/bookings.json, tracking timeline
 │   ├── json-store.js             # Reading and saving the JSON files in data/ for the newer routes
 │   └── shipments.js              # Shipment data the tracking route looks up (demo shipment for now)
 ├── test/

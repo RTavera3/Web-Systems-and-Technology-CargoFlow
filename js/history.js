@@ -11,8 +11,8 @@
  *      Track Shipment page, so both pages tell the same story.
  *   2. Bookings saved on the Express server (GET /api/bookings through
  *      js/api.js) when someone completes the booking + payment flow.
- *      They always show as "Booking Placed", because nothing has been
- *      picked up yet in this simulation.
+ *      Each shows its current delivery step, which
+ *      PATCH /api/bookings/:code/status moves along.
  *
  * Both sources are normalized into one shape (see `normalizeBooking`) so a
  * single render function can display them.
@@ -31,7 +31,7 @@ import { listBookings } from './api.js';
  * @property {number|null} cost    The shipper's share of the trip cost in
  *                                 pesos, or null if not known (bookings
  *                                 saved by payment.js do not store a price).
- * @property {"Booking Placed"|"In Transit"|"Delivered"} status
+ * @property {"Booking Placed"|"Picked Up"|"In Transit"|"Out for Delivery"|"Delivered"} status
  * @property {boolean} trackable   True if the Track Shipment page can show
  *                                 this code (the demo code and saved bookings).
  */
@@ -92,7 +92,9 @@ const sampleShipments = [
  */
 const statusBadgeClass = {
   "Booking Placed": "cf-badge-placed",
+  "Picked Up": "cf-badge-transit",
   "In Transit": "cf-badge-transit",
+  "Out for Delivery": "cf-badge-transit",
   Delivered: "cf-badge-delivered",
 };
 
