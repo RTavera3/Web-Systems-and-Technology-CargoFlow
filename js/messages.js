@@ -9,6 +9,8 @@ import { getTransactionRecords } from './transaction-data.js';
 const API_BASE_URL = 'http://localhost:3000';
 const DEMO_BOOKING_CODE = 'CF-24810293';
 const MAX_MESSAGE_LENGTH = 500;
+const RETRY_AFTER_RECONNECT_MESSAGE =
+  "Couldn't reach the server. Your message is saved here. Select Retry when the server is online.";
 const conversationList = document.querySelector('.conversation-list');
 const searchInput = document.querySelector('.search-box input');
 const messageInput = document.querySelector('.message-input');
@@ -31,6 +33,11 @@ let isServerAvailable = navigator.onLine;
 let demoFirstSendAvailable = true;
 const sendingMessageIds = new Set();
 let pendingMessages = getPendingMessages().map((message) => {
+  if (message.demoFailureShown && message.lastError?.startsWith('Demo:')) {
+    const updated = { ...message, lastError: RETRY_AFTER_RECONNECT_MESSAGE };
+    savePendingMessage(updated);
+    return updated;
+  }
   if (message.status !== 'sending') return message;
   const requeued = { ...message, status: 'queued', lastError: '' };
   savePendingMessage(requeued);
@@ -369,7 +376,7 @@ async function sendPendingMessage(messageId) {
   }
 
   if (pending.demoFirstAttempt && !pending.demoFailureShown) {
-    const error = 'Demo: this first send was deliberately blocked. Select Retry to resend it.';
+    const error = RETRY_AFTER_RECONNECT_MESSAGE;
     updatePendingMessage(messageId, {
       status: 'failed',
       lastError: error,

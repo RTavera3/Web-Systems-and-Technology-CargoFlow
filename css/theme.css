@@ -734,10 +734,7 @@ body {
   color: #b02a37;
 }
 
-.message-demo-note {
-  color: #343a40;
-  font-size: 13px;
-}
+
 
 /* An outgoing message the server could not save, with its Retry button. */
 .message.failed .message-content p {
