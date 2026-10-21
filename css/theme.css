@@ -192,6 +192,52 @@ body {
   border-radius: 0;
 }
 
+.history-table {
+  min-width: 1000px;
+  table-layout: fixed;
+}
+
+.history-col-tracking { width: 12%; }
+.history-col-route { width: 19%; }
+.history-col-date { width: 11%; }
+.history-col-payment { width: 16%; }
+.history-col-share { width: 8%; }
+.history-col-status { width: 9%; }
+.history-col-details { width: 13%; }
+.history-col-messages { width: 12%; }
+
+.history-table th,
+.history-table td {
+  overflow-wrap: anywhere;
+}
+
+.history-table details summary {
+  color: var(--cf-navy);
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.35rem 0;
+  text-decoration: underline;
+  text-decoration-color: rgba(11, 61, 145, 0.35);
+  text-underline-offset: 3px;
+}
+
+.history-table details[open] summary {
+  color: #9a4b00;
+  text-decoration-color: currentColor;
+}
+
+.history-table details p {
+  background: #f8f7f4;
+  border-left: 3px solid var(--cf-orange);
+  border-radius: 0.25rem;
+  color: #343a40;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0.5rem 0 0;
+  overflow-wrap: anywhere;
+  padding: 0.65rem 0.75rem;
+}
+
 /* The "Get a price" card floats on the boundary between the navy hero and
    the white page below it, like the search bar on booking.com's homepage:
    pulled up with a negative margin so its top half sits on navy and its

@@ -1,88 +1,67 @@
 /**
  * Track Shipment page.
  *
- * There is no backend, so tracking results come from two sources, checked
- * in order:
- *   1. `knownShipments` below - one hardcoded sample shipment
- *      (CF-24810293) with a full fake "in transit" timeline, used for demos
- *      and grading.
- *   2. Bookings saved by js/payment.js through js/storage.js when someone
- *      completes the booking + payment flow.
- *      These always render as "Booking Placed" (nothing has actually been
- *      picked up yet in this simulation).
- *
- * Both sources are normalized into the same shape (see `renderShipment`)
- * so one render function can display either.
+ * Shipment tracking uses the same transaction records as history and profile,
+ * so every listed tracking code reports its current saved/demo status.
  */
 
-import { findBooking } from './storage.js';
+import { getTransactionRecords } from './transaction-data.js';
 
-/**
- * The one hardcoded demo shipment, keyed by tracking code.
- * @type {Record<string, {
- *   route: string,
- *   eta: string,
- *   status: string,
- *   badgeClass: string,
- *   timeline: {label: string, time: string, state: string}[],
- * }>}
- */
-const knownShipments = {
-  "CF-24810293": {
-    route: "Manila &rarr; Cebu",
-    eta: "Sept 15, 2026",
-    status: "In Transit",
-    badgeClass: "cf-badge-transit",
-    timeline: [
-      { label: "Order Placed", time: "Sept 10, 8:00 AM", state: "is-done" },
-      { label: "Picked Up", time: "Sept 10, 2:30 PM", state: "is-done" },
-      { label: "In Transit", time: "Sept 12, 9:15 AM", state: "is-current" },
-      { label: "Out for Delivery", time: "Estimated Sept 15", state: "is-upcoming" },
-      { label: "Delivered", time: "Estimated Sept 15", state: "is-upcoming" },
-    ],
-  },
+const statusBadgeClasses = {
+  "Booking Placed": "cf-badge-placed",
+  "In Transit": "cf-badge-transit",
+  Delivered: "cf-badge-delivered",
 };
 
-/**
- * Looks up a tracking code among the real bookings saved by
- * js/payment.js, and if found, builds the same "shipment" shape that
- * `knownShipments` entries use so `renderShipment` can display it.
- *
- * Because a booking has only just been paid for (never actually picked
- * up), the timeline always shows step 1 ("Order Placed") as done, the
- * scheduled pickup date/time as the next (upcoming) step, and everything
- * after that as "Pending pickup".
- *
- * @param {string} code Tracking code, already trimmed/uppercased.
- * @returns {{
- *   route: string, eta: string, status: string, badgeClass: string,
- *   timeline: {label: string, time: string, state: string}[],
- * }|null} null if no booking with that code has been saved.
- */
-function getStoredBooking(code) {
-  const booking = findBooking(code);
-  if (!booking) return null;
+function formatPickupDate(value) {
+  const date = new Date(`${value}T00:00:00`);
+  return Number.isNaN(date.getTime())
+    ? value || "Date not provided"
+    : date.toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" });
+}
 
-  const placedAt = new Date(booking.createdAt);
-  const placedLabel = placedAt.toLocaleString("en-PH", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+function getShipment(code) {
+  const record = getTransactionRecords().find((shipment) => shipment.code === code);
+  if (!record) return null;
+
+  const status = statusBadgeClasses[record.status] ? record.status : "Booking Placed";
+  const bookingPlaced = status === "Booking Placed";
+  const inTransit = status === "In Transit";
+  const pickupDate = formatPickupDate(record.pickupDate);
+  const timeline = [
+    { label: "Order Placed", time: pickupDate, state: "is-done" },
+    {
+      label: "Picked Up",
+      time: bookingPlaced ? `Scheduled ${pickupDate}${record.booking?.pickupTime ? `, ${record.booking.pickupTime}` : ""}` : pickupDate,
+      state: bookingPlaced ? "is-upcoming" : "is-done",
+    },
+    {
+      label: "In Transit",
+      time: bookingPlaced ? "Pending pickup" : inTransit ? "Current shipment status" : pickupDate,
+      state: bookingPlaced ? "is-upcoming" : inTransit ? "is-current" : "is-done",
+    },
+    {
+      label: "Out for Delivery",
+      time: bookingPlaced ? "Pending pickup" : inTransit ? `Estimated ${formatPickupDate(record.eta || record.pickupDate)}` : pickupDate,
+      state: bookingPlaced || inTransit ? "is-upcoming" : "is-done",
+    },
+    {
+      label: "Delivered",
+      time: bookingPlaced ? "Pending pickup" : inTransit ? `Estimated ${formatPickupDate(record.eta || record.pickupDate)}` : pickupDate,
+      state: bookingPlaced || inTransit ? "is-upcoming" : "is-done",
+    },
+  ];
 
   return {
-    route: `${booking.from} &rarr; ${booking.to}`,
-    eta: `${booking.pickupDate} (pending pickup)`,
-    status: "Booking Placed",
-    badgeClass: "cf-badge-placed",
-    timeline: [
-      { label: "Order Placed", time: placedLabel, state: "is-done" },
-      { label: "Picked Up", time: `Scheduled ${booking.pickupDate}, ${booking.pickupTime}`, state: "is-upcoming" },
-      { label: "In Transit", time: "Pending pickup", state: "is-upcoming" },
-      { label: "Out for Delivery", time: "Pending pickup", state: "is-upcoming" },
-      { label: "Delivered", time: "Pending pickup", state: "is-upcoming" },
-    ],
+    route: `${record.from} &rarr; ${record.to}`,
+    eta: status === "Delivered"
+      ? "Delivered"
+      : bookingPlaced
+        ? `${pickupDate} (pending pickup)`
+        : record.eta ? formatPickupDate(record.eta) : "In transit",
+    status,
+    badgeClass: statusBadgeClasses[status],
+    timeline,
   };
 }
 
@@ -100,8 +79,7 @@ const trackingInput = document.getElementById("trackingNumber");
 const trackButton = form.querySelector("button[type='submit']");
 
 /**
- * Fills in and reveals the shipment summary card + delivery timeline for
- * a found shipment (from either `knownShipments` or `getStoredBooking`).
+ * Fills in and reveals the shipment summary card + delivery timeline.
  *
  * `summaryRoute` is set with `innerHTML` (not `textContent`) because the
  * route string contains an `&rarr;` HTML entity for the arrow between
@@ -147,9 +125,8 @@ function renderShipment(code, shipment) {
  *   2. Otherwise, disable the button and show "Searching..." for 600ms
  *      (a fake delay purely for the feel of a real lookup - there is no
  *      actual network request).
- *   3. Look the code up in `knownShipments` first, then in saved bookings
- *      via `getStoredBooking`. If found, render it; otherwise show the
- *      "not found" message with a hint toward the sample code.
+ *   3. Look the code up in the shared transaction records. If found, render it;
+ *      otherwise show the "not found" message with a hint toward the sample code.
  *   4. Re-enable the button either way.
  */
 form.addEventListener("submit", (event) => {
@@ -171,7 +148,7 @@ form.addEventListener("submit", (event) => {
   trackButton.textContent = "Searching...";
 
   setTimeout(() => {
-    const shipment = knownShipments[enteredCode] || getStoredBooking(enteredCode);
+    const shipment = getShipment(enteredCode);
 
     if (shipment) {
       renderShipment(enteredCode, shipment);
