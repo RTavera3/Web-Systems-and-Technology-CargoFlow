@@ -79,3 +79,14 @@ test("queued saves run one after another and none is lost", async () => {
     Array.from({ length: 20 }, (_, i) => i),
   );
 });
+
+test("with quarantine off, a damaged file is left alone and the error is thrown", async () => {
+  const file = await tempFile();
+  const broken = '[{"id": 1}, {"id"';
+  await fs.writeFile(file, broken, "utf8");
+
+  await assert.rejects(readJson(file, [], { quarantine: false }), SyntaxError);
+
+  assert.equal(await fs.readFile(file, "utf8"), broken);
+  assert.deepEqual(await fs.readdir(path.dirname(file)), ["data.json"]);
+});

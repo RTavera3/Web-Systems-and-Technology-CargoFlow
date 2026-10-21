@@ -21,8 +21,9 @@ const usersFile = dataFile("USERS_FILE", "users.json");
 // "BC" plus 4 digits, e.g. BC0001.
 const USER_ID_PATTERN = /^BC\d{4}$/;
 
+// users.json is edited by hand, so a typo is reported and the file is left alone.
 async function readUsers() {
-  const users = await readJson(usersFile(), []);
+  const users = await readJson(usersFile(), [], { quarantine: false });
   return Array.isArray(users) ? users : [];
 }
 
