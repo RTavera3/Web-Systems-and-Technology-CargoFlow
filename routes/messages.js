@@ -22,7 +22,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const router = express.Router();
 
-// Reference: https://nodejs.org/api/modules.html#__dirname
+// Reference: https://nodejs.org/api/esm.html#importmetaurl
 // This file is inside routes/, so '..' goes up one folder to reach data/.
 const MESSAGES_FILE = path.join(__dirname, '..', 'data', 'messages.json');
 

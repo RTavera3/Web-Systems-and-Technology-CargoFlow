@@ -5,15 +5,14 @@
  * pickup date, payment method and cost, and lets them filter by status,
  * search by tracking number or city, and sort by pickup date.
  *
- * There is no backend yet, so the list is built from two sources, the same
- * ones js/trackshipment.js reads:
+ * The list is built from two sources:
  *   1. `sampleShipments` below - a few hardcoded past and current shipments
  *      for demos and grading. CF-24810293 matches the sample shipment on the
  *      Track Shipment page, so both pages tell the same story.
- *   2. Bookings saved by js/payment.js through js/storage.js when someone
- *      completes the booking + payment flow.
- *      They always show as "Booking Placed", because nothing has been
- *      picked up yet in this simulation.
+ *   2. Bookings saved on the Express server (GET /api/bookings through
+ *      js/api.js) when someone completes the booking + payment flow.
+ *      Each shows its current delivery step, which
+ *      PATCH /api/bookings/:code/status moves along.
  *
  * Both sources are normalized into one shape (see `normalizeBooking`) so a
  * single render function can display them.

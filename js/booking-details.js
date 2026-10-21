@@ -9,10 +9,10 @@
  *   2. Sync each address card's city/province from the route chosen in
  *      step 1, so "Pick-up city: Manila" also sets the pickup address's
  *      city/province without the user re-selecting it.
- *   3. Sender/Receiver "User ID" auto-fill: looks a typed ID up against
- *      resources/users.json and fills in that person's saved details.
+ *   3. Sender/Receiver "User ID" auto-fill: looks a typed ID up on the
+ *      server (GET /api/users/:id) and fills in that person's saved details.
  *   4. Account owner details (step 4): filled in from the account profile
- *      saved on pages/profile.html (js/storage.js).
+ *      saved on pages/profile.html (GET /api/profile).
  *   5. Digits-only validation for package count / declared value.
  *   6. Vehicle capacity guidance (warns if cargo weight exceeds the
  *      selected vehicle's limit).
@@ -22,10 +22,12 @@
  *      on submit, since the wizard can legitimately sit open past the
  *      originally-chosen pickup time.
  *
- * Nothing here calls a server: the whole flow is client-side, and the
- * "submit" at the end is a GET that carries every field to payment.html
- * as query params (see js/payment.js).
+ * The server is only asked for users and the profile (through js/api.js).
+ * The "submit" at the end is a GET that carries every field to
+ * payment.html as query params; js/payment.js saves the booking.
  */
+
+import { getProfile, getUser, listUsers } from './api.js';
 
 /** Query params carried over from the homepage's "Get a price" form. */
 const bookingParams = new URLSearchParams(window.location.search);
@@ -116,7 +118,7 @@ const limitTimeForSelectedDate = () => {
  * Maps a city name to its province, used to auto-fill the Province field
  * whenever a City is chosen (in step 1's route or a step-2 address card).
  * Covers both the short city names used in the <select> options and the
- * "___ City" variants that come back from resources/users.json.
+ * "___ City" variants that come back from GET /api/users/:id.
  * @type {Record<string, string>}
  */
 const cityProvinceMap = {
@@ -264,7 +266,7 @@ const addSelectOption = (select, value) => {
  *   name: string, contactNumber: string, streetAddress: string,
  *   zipCode: string, city: string, province: string,
  * }|undefined} user The matched user record, or undefined if the ID
- *   wasn't found in resources/users.json.
+ *   wasn't found (GET /api/users/:id returned 404).
  */
 const fillUserDetails = (userIdFieldId, statusId, fieldIds, user) => {
   const userIdField = document.getElementById(userIdFieldId);
@@ -290,15 +292,20 @@ const fillUserDetails = (userIdFieldId, statusId, fieldIds, user) => {
   document.getElementById(fieldIds.routeSelect).value = user.city;
 };
 
-// Load the user directory once, build the shared <datalist> of known IDs,
-// and wire up live lookup on both the Sender and Receiver User ID fields.
-fetch('../resources/users.json')
-  .then((response) => {
-    if (!response.ok) throw new Error('Unable to load user records.');
-    return response.json();
-  })
+/** Shows "User records could not be loaded." next to both User ID fields. */
+const showUsersUnavailable = () => {
+  ['senderUserIdStatus', 'receiverUserIdStatus'].forEach((statusId) => {
+    document.getElementById(statusId).textContent = 'User records could not be loaded.';
+    document.getElementById(statusId).classList.add('is-error');
+  });
+};
+
+// Load every user's ID and name once for the shared <datalist>, then wire up
+// live lookup on both the Sender and Receiver User ID fields. Each lookup
+// asks the server for that one user's details.
+listUsers()
   .then((users) => {
-    const usersById = new Map(users.map((user) => [user.userId.toUpperCase(), user]));
+    const knownIds = new Set(users.map((user) => user.userId.toUpperCase()));
     const userIdOptions = document.getElementById('userIdOptions');
     users.forEach((user) => {
       userIdOptions.append(new Option(`${user.userId} - ${user.name}`, user.userId));
@@ -335,10 +342,21 @@ fetch('../resources/users.json')
        * Normalizes the typed ID to uppercase, looks it up, and applies
        * (or clears) the matching user's details.
        */
-      const lookup = () => {
+      const lookup = async () => {
         const value = input.value.trim().toUpperCase();
         input.value = value;
-        fillUserDetails(userId, status, fields, usersById.get(value));
+        if (!knownIds.has(value)) {
+          fillUserDetails(userId, status, fields, undefined);
+          return;
+        }
+        try {
+          const user = await getUser(value);
+          // Ignore the answer if the field changed while it was loading.
+          if (input.value === value) fillUserDetails(userId, status, fields, user);
+        } catch (error) {
+          if (error.status === 404) fillUserDetails(userId, status, fields, undefined);
+          else showUsersUnavailable();
+        }
       };
       input.addEventListener('input', lookup);
       input.addEventListener('change', lookup);
@@ -347,23 +365,16 @@ fetch('../resources/users.json')
       if (input.value) lookup();
     });
   })
-  .catch(() => {
-    // If resources/users.json can't be fetched (e.g. opened the HTML file
-    // directly via file:// instead of a local server), tell the user
-    // rather than leaving the fields silently non-functional.
-    ['senderUserIdStatus', 'receiverUserIdStatus'].forEach((statusId) => {
-      document.getElementById(statusId).textContent = 'User records could not be loaded.';
-      document.getElementById(statusId).classList.add('is-error');
-    });
-  });
+  // If the server can't be reached (e.g. the HTML file was opened directly
+  // instead of through `npm start`), say so rather than leaving the fields
+  // silently non-functional.
+  .catch(showUsersUnavailable);
 
 // --- Step 4 (Review): account owner details from the saved profile ---
 
-// This file is a classic script, so the storage module is loaded with a
-// dynamic import. If it fails, the demo values already in the HTML stay.
-import('./storage.js')
-  .then(({ getProfile }) => {
-    const profile = getProfile();
+// If the profile can't be loaded, the demo values already in the HTML stay.
+getProfile()
+  .then((profile) => {
     const ownerFields = {
       customerName: profile.name,
       customerContact: profile.contact,

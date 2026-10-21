@@ -43,3 +43,36 @@ export function createBooking(booking) {
     body: JSON.stringify(booking),
   });
 }
+
+/** GET /api/users - every user's { userId, name }. */
+export function listUsers() {
+  return request("/api/users");
+}
+
+/** GET /api/users/:id - one user's saved details. */
+export function getUser(userId) {
+  return request(`/api/users/${encodeURIComponent(userId)}`);
+}
+
+/** POST /api/contact - sends the contact form's { name, email, message }. */
+export function sendContactMessage(message) {
+  return request("/api/contact", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(message),
+  });
+}
+
+/** GET /api/profile - the account profile. */
+export function getProfile() {
+  return request("/api/profile");
+}
+
+/** PUT /api/profile - saves the account profile and resolves with the saved one. */
+export function saveProfile(profile) {
+  return request("/api/profile", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(profile),
+  });
+}

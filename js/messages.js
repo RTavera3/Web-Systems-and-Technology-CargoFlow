@@ -44,13 +44,9 @@ function getCurrentFormattedTime() {
 // Storage helpers as advised during mentoring session - MDN WebDocs
 
 /**
- * Reads and parses the saved chat history from localStorage.
- * Deleted the getStoredMessages() function to avoid redundancy since the messages are now fetched from the server.
- */
-
 /**
  * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#supplying_options
- * Appends one message to the saved chat history in localStorage.
+ * Saves one message on the server (POST /api/messages).
  * @param {string} text The message body.
  * @param {string} messageType Either "incoming" (from the carrier) or
  *   "outgoing" (from the user) - matches the CSS class used to style it.
@@ -179,9 +175,9 @@ function removeTypingIndicator() {
  * @param {string} text The message body to display.
  * @param {string} messageType "incoming" or "outgoing" - controls bubble
  *   alignment/color and whether an avatar is shown.
- * @param {boolean} [shouldSave=true] Whether to persist this message to
- *   localStorage. Set to false when replaying history on load (via
- *   `loadMessages`) so it isn't duplicated in storage.
+ * @param {boolean} [shouldSave=true] Whether to save this message on the
+ *   server. Set to false when replaying history on load (via
+ *   `loadMessages`) so it isn't saved twice.
  * @param {string|null} [formattedTime=null] A pre-formatted time to show
  *   instead of the current time - used when replaying a saved message so
  *   it keeps its original timestamp instead of getting "now".
@@ -304,7 +300,7 @@ function updateComposer() {
 
 /**
  * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#supplying_options
- * Wipes the entire chat history: clears localStorage, empties the chat
+ * Wipes the entire chat history: deletes it on the server, empties the chat
  * window, and resets the sidebar preview text. Triggered by the trash
  * icon after a confirmation prompt.
  */
