@@ -1,6 +1,6 @@
 [
   {
-    "userId": "FC00001",
+    "userId": "BC0001",
     "name": "Juan Dela Cruz",
     "contactNumber": "0999-123-4567",
     "streetAddress": "123 Rizal Street, Barangay 660",
@@ -9,7 +9,7 @@
     "zipCode": "1000"
   },
   {
-    "userId": "FC00002",
+    "userId": "BC0002",
     "name": "Maria Santos",
     "contactNumber": "0917-234-5678",
     "streetAddress": "45 Mabini Avenue, Barangay 3",
@@ -18,7 +18,7 @@
     "zipCode": "4200"
   },
   {
-    "userId": "FC00003",
+    "userId": "BC0003",
     "name": "Jose Reyes",
     "contactNumber": "0928-345-6789",
     "streetAddress": "78 Bonifacio Street, Barangay 21",
@@ -27,7 +27,7 @@
     "zipCode": "2600"
   },
   {
-    "userId": "FC00004",
+    "userId": "BC0004",
     "name": "Ana Garcia",
     "contactNumber": "0939-456-7890",
     "streetAddress": "22 Aguinaldo Road, Barangay 8",
@@ -36,7 +36,7 @@
     "zipCode": "6000"
   },
   {
-    "userId": "FC00005",
+    "userId": "BC0005",
     "name": "Pedro Bautista",
     "contactNumber": "0945-567-8901",
     "streetAddress": "9 Luna Street, Barangay 19-B",
@@ -45,7 +45,7 @@
     "zipCode": "8000"
   },
   {
-    "userId": "FC00006",
+    "userId": "BC0006",
     "name": "Rosa Fernandez",
     "contactNumber": "0956-678-9012",
     "streetAddress": "15 Del Pilar Street, Barangay Dolores",

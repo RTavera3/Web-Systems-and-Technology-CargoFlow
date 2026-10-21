@@ -4,11 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CargoFlow</title>
+    <meta name="description" content="CargoFlow matches your cargo with carriers already driving your route, so you share the truck and split the cost." />
+    <link rel="icon" type="image/png" href="resources/cargoflow.logo.png" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/theme.css" />
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
+    <nav class="navbar bg-white border-bottom sticky-top">
       <div class="container">
         <a class="navbar-brand d-flex align-items-center gap-2" href="#book" aria-label="CargoFlow home">
           <svg viewBox="0 0 56 56" width="36" height="36" aria-hidden="true">
@@ -21,24 +23,30 @@
           </svg>
           <span>Cargo<b class="text-cf-orange">Flow</b></span>
         </a>
-        <div class="navbar-collapse">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navMain"
+          aria-controls="navMain"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMain">
           <span class="navbar-text small fw-bold text-cf-orange d-none d-lg-inline me-auto ms-3">
             Share the Road. Share the Cost.
           </span>
-          <nav class="site-nav ms-auto" aria-label="Main navigation">
-            <details>
-              <summary aria-label="Navigation menu"><span class="burger-icon"><span></span><span></span><span></span></span></summary>
-              <div class="site-nav-menu">
-                <a href="#book">Book cargo space</a>
-                <a href="pages/trackshipment.html">Track shipment</a>
-                <a href="pages/messages.html">Connect to carrier</a>
-                <a href="pages/profile.html">Account profile</a>
-                <a href="pages/transactions.html">Transaction records</a>
-                <a href="#about">About</a>
-                <a href="pages/contact.html">Contact Us</a>
-              </div>
-            </details>
-          </nav>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a class="nav-link" href="#book">Book cargo space</a></li>
+            <li class="nav-item"><a class="nav-link" href="pages/trackshipment.html">Track shipment</a></li>
+            <li class="nav-item"><a class="nav-link" href="pages/history.html">Transaction records</a></li>
+            <li class="nav-item"><a class="nav-link" href="pages/messages.html">Connect to carrier</a></li>
+            <li class="nav-item"><a class="nav-link" href="pages/profile.html">Account profile</a></li>
+            <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="pages/contact.html">Contact Us</a></li>
+          </ul>
         </div>
       </div>
     </nav>
@@ -46,7 +54,7 @@
     <header class="cf-hero pt-5" id="book">
       <div class="container text-center">
         <h1 class="cf-h1 fw-bold mb-3">Book cargo space going your way</h1>
-        <p class="lead mb-0 mx-auto" style="max-width: 60ch">
+        <p class="lead mb-0 mx-auto cf-measure">
           Don't pay for a whole truck. Tell us your route and load, and we
           match a carrier already driving that way and price it by the space
           you use.
@@ -60,7 +68,7 @@
           <div class="card cf-card cf-overlap-card shadow">
             <div class="card-body p-4">
               <h2 class="h5 fw-bold mb-3">Get a price</h2>
-              <form id="quote" action="pages/booking-details.html" method="get">
+              <form id="quote" class="needs-validation" novalidate action="pages/booking-details.html" method="get">
                 <div class="row g-3">
                     <div class="col-sm-6">
                       <label class="form-label">Pick-up city</label>
@@ -73,6 +81,7 @@
                         <option>Davao</option>
                         <option>Pampanga</option>
                       </select>
+                      <div class="invalid-feedback">Select a pick-up city.</div>
                     </div>
                     <div class="col-sm-6">
                       <label class="form-label">Drop-off city</label>
@@ -85,14 +94,67 @@
                         <option>Davao</option>
                         <option>Pampanga</option>
                       </select>
+                      <div class="invalid-feedback">Select a drop-off city.</div>
                     </div>
                     <div class="col-sm-6">
                       <label class="form-label">Pick-up date</label>
                       <input type="date" name="date" class="form-control" required />
+                      <div class="invalid-feedback">Choose a pick-up date.</div>
                     </div>
                     <div class="col-sm-6">
                       <label class="form-label">Pick-up time</label>
-                      <input type="time" name="time" class="form-control" required />
+                      <select name="time" class="form-select" required>
+                        <option value="">Select a time</option>
+                        <option value="00:00">12:00 AM</option>
+                        <option value="00:30">12:30 AM</option>
+                        <option value="01:00">1:00 AM</option>
+                        <option value="01:30">1:30 AM</option>
+                        <option value="02:00">2:00 AM</option>
+                        <option value="02:30">2:30 AM</option>
+                        <option value="03:00">3:00 AM</option>
+                        <option value="03:30">3:30 AM</option>
+                        <option value="04:00">4:00 AM</option>
+                        <option value="04:30">4:30 AM</option>
+                        <option value="05:00">5:00 AM</option>
+                        <option value="05:30">5:30 AM</option>
+                        <option value="06:00">6:00 AM</option>
+                        <option value="06:30">6:30 AM</option>
+                        <option value="07:00">7:00 AM</option>
+                        <option value="07:30">7:30 AM</option>
+                        <option value="08:00">8:00 AM</option>
+                        <option value="08:30">8:30 AM</option>
+                        <option value="09:00">9:00 AM</option>
+                        <option value="09:30">9:30 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="10:30">10:30 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="11:30">11:30 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="12:30">12:30 PM</option>
+                        <option value="13:00">1:00 PM</option>
+                        <option value="13:30">1:30 PM</option>
+                        <option value="14:00">2:00 PM</option>
+                        <option value="14:30">2:30 PM</option>
+                        <option value="15:00">3:00 PM</option>
+                        <option value="15:30">3:30 PM</option>
+                        <option value="16:00">4:00 PM</option>
+                        <option value="16:30">4:30 PM</option>
+                        <option value="17:00">5:00 PM</option>
+                        <option value="17:30">5:30 PM</option>
+                        <option value="18:00">6:00 PM</option>
+                        <option value="18:30">6:30 PM</option>
+                        <option value="19:00">7:00 PM</option>
+                        <option value="19:30">7:30 PM</option>
+                        <option value="20:00">8:00 PM</option>
+                        <option value="20:30">8:30 PM</option>
+                        <option value="21:00">9:00 PM</option>
+                        <option value="21:30">9:30 PM</option>
+                        <option value="22:00">10:00 PM</option>
+                        <option value="22:30">10:30 PM</option>
+                        <option value="23:00">11:00 PM</option>
+                        <option value="23:30">11:30 PM</option>
+                      </select>
+                      <div class="invalid-feedback">Choose a pick-up time.</div>
                     </div>
                     <div class="col-sm-6">
                       <label class="form-label">Cargo weight (kg)</label>
@@ -105,6 +167,7 @@
                         class="form-control"
                         required
                       />
+                      <div class="invalid-feedback">Enter a weight between 1 and 50,000 kg.</div>
                     </div>
                     <div class="col-sm-6">
                       <label class="form-label">Cargo type</label>
@@ -116,6 +179,7 @@
                         <option>Bulk / sacks</option>
                         <option>Appliances / furniture</option>
                       </select>
+                      <div class="invalid-feedback">Select a cargo type.</div>
                     </div>
                   </div>
 
@@ -145,8 +209,7 @@
             <h1 class="cf-h2 fw-bold mb-2 text-cf-navy">Track your shipment</h1>
             <p class="lead text-muted mb-4">Enter your booking code to check its status.</p>
             <form
-              class="track-search d-flex gap-2 p-3 bg-cf-panel mx-auto mx-lg-0"
-              style="max-width: 480px"
+              class="track-search d-flex gap-2 p-3 bg-cf-panel mx-auto mx-lg-0 cf-narrow"
             >
               <input type="text" name="code" class="form-control" placeholder="e.g. CF-10492" />
               <button type="submit" class="btn btn-cf-accent">Track</button>
@@ -231,57 +294,9 @@
       </div>
     </footer>
 
-    <script>
-      const pickupDate = document.querySelector('input[name="date"]');
-      const pickupTime = document.querySelector('input[name="time"]');
-
-      const formatDateValue = (date) => {
-        const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-        return localDate.toISOString().split('T')[0];
-      };
-
-      const formatTimeValue = (date) => {
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        return `${hours}:${minutes}`;
-      };
-
-      const limitTimeForSelectedDate = () => {
-        if (!pickupDate || !pickupTime) return;
-
-        const todayString = formatDateValue(new Date());
-        pickupDate.min = todayString;
-
-        if (!pickupDate.value || pickupDate.value < todayString) {
-          pickupDate.value = todayString;
-        }
-
-        const selectedDate = pickupDate.value;
-
-        if (selectedDate === todayString) {
-          const minTimeDate = new Date(Date.now() + 60000);
-          const minTime = formatTimeValue(minTimeDate);
-          pickupTime.min = minTime;
-
-          if (pickupTime.value && pickupTime.value < minTime) {
-            pickupTime.value = '';
-          }
-        } else {
-          pickupTime.min = '';
-        }
-      };
-
-      if (pickupDate) {
-        pickupDate.addEventListener('change', limitTimeForSelectedDate);
-        pickupTime?.addEventListener('change', () => {
-          if (pickupDate.value === pickupDate.min && pickupTime.value && pickupTime.value < pickupTime.min) {
-            pickupTime.value = '';
-          }
-        });
-        limitTimeForSelectedDate();
-      }
-    </script>
+    <script src="js/quote-form.js" defer></script>
     <script src="js/track.js" defer></script>
+    <script src="js/form-validation.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
