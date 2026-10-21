@@ -5,6 +5,8 @@
  *                         history.html and the profile's booking count)
  *   POST /api/bookings  - checks and saves a new booking; the server makes
  *                         its tracking code and sends the booking back
+ *   PATCH /api/bookings/:code/status - moves a booking to its next delivery
+ *                         step ({ "status": "Picked Up" }) and records when
  *
  * The rules, the saved fields and data/bookings.json are in lib/bookings.js.
  * One booking is tracked through GET /api/shipments/:code (routes/shipments.js).
@@ -22,6 +24,9 @@ import {
   saveBookings,
   newBookingCode,
   bookingSummary,
+  advanceStatus,
+  statusHistory,
+  CODE_PATTERN,
 } from "../lib/bookings.js";
 import { findShipment } from "../lib/shipments.js";
 
@@ -92,6 +97,44 @@ router.post("/", async (req, res) => {
     // Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/500
     console.error("Error saving booking:", error);
     res.status(500).json({ error: "Failed to save booking." });
+  }
+});
+
+/**
+ * PATCH /api/bookings/:code/status - moves the booking to the next delivery
+ * step: Booking Placed -> Picked Up -> In Transit -> Out for Delivery ->
+ * Delivered. The body names that step, e.g. { "status": "Picked Up" }, and
+ * the time it happened is recorded, so Track Shipment's timeline fills in.
+ * Skipping a step, going back, or repeating one gets 409 (Conflict).
+ * Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/409
+ */
+router.patch("/:code/status", async (req, res) => {
+  const code = req.params.code.trim().toUpperCase();
+  if (!CODE_PATTERN.test(code)) {
+    return res.status(400).json({ error: "Booking code must look like CF-12345678." });
+  }
+
+  try {
+    const result = await oneAtATime(async () => {
+      const bookings = await readBookings();
+      if (!Object.hasOwn(bookings, code)) return { notFound: true };
+      const step = advanceStatus(bookings[code], req.body?.status);
+      if (step.booking) {
+        bookings[code] = step.booking;
+        await saveBookings(bookings);
+      }
+      return step;
+    });
+
+    if (result.notFound) return res.status(404).json({ error: "No booking found for that code." });
+    if (result.error) return res.status(result.conflict ? 409 : 400).json({ error: result.error });
+    res.json({
+      message: `Booking is now "${result.booking.status}".`,
+      data: { ...bookingSummary(code, result.booking), statusHistory: statusHistory(result.booking) },
+    });
+  } catch (error) {
+    console.error("Error updating booking status:", error);
+    res.status(500).json({ error: "Failed to update the booking status." });
   }
 });
 

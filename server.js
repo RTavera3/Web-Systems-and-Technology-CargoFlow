@@ -19,6 +19,7 @@
  *   DELETE /api/messages          clear the chat history
  *   GET    /api/bookings          every booking, summary fields only (routes/bookings.js)
  *   POST   /api/bookings          check and save one booking; the server makes its code
+ *   PATCH  /api/bookings/:code/status  move a booking to its next delivery step
  *   GET    /api/shipments/:code   one shipment's tracking details   (routes/shipments.js)
  *
  * Run:  npm install   (first time only)
