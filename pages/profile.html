@@ -17,13 +17,19 @@
         <span>Cargo<b>Flow</b></span>
       </a>
       <p class="tag">Share the Road. Share the Cost.</p>
-      <nav>
-        <a href="../index.html#book">Book cargo space</a>
-        <a href="trackshipment.html">Track shipment</a>
-        <a href="messages.html">Connect to carrier</a>
-        <a href="profile.html" aria-current="page">Account profile</a>
-        <a href="../index.html#about">About</a>
-        <a href="contact.html">Contact Us</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <details>
+          <summary aria-label="Navigation menu"><span class="burger-icon"><span></span><span></span><span></span></span></summary>
+          <div class="site-nav-menu">
+            <a href="../index.html#book">Book cargo space</a>
+            <a href="trackshipment.html">Track shipment</a>
+            <a href="messages.html">Connect to carrier</a>
+            <a href="profile.html" aria-current="page">Account profile</a>
+            <a href="transactions.html">Transaction records</a>
+            <a href="../index.html#about">About</a>
+            <a href="contact.html">Contact Us</a>
+          </div>
+        </details>
       </nav>
     </header>
 
@@ -124,25 +130,6 @@
         </form>
       </section>
 
-      <section class="panel profile-panel transaction-panel" aria-labelledby="transactionsHeading">
-        <div class="profile-section-heading">
-          <div>
-            <h2 id="transactionsHeading">Transaction records</h2>
-            <p>Review your current bookings and completed or cancelled shipments.</p>
-          </div>
-          <a class="profile-book-link" href="../index.html#book">＋ New booking</a>
-        </div>
-        <div class="transaction-tabs" role="tablist" aria-label="Transaction status">
-          <button type="button" id="ongoingTab" role="tab" aria-selected="true" aria-controls="ongoingTransactions">Ongoing <span id="ongoingCount">0</span></button>
-          <button type="button" id="pastTab" role="tab" aria-selected="false" aria-controls="pastTransactions" tabindex="-1">Past <span id="pastCount">0</span></button>
-        </div>
-        <div id="ongoingTransactions" role="tabpanel" aria-labelledby="ongoingTab">
-          <div class="transaction-list" id="ongoingList"></div>
-        </div>
-        <div id="pastTransactions" role="tabpanel" aria-labelledby="pastTab" hidden>
-          <div class="transaction-list" id="pastList"></div>
-        </div>
-      </section>
     </main>
 
     <footer>
