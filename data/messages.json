@@ -30,5 +30,23 @@
     "conversationId": "CF-24750118",
     "text": "Thanks for your message about your Quezon City to Davao shipment. We'll follow up here with booking updates.",
     "timestamp": "2026-10-21T17:11:32.400Z"
+  },
+  {
+    "id": "1792614418067",
+    "clientMessageId": "42d64b0c-b06a-48af-9405-b0d1742b77fa",
+    "sender": "Shipper",
+    "recipient": "Carrier support",
+    "conversationId": "CF-24750118",
+    "text": "Hello",
+    "timestamp": "2026-10-21T20:26:58.067Z"
+  },
+  {
+    "id": "1792614419296",
+    "clientMessageId": "b5cab509-e543-437f-a3c3-73001e2073e2",
+    "sender": "Carrier support",
+    "recipient": "Shipper",
+    "conversationId": "CF-24750118",
+    "text": "Thanks for your message about your Quezon City to Davao shipment. We'll follow up here with booking updates.",
+    "timestamp": "2026-10-21T20:26:59.296Z"
   }
 ]

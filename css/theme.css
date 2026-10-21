@@ -83,6 +83,39 @@ body {
   color: var(--cf-navy);
 }
 
+.messages-shortcut {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1040;
+  display: grid;
+  width: 60px;
+  height: 60px;
+  place-items: center;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--cf-navy);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.messages-shortcut:hover {
+  transform: translateY(-2px);
+  background: #082c69;
+  color: #fff;
+}
+
+.messages-shortcut:focus-visible {
+  outline: 3px solid var(--cf-orange);
+  outline-offset: 3px;
+}
+
+.messages-shortcut svg {
+  width: 28px;
+  height: 28px;
+}
+
 /* Hero — only .cf-hero (the Book cargo space section) is navy.
    padding-bottom is large on purpose: it leaves clear space below the
    subtitle so the floating card (pulled up by .cf-overlap-card's negative
