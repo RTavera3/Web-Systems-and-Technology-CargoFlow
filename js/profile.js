@@ -6,11 +6,12 @@
  * reused elsewhere:
  *   - js/booking-details.js fills step 4's "Account Owner Details" with them.
  *   - js/payment.js starts on the preferred payment method.
- * Bookings themselves are listed on pages/history.html, so this page only
- * links there with a count.
+ * The booking count comes from the same transaction source as
+ * pages/history.html, including its demo records.
  */
 
-import { getProfile, listBookings, saveProfile } from './storage.js';
+import { getProfile, saveProfile } from './storage.js';
+import { getTransactionRecords } from './transaction-data.js';
 
 /** @type {HTMLFormElement} */
 const profileForm = document.getElementById('profileForm');
@@ -59,7 +60,11 @@ const memberSince = new Date(profile.memberSince);
 document.getElementById('profileMemberSince').textContent = Number.isNaN(memberSince.getTime())
   ? profile.memberSince
   : new Intl.DateTimeFormat(undefined, { month: 'short', year: 'numeric' }).format(memberSince);
-document.getElementById('profileBookingCount').textContent = String(listBookings().length);
+const profileBookingCount = document.getElementById('profileBookingCount');
+const renderBookingCount = () => {
+  profileBookingCount.textContent = String(getTransactionRecords().length);
+};
+renderBookingCount();
 renderSummary(profile);
 
 profileForm.addEventListener('submit', (event) => {
@@ -86,3 +91,8 @@ profileForm.addEventListener('submit', (event) => {
 profileForm.addEventListener('input', () => {
   profileSaveStatus.textContent = '';
 });
+
+window.addEventListener('storage', (event) => {
+  if (event.key === 'cargoflow_bookings') renderBookingCount();
+});
+window.addEventListener('pageshow', renderBookingCount);

@@ -1,43 +1,7 @@
-import { listBookings } from './storage.js';
+import { getTransactionRecords } from './transaction-data.js';
 
 const API_BASE_URL = 'http://localhost:3000';
-const DEMO_BOOKING = {
-  code: 'CF-24810293',
-  from: 'Manila',
-  to: 'Cebu',
-  pickupDate: '2026-09-10',
-  eta: '2026-09-15',
-  carrier: 'LBC Express',
-};
-const PREVIOUS_TRANSACTIONS = [
-  {
-    code: 'CF-24750118',
-    from: 'Quezon City',
-    to: 'Davao',
-    pickupDate: '2026-08-28',
-    paymentMethod: 'Credit or debit card',
-    status: 'Delivered',
-    carrier: 'Carrier support',
-  },
-  {
-    code: 'CF-24690457',
-    from: 'Pasig',
-    to: 'Iloilo',
-    pickupDate: '2026-08-12',
-    paymentMethod: 'Cash on pickup',
-    status: 'Delivered',
-    carrier: 'Carrier support',
-  },
-  {
-    code: 'CF-24610932',
-    from: 'Makati',
-    to: 'Baguio',
-    pickupDate: '2026-07-30',
-    paymentMethod: 'GCash',
-    status: 'Delivered',
-    carrier: 'Carrier support',
-  },
-];
+const DEMO_BOOKING_CODE = 'CF-24810293';
 const MAX_MESSAGE_LENGTH = 500;
 const conversationList = document.querySelector('.conversation-list');
 const searchInput = document.querySelector('.search-box input');
@@ -58,17 +22,10 @@ let activeConversation = null;
 let isSending = false;
 
 function getConversations() {
-  const bookings = listBookings().map(({ code, ...booking }) => ({
-    ...booking,
-    code,
-    carrier: code === DEMO_BOOKING.code ? DEMO_BOOKING.carrier : 'Carrier match pending',
-  }));
-  const savedCodes = new Set(bookings.map((booking) => booking.code));
-  bookings.push(
-    ...[...PREVIOUS_TRANSACTIONS, DEMO_BOOKING]
-      .filter((transaction) => !savedCodes.has(transaction.code)),
-  );
-  return bookings.sort((a, b) => {
+  return getTransactionRecords().map((transaction) => ({
+    ...transaction,
+    eta: transaction.eta || null,
+  })).sort((a, b) => {
     const dateDifference = Date.parse(b.createdAt || b.pickupDate || '')
       - Date.parse(a.createdAt || a.pickupDate || '');
     return Number.isNaN(dateDifference) ? 0 : dateDifference;
@@ -142,7 +99,7 @@ function renderConversations() {
     const header = document.createElement('span');
     header.className = 'item-header';
     const title = document.createElement('strong');
-    title.textContent = conversation.code === DEMO_BOOKING.code
+    title.textContent = conversation.code === DEMO_BOOKING_CODE
       ? getConversationName(conversation)
       : `Booking ${conversation.code}`;
     const route = document.createElement('span');
@@ -152,7 +109,7 @@ function renderConversations() {
     preview.className = 'preview-text';
     preview.textContent = conversation.status
       ? `Previous transaction · ${conversation.status}`
-      : conversation.code === DEMO_BOOKING.code
+      : conversation.code === DEMO_BOOKING_CODE
         ? 'Ongoing shipment'
         : 'New booking · conversation ready';
     header.append(title);
@@ -160,6 +117,13 @@ function renderConversations() {
     item.append(avatar, info);
     item.addEventListener('click', () => selectConversation(conversation));
     conversationList.append(item);
+  });
+}
+
+function filterConversations() {
+  const query = searchInput.value.trim().toLowerCase();
+  conversationList.querySelectorAll('.conversation-item').forEach((item) => {
+    item.hidden = !item.textContent.toLowerCase().includes(query);
   });
 }
 
@@ -341,17 +305,14 @@ messageInput.addEventListener('input', () => {
   updateComposer();
 });
 document.querySelector('#clear-btn').addEventListener('click', clearChat);
-searchInput.addEventListener('input', () => {
-  const query = searchInput.value.trim().toLowerCase();
-  conversationList.querySelectorAll('.conversation-item').forEach((item) => {
-    item.hidden = !item.textContent.toLowerCase().includes(query);
-  });
-  window.addEventListener('storage', (event) => {
-    if (event.key !== 'cargoflow_bookings') return;
-    const activeCode = activeConversation?.code;
-    conversations = getConversations();
-    renderConversations();
-    const retainedSelection = conversations.find((conversation) => conversation.code === activeCode);
-    if (retainedSelection) selectConversation(retainedSelection, false);
-  });
+searchInput.addEventListener('input', filterConversations);
+window.addEventListener('storage', (event) => {
+  if (event.key !== 'cargoflow_bookings') return;
+  const activeCode = activeConversation?.code;
+  conversations = getConversations();
+  renderConversations();
+  filterConversations();
+  const selection = conversations.find((conversation) => conversation.code === activeCode)
+    || conversations[0];
+  if (selection) selectConversation(selection, false);
 });

@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "1792601814294",
+    "sender": "Shipper",
+    "recipient": "LBC Express",
+    "conversationId": "CF-24810293",
+    "text": "Hello",
+    "timestamp": "2026-10-21T16:56:54.294Z"
+  },
+  {
+    "id": "1792601815536",
+    "sender": "LBC Express",
+    "recipient": "Shipper",
+    "conversationId": "CF-24810293",
+    "text": "Thanks for your message about your Manila to Cebu shipment. We'll follow up here with booking updates.",
+    "timestamp": "2026-10-21T16:56:55.536Z"
+  }
+]
