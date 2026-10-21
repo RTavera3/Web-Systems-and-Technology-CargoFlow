@@ -9,6 +9,35 @@ const DEMO_BOOKING = {
   eta: '2026-09-15',
   carrier: 'LBC Express',
 };
+const PREVIOUS_TRANSACTIONS = [
+  {
+    code: 'CF-24750118',
+    from: 'Quezon City',
+    to: 'Davao',
+    pickupDate: '2026-08-28',
+    paymentMethod: 'Credit or debit card',
+    status: 'Delivered',
+    carrier: 'Carrier support',
+  },
+  {
+    code: 'CF-24690457',
+    from: 'Pasig',
+    to: 'Iloilo',
+    pickupDate: '2026-08-12',
+    paymentMethod: 'Cash on pickup',
+    status: 'Delivered',
+    carrier: 'Carrier support',
+  },
+  {
+    code: 'CF-24610932',
+    from: 'Makati',
+    to: 'Baguio',
+    pickupDate: '2026-07-30',
+    paymentMethod: 'GCash',
+    status: 'Delivered',
+    carrier: 'Carrier support',
+  },
+];
 const MAX_MESSAGE_LENGTH = 500;
 const conversationList = document.querySelector('.conversation-list');
 const searchInput = document.querySelector('.search-box input');
@@ -34,13 +63,15 @@ function getConversations() {
     code,
     carrier: code === DEMO_BOOKING.code ? DEMO_BOOKING.carrier : 'Carrier match pending',
   }));
-  if (!bookings.some((booking) => booking.code === DEMO_BOOKING.code)) {
-    bookings.push(DEMO_BOOKING);
-  }
+  const savedCodes = new Set(bookings.map((booking) => booking.code));
+  bookings.push(
+    ...[...PREVIOUS_TRANSACTIONS, DEMO_BOOKING]
+      .filter((transaction) => !savedCodes.has(transaction.code)),
+  );
   return bookings.sort((a, b) => {
-    if (a.code === DEMO_BOOKING.code) return 1;
-    if (b.code === DEMO_BOOKING.code) return -1;
-    return Date.parse(b.createdAt || '') - Date.parse(a.createdAt || '');
+    const dateDifference = Date.parse(b.createdAt || b.pickupDate || '')
+      - Date.parse(a.createdAt || a.pickupDate || '');
+    return Number.isNaN(dateDifference) ? 0 : dateDifference;
   });
 }
 
@@ -75,7 +106,7 @@ function selectConversation(conversation, updateUrl = true) {
   chatTrackingNumber.textContent = conversation.code;
   chatShipmentSummary.textContent = conversation.eta
     ? `${route} · Estimated delivery ${formatDate(conversation.eta)}`
-    : `${route} · Pickup ${formatDate(conversation.pickupDate)}`;
+    : `${route} · ${conversation.status ? `${conversation.status} · ` : ''}Pickup ${formatDate(conversation.pickupDate)}`;
   chatCarrierAvatar.setAttribute('aria-label', name);
 
   conversationList.querySelectorAll('.conversation-item').forEach((item) => {
@@ -119,9 +150,11 @@ function renderConversations() {
     route.textContent = `${conversation.from || 'Pickup'} to ${conversation.to || 'Drop-off'}`;
     const preview = document.createElement('span');
     preview.className = 'preview-text';
-    preview.textContent = conversation.code === DEMO_BOOKING.code
-      ? 'Ongoing shipment'
-      : 'New booking · conversation ready';
+    preview.textContent = conversation.status
+      ? `Previous transaction · ${conversation.status}`
+      : conversation.code === DEMO_BOOKING.code
+        ? 'Ongoing shipment'
+        : 'New booking · conversation ready';
     header.append(title);
     info.append(header, route, preview);
     item.append(avatar, info);
