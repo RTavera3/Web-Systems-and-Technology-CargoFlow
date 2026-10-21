@@ -98,6 +98,9 @@ app.get('/api/messages', (req, res) => {
 app.post('/api/messages', (req, res) => {
   try {
     const { text, sender, recipient } = req.body;
+    const clientMessageId = typeof req.body.clientMessageId === 'string'
+      ? req.body.clientMessageId.trim()
+      : '';
     const conversationId = typeof req.body.conversationId === 'string'
       ? req.body.conversationId.trim().toUpperCase()
       : 'CF-24810293';
@@ -109,6 +112,9 @@ app.post('/api/messages', (req, res) => {
     // Validation: Reject empty or non-string messages
     if (!text || typeof text !== 'string' || text.trim() === '') {
       return res.status(400).json({ error: 'Message text cannot be empty.' });
+    }
+    if (clientMessageId.length > 128) {
+      return res.status(400).json({ error: 'Invalid client message ID.' });
     }
 
     // Reference: https://expressjs.com/en/4x/api.html#res.status
@@ -122,9 +128,14 @@ app.post('/api/messages', (req, res) => {
 
     const fileData = fs.readFileSync(DATA_FILE, 'utf8');
     const messages = JSON.parse(fileData || '[]');
+    if (clientMessageId) {
+      const existing = messages.find((message) => message.clientMessageId === clientMessageId);
+      if (existing) return res.status(200).json({ message: existing, duplicate: true });
+    }
 
     const newMessage = {
       id: Date.now().toString(),
+      ...(clientMessageId ? { clientMessageId } : {}),
       sender: sender || 'Shipper',
       recipient: recipient || 'Carrier',
       conversationId,
@@ -135,10 +146,7 @@ app.post('/api/messages', (req, res) => {
     messages.push(newMessage);
     fs.writeFileSync(DATA_FILE, JSON.stringify(messages, null, 2), 'utf8');
 
-    res.status(201).json({ 
-      message: 'Message saved successfully.',
-      data: newMessage
-    });
+    res.status(201).json({ message: newMessage, duplicate: false });
   } catch (error) {
     console.error('Error saving message:', error);
     res.status(500).json({ error: 'Failed to save message.' });

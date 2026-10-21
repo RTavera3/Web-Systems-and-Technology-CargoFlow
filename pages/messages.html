@@ -79,7 +79,10 @@
             </div>
           </div>
 
-          <div class="messages-container" role="log" aria-live="polite" aria-label="Chat messages"></div>
+          <div class="offline-banner" id="offlineBanner" role="status" aria-live="polite" hidden>
+            You’re offline or the CargoFlow server is unavailable. New messages are saved here and will send when the connection returns.
+          </div>
+          <div class="messages-container" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Chat messages"></div>
           <p class="conversation-empty" id="conversationEmpty" hidden>
             No messages yet. Send a message about this booking to start the conversation.
           </p>

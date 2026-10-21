@@ -133,6 +133,9 @@ used to prefill the booking form and preferred payment method).
 The profile booking count, transaction history, and booking-specific message
 threads share the same transaction records, including demo shipments and saved
 bookings, so their totals and conversation lists stay consistent.
+The message composer also validates empty and over-limit messages, announces
+updates accessibly, and keeps an offline outbox that retries when the messaging
+server becomes available again.
 
 The design follows the CargoFlow brand palette: deep blue (`#0B3D91`) and
 flow orange (`#FF7A00`), with sand (`#F4F1EA`) as a secondary background.

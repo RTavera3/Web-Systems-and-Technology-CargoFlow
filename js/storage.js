@@ -10,6 +10,8 @@
  *     tracking code, e.g. { "CF-04829371": { from, to, ... } }.
  *   - Chat messages: saved and cleared by js/messages.js. Each message is
  *     tagged with its booking code so conversations stay separate.
+ *   - Message outbox: outgoing chat messages wait here when the server is
+ *     unavailable and are removed after successful delivery.
  *   - Account profile: edited on pages/profile.html (js/profile.js), read by
  *     js/booking-details.js and js/payment.js to prefill the account owner
  *     and payment method. Stored under "cargoflow_profile" as one object.
@@ -31,6 +33,7 @@ export const STORAGE_VERSION = 2;
 export const KEYS = Object.freeze({
   bookings: 'cargoflow_bookings',
   messages: 'chatMessages',
+  messageOutbox: 'cargoflow_message_outbox',
   profile: 'cargoflow_profile',
   version: 'cargoflow_storage_version',
 });
@@ -281,6 +284,52 @@ export function addMessage(message) {
 /** Deletes the saved chat history. */
 export function clearMessages() {
   remove(KEYS.messages);
+}
+
+/**
+ * Outgoing messages waiting for server delivery. The browser copy ensures
+ * messages composed while offline survive navigation and reloads.
+ * @returns {Array<{id: string, conversationId: string, text: string, sender: string, recipient: string, timestamp: string, status: string}>}
+ */
+export function getPendingMessages() {
+  const messages = readJson(KEYS.messageOutbox, []);
+  return Array.isArray(messages)
+    ? messages.filter((message) =>
+        isPlainObject(message)
+        && typeof message.id === 'string'
+        && typeof message.conversationId === 'string'
+        && typeof message.text === 'string',
+      )
+    : [];
+}
+
+/**
+ * Adds or updates one outbox message.
+ * @param {object} pendingMessage
+ * @returns {boolean} false if browser storage could not save the outbox.
+ */
+export function savePendingMessage(pendingMessage) {
+  if (!pendingMessage || typeof pendingMessage.id !== 'string') {
+    throw new TypeError('savePendingMessage needs a message ID.');
+  }
+  const messages = getPendingMessages();
+  const index = messages.findIndex((message) => message.id === pendingMessage.id);
+  if (index === -1) messages.push(pendingMessage);
+  else messages[index] = pendingMessage;
+  return writeJson(KEYS.messageOutbox, messages);
+}
+
+/** Removes one delivered or discarded message from the outbox. */
+export function removePendingMessage(id) {
+  return writeJson(KEYS.messageOutbox, getPendingMessages().filter((message) => message.id !== id));
+}
+
+/** Discards only queued messages belonging to one conversation. */
+export function clearPendingMessages(conversationId) {
+  return writeJson(
+    KEYS.messageOutbox,
+    getPendingMessages().filter((message) => message.conversationId !== conversationId),
+  );
 }
 
 // --- Account profile ----------------------------------------------------------

@@ -14,5 +14,21 @@
     "conversationId": "CF-24810293",
     "text": "Thanks for your message about your Manila to Cebu shipment. We'll follow up here with booking updates.",
     "timestamp": "2026-10-21T16:56:55.536Z"
+  },
+  {
+    "id": "1792602692361",
+    "sender": "Shipper",
+    "recipient": "Carrier support",
+    "conversationId": "CF-24750118",
+    "text": "Hello",
+    "timestamp": "2026-10-21T17:11:32.361Z"
+  },
+  {
+    "id": "1792602692400",
+    "sender": "Carrier support",
+    "recipient": "Shipper",
+    "conversationId": "CF-24750118",
+    "text": "Thanks for your message about your Quezon City to Davao shipment. We'll follow up here with booking updates.",
+    "timestamp": "2026-10-21T17:11:32.400Z"
   }
 ]

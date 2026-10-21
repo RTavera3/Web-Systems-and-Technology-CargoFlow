@@ -590,7 +590,7 @@ body {
 
 .time {
   font-size: 11px;
-  color: #888;
+  color: #595959;
   margin-top: 4px;
 }
 
@@ -640,6 +640,12 @@ body {
   outline-offset: -1px;
 }
 
+.chat-app :focus-visible,
+.navbar-toggler:focus-visible {
+  outline: 3px solid var(--cf-navy);
+  outline-offset: 2px;
+}
+
 .icon-btn {
   background: none;
   border: none;
@@ -650,7 +656,7 @@ body {
 }
 
 .send-btn {
-  background-color: var(--cf-orange);
+  background-color: #a83f00;
   color: #fff;
   border: none;
   padding: 8px 16px;
@@ -660,11 +666,11 @@ body {
 }
 
 .send-btn:hover {
-  background-color: #e96d00;
+  background-color: #873300;
 }
 
 .send-btn:disabled {
-  background-color: #c9c9c9;
+  background-color: #595959;
   cursor: not-allowed;
 }
 
@@ -678,7 +684,7 @@ body {
 .message-character-count {
   align-self: flex-end;
   font-size: 11px;
-  color: #666;
+  color: #595959;
   margin-top: 2px;
 }
 
@@ -721,6 +727,32 @@ body {
 .message-retry-btn:disabled {
   opacity: 0.6;
   cursor: wait;
+}
+
+.offline-banner {
+  margin: 12px 20px 0;
+  padding: 10px 12px;
+  border: 1px solid #8a4b00;
+  border-radius: 4px;
+  background: #fff4e5;
+  color: #5c3100;
+  font-size: 14px;
+}
+
+.message-state {
+  display: block;
+  margin-top: 4px;
+  color: #595959;
+  font-size: 12px;
+}
+
+.message.failed .message-state {
+  color: #8b1e2d;
+}
+
+.message-retry-btn:focus-visible {
+  outline: 3px solid var(--cf-navy);
+  outline-offset: 2px;
 }
 
 /* Booking details page (pages/booking-details.html) — vehicle-guidance is
