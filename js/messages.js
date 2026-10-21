@@ -28,6 +28,7 @@ let conversations = getConversations();
 let activeConversation = null;
 let isSending = false;
 let isServerAvailable = navigator.onLine;
+let demoFirstSendAvailable = true;
 const sendingMessageIds = new Set();
 let pendingMessages = getPendingMessages().map((message) => {
   if (message.status !== 'sending') return message;
@@ -367,6 +368,20 @@ async function sendPendingMessage(messageId) {
     return;
   }
 
+  if (pending.demoFirstAttempt && !pending.demoFailureShown) {
+    const error = 'Demo: this first send was deliberately blocked. Select Retry to resend it.';
+    updatePendingMessage(messageId, {
+      status: 'failed',
+      lastError: error,
+      demoFailureShown: true,
+    });
+    if (activeConversation?.code === pending.conversationId) {
+      setSendStatus(error, true);
+      renderMessages([], activeConversation);
+    }
+    return;
+  }
+
   sendingMessageIds.add(messageId);
   isSending = true;
   updatePendingMessage(messageId, { status: 'sending', lastError: '' });
@@ -408,7 +423,11 @@ async function sendPendingMessage(messageId) {
 }
 
 async function retryPendingMessage(messageId) {
-  const pending = updatePendingMessage(messageId, { status: 'queued', lastError: '' });
+  const pending = updatePendingMessage(messageId, {
+    status: 'queued',
+    lastError: '',
+    demoFirstAttempt: false,
+  });
   if (!pending) return;
   if (!navigator.onLine) {
     setServerAvailability(false);
@@ -474,7 +493,9 @@ async function sendMessage() {
     timestamp: new Date().toISOString(),
     status: 'queued',
     lastError: '',
+    demoFirstAttempt: demoFirstSendAvailable,
   };
+  demoFirstSendAvailable = false;
   const persisted = storePendingMessage(pending);
   messageInput.value = '';
   updateComposer();
