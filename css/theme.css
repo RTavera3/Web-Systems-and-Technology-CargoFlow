@@ -384,10 +384,39 @@ body {
 
 .conversation-item {
   display: flex;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
   gap: 12px;
   padding: 15px;
   border-bottom: 1px solid #eee;
   cursor: pointer;
+}
+
+.conversation-item:focus-visible {
+  outline: 3px solid var(--cf-orange);
+  outline-offset: -3px;
+}
+
+.conversation-info {
+  display: block;
+  min-width: 0;
+  flex: 1;
+}
+
+.item-header,
+.preview-text {
+  display: block;
+}
+
+.conversation-empty {
+  margin: auto 20px;
+  padding: 12px;
+  color: #666;
+  text-align: center;
 }
 
 .conversation-item:hover {

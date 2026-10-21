@@ -16,7 +16,7 @@
  *      and pages/history.html can show it later.
  */
 
-import { getProfile, saveBooking } from './storage.js';
+import { findBooking, getProfile, saveBooking } from './storage.js';
 
 /** Parses the booking details carried over in the URL's query string. */
 const paymentParams = new URLSearchParams(window.location.search);
@@ -50,6 +50,7 @@ const bookingIsComplete = requiredBookingDetails.every(
  * @returns {string} The param's value, or "Not provided" if absent.
  */
 const paymentValue = (name) => paymentParams.get(name) || 'Not provided';
+const optionalPaymentValue = (name) => paymentParams.get(name)?.trim() || null;
 
 /**
  * Sets an element's displayed text to a query param's value (or the
@@ -169,27 +170,57 @@ updatePaymentFields(); // Apply once for whichever method is pre-selected on loa
  * @returns {string} e.g. "CF-04829371"
  */
 const generateBookingCode = () => {
-  const digits = String(Math.floor(Math.random() * 1e8)).padStart(8, '0');
-  return `CF-${digits}`;
+  let code;
+  do {
+    const digits = String(Math.floor(Math.random() * 1e8)).padStart(8, '0');
+    code = `CF-${digits}`;
+  } while (findBooking(code));
+  return code;
 };
 
 /**
- * Saves this booking through js/storage.js under its reference code, so the
- * Track Shipment and My Shipments pages can show it later. Only the fields
- * those pages use are kept, not the whole booking summary.
+ * Saves the complete booking through js/storage.js under its reference code,
+ * so shipment history, tracking, and the matching message conversation all
+ * refer to the same booking.
  * @param {string} code The reference code to store this booking under.
  */
 const recordBooking = (code) => {
-  saveBooking(code, {
+  return saveBooking(code, {
     from: paymentValue('from'),
     to: paymentValue('to'),
     pickupDate: paymentValue('date'),
     pickupTime: paymentValue('time'),
     paymentMethod: paymentMethod.value,
-    weight: paymentParams.get('weight'),
-    cargoType: paymentParams.get('type'),
-    vehicleType: paymentParams.get('vehicleType'),
-    declaredValue: paymentParams.get('declaredValue'),
+    weight: paymentValue('weight'),
+    cargoType: paymentValue('type'),
+    vehicleType: paymentValue('vehicleType'),
+    declaredValue: paymentValue('declaredValue'),
+    cargoDescription: paymentValue('cargoDescription'),
+    packageCount: paymentValue('packageCount'),
+    senderName: paymentValue('senderName'),
+    senderContact: paymentValue('senderContact'),
+    senderUserId: optionalPaymentValue('senderUserId'),
+    pickupAddress: paymentValue('pickupAddress'),
+    pickupCity: paymentValue('pickupCity'),
+    pickupProvince: paymentValue('pickupProvince'),
+    pickupZip: paymentValue('pickupZip'),
+    receiverName: paymentValue('receiverName'),
+    receiverContact: paymentValue('receiverContact'),
+    receiverUserId: optionalPaymentValue('receiverUserId'),
+    dropoffAddress: paymentValue('dropoffAddress'),
+    dropoffCity: paymentValue('dropoffCity'),
+    dropoffProvince: paymentValue('dropoffProvince'),
+    dropoffZip: paymentValue('dropoffZip'),
+    customerName: paymentValue('customerName'),
+    customerContact: paymentValue('customerContact'),
+    customerAddress: paymentValue('customerAddress'),
+    customerCity: paymentValue('customerCity'),
+    customerProvince: paymentValue('customerProvince'),
+    customerZip: paymentValue('customerZip'),
+    specialInstructions: optionalPaymentValue('specialInstructions'),
+    fragile: paymentParams.has('fragile'),
+    loading: paymentParams.has('loading'),
+    status: 'Booking Placed',
   });
 };
 
@@ -209,7 +240,19 @@ paymentFormEl.addEventListener('submit', (event) => {
     return;
   }
   const bookingCode = generateBookingCode();
-  recordBooking(bookingCode);
+  if (!recordBooking(bookingCode)) {
+    document.getElementById('paymentSuccess').hidden = false;
+    document.getElementById('paymentSuccess').classList.remove('alert-success');
+    document.getElementById('paymentSuccess').classList.add('alert-danger');
+    document.getElementById('paymentSuccess').textContent =
+      'Unable to save this booking in this browser. Please try again.';
+    return;
+  }
   document.getElementById('paymentBookingCode').textContent = bookingCode;
+  const messagesLink = document.getElementById('paymentMessagesLink');
+  messagesLink.href = `messages.html?conversation=${encodeURIComponent(bookingCode)}`;
+  document.getElementById('paymentTrackingLink').href =
+    `trackshipment.html?code=${encodeURIComponent(bookingCode)}`;
+  document.querySelector('#paymentForm button[type="submit"]').disabled = true;
   document.getElementById('paymentSuccess').hidden = false;
 });

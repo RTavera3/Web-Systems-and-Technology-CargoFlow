@@ -8,8 +8,8 @@
  *   - Bookings: saved by js/payment.js, read by js/trackshipment.js and
  *     js/history.js. Stored under "cargoflow_bookings" as an object keyed by
  *     tracking code, e.g. { "CF-04829371": { from, to, ... } }.
- *   - Chat messages: saved and cleared by js/messages.js. Stored under
- *     "chatMessages" as an array of { text, messageType, time }.
+ *   - Chat messages: saved and cleared by js/messages.js. Each message is
+ *     tagged with its booking code so conversations stay separate.
  *   - Account profile: edited on pages/profile.html (js/profile.js), read by
  *     js/booking-details.js and js/payment.js to prefill the account owner
  *     and payment method. Stored under "cargoflow_profile" as one object.
@@ -25,7 +25,7 @@
  */
 
 /** Current shape of the saved data. Bump when it changes, and add a migration step. */
-export const STORAGE_VERSION = 1;
+export const STORAGE_VERSION = 2;
 
 /** Every localStorage key the site uses. */
 export const KEYS = Object.freeze({
@@ -49,6 +49,21 @@ export const KEYS = Object.freeze({
  * @property {string|null} cargoType  Cargo type, if saved.
  * @property {string|null} vehicleType Requested vehicle, if saved.
  * @property {string|null} declaredValue Declared cargo value (PHP), if saved.
+ * @property {string|null} cargoDescription Item description.
+ * @property {string|null} packageCount Number of packages.
+ * @property {string|null} senderName Sender name.
+ * @property {string|null} senderContact Sender contact number.
+ * @property {string|null} pickupAddress Pickup street address.
+ * @property {string|null} pickupCity Pickup city.
+ * @property {string|null} pickupProvince Pickup province.
+ * @property {string|null} pickupZip Pickup ZIP code.
+ * @property {string|null} receiverName Receiver name.
+ * @property {string|null} receiverContact Receiver contact number.
+ * @property {string|null} dropoffAddress Drop-off street address.
+ * @property {string|null} dropoffCity Drop-off city.
+ * @property {string|null} dropoffProvince Drop-off province.
+ * @property {string|null} dropoffZip Drop-off ZIP code.
+ * @property {string|null} specialInstructions Additional booking notes.
  */
 
 const BOOKING_DEFAULTS = Object.freeze({
@@ -56,6 +71,31 @@ const BOOKING_DEFAULTS = Object.freeze({
   cargoType: null,
   vehicleType: null,
   declaredValue: null,
+  cargoDescription: null,
+  packageCount: null,
+  senderName: null,
+  senderContact: null,
+  senderUserId: null,
+  pickupAddress: null,
+  pickupCity: null,
+  pickupProvince: null,
+  pickupZip: null,
+  receiverName: null,
+  receiverContact: null,
+  receiverUserId: null,
+  dropoffAddress: null,
+  dropoffCity: null,
+  dropoffProvince: null,
+  dropoffZip: null,
+  customerName: null,
+  customerContact: null,
+  customerAddress: null,
+  customerCity: null,
+  customerProvince: null,
+  customerZip: null,
+  specialInstructions: null,
+  fragile: false,
+  loading: false,
 });
 
 // --- Low-level helpers ------------------------------------------------------
@@ -129,12 +169,28 @@ function isPlainObject(value) {
  *     paymentMethod and createdAt only.
  *   1: bookings also have weight, cargoType, vehicleType and declaredValue
  *     (null when unknown).
+ *   2: bookings also retain the shipment description and contact/address
+ *     details used by transaction records and booking conversations.
  */
 export function migrate() {
   const saved = Number(readJson(KEYS.version, 0)) || 0;
   if (saved >= STORAGE_VERSION) return;
 
   if (saved < 1) {
+    const bookings = readJson(KEYS.bookings, {});
+    if (isPlainObject(bookings)) {
+      for (const code of Object.keys(bookings)) {
+        if (isPlainObject(bookings[code])) {
+          bookings[code] = { ...BOOKING_DEFAULTS, ...bookings[code] };
+        } else {
+          delete bookings[code];
+        }
+      }
+      writeJson(KEYS.bookings, bookings);
+    }
+  }
+
+  if (saved < 2) {
     const bookings = readJson(KEYS.bookings, {});
     if (isPlainObject(bookings)) {
       for (const code of Object.keys(bookings)) {

@@ -1,380 +1,324 @@
-/**
- * Connect to Carrier / Messages page.
- *
- * A simulated chat with a carrier ("LBC Express"): every message the user
- * sends gets a canned auto-reply after a short "typing..." delay. Chat
- * history is saved on the server (data/messages.json) through the
- * /api/messages routes in server.js, so it survives a page reload, and can
- * be wiped with the trash-icon "clear chat" control. Run the site with
- * `npm start` so these routes are available.
- */
+import { listBookings } from './storage.js';
 
 const API_BASE_URL = 'http://localhost:3000';
-
-/** Longest message the server accepts (see POST /api/messages in server.js). */
+const DEMO_BOOKING = {
+  code: 'CF-24810293',
+  from: 'Manila',
+  to: 'Cebu',
+  pickupDate: '2026-09-10',
+  eta: '2026-09-15',
+  carrier: 'LBC Express',
+};
 const MAX_MESSAGE_LENGTH = 500;
-
-// Select the chat elements we need to use.
-/** @type {HTMLInputElement} The message composer text input. */
+const conversationList = document.querySelector('.conversation-list');
+const searchInput = document.querySelector('.search-box input');
 const messageInput = document.querySelector('.message-input');
-/** @type {HTMLButtonElement} The paper-plane "send" button. */
 const sendButton = document.querySelector('.send-btn');
-/** @type {HTMLElement} Scrollable container holding all message bubbles. */
 const messagesContainer = document.querySelector('.messages-container');
-/** @type {HTMLElement} "0 / 500" counter under the composer. */
 const messageCharacterCount = document.querySelector('#messageCharacterCount');
-/** @type {HTMLElement} Status line for "Sending...", "Sent" and errors. */
 const messageSendStatus = document.querySelector('#messageSendStatus');
+const emptyConversation = document.querySelector('#conversationEmpty');
+const chatCarrierAvatar = document.querySelector('#chatCarrierAvatar');
+const chatCarrierName = document.querySelector('#chatCarrierName');
+const chatRoute = document.querySelector('#chatRoute');
+const chatTrackingNumber = document.querySelector('#chatTrackingNumber');
+const chatShipmentSummary = document.querySelector('#chatShipmentSummary');
 
-/** True while a message is being sent, so it can't be sent twice. */
+let conversations = getConversations();
+let activeConversation = null;
 let isSending = false;
 
-/**
- * Gets the current time as a short display string (e.g. "10:30 AM"),
- * stamped onto each message bubble.
- * @returns {string}
- */
-function getCurrentFormattedTime() {
-  const now = new Date();
-  return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
-
-// Storage helpers as advised during mentoring session - MDN WebDocs
-
-/**
- * Reads and parses the saved chat history from localStorage.
- * Deleted the getStoredMessages() function to avoid redundancy since the messages are now fetched from the server.
- */
-
-/**
- * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#supplying_options
- * Appends one message to the saved chat history in localStorage.
- * @param {string} text The message body.
- * @param {string} messageType Either "incoming" (from the carrier) or
- *   "outgoing" (from the user) - matches the CSS class used to style it.
- * @returns {Promise<boolean>} Whether the server saved it.
- */
-async function saveMessage(text, messageType) {
-  try {
-    const sender = messageType === 'outgoing' ? 'Shipper' : 'LBC Express';
-    const response = await fetch(`${API_BASE_URL}/api/messages`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: text, sender: sender, recipient: 'Carrier' })
-    });
-    if (!response.ok) throw new Error(`Server returned status ${response.status}`);
-    return true;
-  } catch (error) {
-    console.error('Error posting message:', error);
-    return false;
+function getConversations() {
+  const bookings = listBookings().map(({ code, ...booking }) => ({
+    ...booking,
+    code,
+    carrier: code === DEMO_BOOKING.code ? DEMO_BOOKING.carrier : 'Carrier match pending',
+  }));
+  if (!bookings.some((booking) => booking.code === DEMO_BOOKING.code)) {
+    bookings.push(DEMO_BOOKING);
   }
+  return bookings.sort((a, b) => {
+    if (a.code === DEMO_BOOKING.code) return 1;
+    if (b.code === DEMO_BOOKING.code) return -1;
+    return Date.parse(b.createdAt || '') - Date.parse(a.createdAt || '');
+  });
 }
 
-/**
- * Shows a message on the status line under the composer.
- * @param {string} text Empty to clear it.
- * @param {boolean} [isError=false]
- */
+function formatDate(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || '');
+  if (!match) return value || 'Date not provided';
+  return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
+    .toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function getConversationName(conversation) {
+  return conversation.carrier || 'Carrier match pending';
+}
+
 function setSendStatus(text, isError = false) {
   messageSendStatus.textContent = text;
   messageSendStatus.classList.toggle('is-error', isError);
 }
 
-/**
- * Marks an outgoing bubble as not sent and adds a Retry button to it.
- * @param {HTMLElement} message The `.message` element.
- */
-function markFailed(message) {
-  message.classList.add('failed');
-  message.querySelector('.time').textContent = 'Not sent';
-  if (!message.querySelector('.message-retry-btn')) {
-    const retryButton = document.createElement('button');
-    retryButton.type = 'button';
-    retryButton.className = 'message-retry-btn';
-    retryButton.textContent = 'Retry';
-    retryButton.setAttribute('aria-label', 'Retry sending this message');
-    message.querySelector('.message-content').appendChild(retryButton);
+function getConversationIdFromUrl() {
+  return new URLSearchParams(window.location.search).get('conversation');
+}
+
+function selectConversation(conversation, updateUrl = true) {
+  activeConversation = conversation;
+  const name = getConversationName(conversation);
+  const route = `${conversation.from || 'Pickup'} to ${conversation.to || 'Drop-off'}`;
+
+  chatCarrierAvatar.textContent = name[0].toUpperCase();
+  chatCarrierName.textContent = name;
+  chatRoute.textContent = route;
+  chatTrackingNumber.textContent = conversation.code;
+  chatShipmentSummary.textContent = conversation.eta
+    ? `${route} · Estimated delivery ${formatDate(conversation.eta)}`
+    : `${route} · Pickup ${formatDate(conversation.pickupDate)}`;
+  chatCarrierAvatar.setAttribute('aria-label', name);
+
+  conversationList.querySelectorAll('.conversation-item').forEach((item) => {
+    const selected = item.dataset.conversationId === conversation.code;
+    item.classList.toggle('active', selected);
+    item.setAttribute('aria-current', selected ? 'true' : 'false');
+  });
+  messagesContainer.replaceChildren();
+  emptyConversation.hidden = true;
+  setSendStatus('');
+  if (updateUrl) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('conversation', conversation.code);
+    window.history.replaceState(null, '', url);
   }
+  loadMessages();
 }
 
-/**
- * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
- * Replays every saved message into the chat window on page load, without
- * re-saving them (they're already in storage).
- */
-async function loadMessages() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/messages`);
-    if (!response.ok) throw new Error('Failed to load messages.');
-    const messages = await response.json();
+function renderConversations() {
+  conversationList.replaceChildren();
+  conversations.forEach((conversation) => {
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'conversation-item';
+    item.dataset.conversationId = conversation.code;
 
-    messagesContainer.innerHTML = '';
-    messages.forEach(function (msg) {
-      const displayTime = msg.timestamp
-        ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        : getCurrentFormattedTime();
+    const avatar = document.createElement('span');
+    avatar.className = 'avatar bg-navy';
+    avatar.textContent = getConversationName(conversation)[0].toUpperCase();
 
-      const messageType = msg.sender === 'Shipper' ? 'outgoing' : 'incoming';
-      addMessage(msg.text, messageType, false, displayTime);
-    });
-
-    if (messages.length > 0) {
-      updateSidebarPreview(messages[messages.length - 1].text);
-    } else {
-      updateSidebarPreview('No messages yet.');
-    }
-  } catch (error) {
-    console.error('Error fetching messages:', error);
-  }
+    const info = document.createElement('span');
+    info.className = 'conversation-info';
+    const header = document.createElement('span');
+    header.className = 'item-header';
+    const title = document.createElement('strong');
+    title.textContent = conversation.code === DEMO_BOOKING.code
+      ? getConversationName(conversation)
+      : `Booking ${conversation.code}`;
+    const route = document.createElement('span');
+    route.className = 'location-tag bg-light-blue';
+    route.textContent = `${conversation.from || 'Pickup'} to ${conversation.to || 'Drop-off'}`;
+    const preview = document.createElement('span');
+    preview.className = 'preview-text';
+    preview.textContent = conversation.code === DEMO_BOOKING.code
+      ? 'Ongoing shipment'
+      : 'New booking · conversation ready';
+    header.append(title);
+    info.append(header, route, preview);
+    item.append(avatar, info);
+    item.addEventListener('click', () => selectConversation(conversation));
+    conversationList.append(item);
+  });
 }
 
-/**
- * Updates the conversation list's preview snippet (in the sidebar) to
- * show the most recent message. Tries a few different selectors since the
- * sidebar markup has varied across page revisions.
- * @param {string} latestText The message text to show as the preview.
- */
-function updateSidebarPreview(latestText) {
-  // Finds the preview text in left sidebar conversation item
-  const sidebarPreview = document.querySelector('.conversation-item p') ||
-    document.querySelector('.sidebar p') ||
-    document.querySelector('aside p');
-  if (sidebarPreview) {
-    sidebarPreview.textContent = latestText;
-  }
+async function saveMessage(text, messageType, conversation = activeConversation) {
+  const response = await fetch(`${API_BASE_URL}/api/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      conversationId: conversation.code,
+      text,
+      sender: messageType === 'outgoing' ? 'Shipper' : getConversationName(conversation),
+      recipient: messageType === 'outgoing' ? getConversationName(conversation) : 'Shipper',
+    }),
+  });
+  if (!response.ok) throw new Error(`Server returned status ${response.status}`);
 }
 
-//Typing indicator functions
-
-/**
- * Inserts a temporary "LBC Express is typing..." bubble at the bottom of
- * the chat, used while the fake auto-reply delay is running.
- */
-function showTypingIndicator() {
-  const typingDiv = document.createElement('div');
-  typingDiv.className = 'message incoming typing-indicator';
-  typingDiv.id = 'typing-status';
-  typingDiv.innerHTML = `
-    <div class="avatar bg-navy message-avatar">L</div>
-    <div class="message-content"><p><i>LBC Express is typing...</i></p></div>
-  `;
-  messagesContainer.appendChild(typingDiv);
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-/** Removes the "typing..." bubble added by `showTypingIndicator`, if present. */
-function removeTypingIndicator() {
-  const indicator = document.getElementById('typing-status');
-  if (indicator) indicator.remove();
-}
-
-//Chat functions.
-
-/**
- * Builds and appends one message bubble to the chat window, then scrolls
- * to the bottom so the newest message is visible.
- *
- * @param {string} text The message body to display.
- * @param {string} messageType "incoming" or "outgoing" - controls bubble
- *   alignment/color and whether an avatar is shown.
- * @param {boolean} [shouldSave=true] Whether to persist this message to
- *   localStorage. Set to false when replaying history on load (via
- *   `loadMessages`) so it isn't duplicated in storage.
- * @param {string|null} [formattedTime=null] A pre-formatted time to show
- *   instead of the current time - used when replaying a saved message so
- *   it keeps its original timestamp instead of getting "now".
- * @returns {Promise<{message: HTMLElement, saved: boolean}>} The new bubble,
- *   and whether it was saved (always true when `shouldSave` is false).
- */
-async function addMessage(text, messageType, shouldSave = true, formattedTime = null) {
+function addMessage(text, messageType, timestamp) {
   const message = document.createElement('div');
-  const messageContent = document.createElement('div');
+  const content = document.createElement('div');
   const messageText = document.createElement('p');
-  const messageTime = document.createElement('span');
-
-  const timeToDisplay = formattedTime || getCurrentFormattedTime();
-
-  // Add the same classes used by the messages already in the HTML.
-  message.className = 'message ' + messageType;
-  messageContent.className = 'message-content';
+  const time = document.createElement('span');
+  message.className = `message ${messageType}`;
+  content.className = 'message-content';
   messageText.textContent = text;
-  messageTime.className = 'time';
-  messageTime.textContent = timeToDisplay;
-
-  // Put the text and time inside the message, then add it to the chat.
-  messageContent.appendChild(messageText);
-  messageContent.appendChild(messageTime);
+  time.className = 'time';
+  const date = new Date(timestamp);
+  time.textContent = Number.isNaN(date.getTime())
+    ? 'Time unavailable'
+    : date.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+  content.append(messageText, time);
 
   if (messageType === 'incoming') {
-    const avatar = document.createElement('div');
+    const avatar = document.createElement('span');
     avatar.className = 'avatar bg-navy message-avatar';
-    avatar.textContent = 'L';
-    message.appendChild(avatar);
+    avatar.textContent = getConversationName(activeConversation)[0].toUpperCase();
+    message.append(avatar);
   }
-
-  message.appendChild(messageContent);
-  messagesContainer.appendChild(message);
+  message.append(content);
+  messagesContainer.append(message);
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-  // Update sidebar preview on every message
-  updateSidebarPreview(text);
-
-  const saved = shouldSave ? await saveMessage(text, messageType) : true;
-  return { message, saved };
 }
 
-/** Shows the carrier "typing..." for 1.5s, then posts the fixed auto-reply. */
-function replyFromCarrier() {
-  showTypingIndicator();
-  setTimeout(async function () {
-    removeTypingIndicator();
-    await addMessage('Hello! Your shipment is currently in transit to Cebu and on schedule.', 'incoming');
-  }, 1500);
+async function loadMessages(conversation = activeConversation) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/messages?conversationId=${encodeURIComponent(conversation.code)}`,
+    );
+    if (!response.ok) throw new Error(`Server returned status ${response.status}`);
+    const messages = await response.json();
+    if (activeConversation === conversation) {
+      messagesContainer.replaceChildren();
+      messages.forEach((message) => {
+        addMessage(message.text, message.sender === 'Shipper' ? 'outgoing' : 'incoming', message.timestamp);
+      });
+      emptyConversation.hidden = messages.length > 0;
+      updateComposer();
+    }
+    updateSidebarPreview(
+      messages.length ? messages[messages.length - 1].text : 'No messages yet.',
+      conversation.code,
+    );
+  } catch (error) {
+    console.error('Unable to load booking messages:', error);
+    setSendStatus('Unable to load this conversation. Check that the CargoFlow server is running.', true);
+  }
 }
 
-/**
- * Sends whatever is currently typed in the composer: adds it as an
- * outgoing message, clears the input, then simulates the carrier "typing"
- * for 1.5s before posting a fixed auto-reply. Does nothing if the input
- * is empty/whitespace-only or a message is already sending. If the server
- * can't save it, the bubble is marked "Not sent" with a Retry button.
- */
+function updateSidebarPreview(text, conversationId = activeConversation?.code) {
+  const activeItem = conversationList.querySelector(
+    `.conversation-item[data-conversation-id="${CSS.escape(conversationId || '')}"]`,
+  );
+  const preview = activeItem && activeItem.querySelector('.preview-text');
+  if (preview) preview.textContent = text;
+}
+
+function showTypingIndicator() {
+  const indicator = document.createElement('div');
+  indicator.className = 'message incoming typing-indicator';
+  indicator.id = 'typing-status';
+  const content = document.createElement('div');
+  content.className = 'message-content';
+  const text = document.createElement('p');
+  text.textContent = `${getConversationName(activeConversation)} is typing...`;
+  content.append(text);
+  indicator.append(content);
+  messagesContainer.append(indicator);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function replyFromCarrier(conversation) {
+  if (activeConversation === conversation) showTypingIndicator();
+  window.setTimeout(async () => {
+    if (activeConversation === conversation) {
+      document.querySelector('#typing-status')?.remove();
+    }
+    try {
+      await saveMessage(
+        `Thanks for your message about your ${conversation.from} to ${conversation.to} shipment. We'll follow up here with booking updates.`,
+        'incoming',
+        conversation,
+      );
+      await loadMessages(conversation);
+      updateSidebarPreview('Carrier replied', conversation.code);
+    } catch (error) {
+      console.error('Unable to save carrier reply:', error);
+    }
+  }, 1200);
+}
+
 async function sendMessage() {
   const text = messageInput.value.trim();
-  if (text === '' || isSending) return;
-
-  // The input's maxlength already stops longer messages; this is a backstop.
+  if (!text || isSending) return;
   if (text.length > MAX_MESSAGE_LENGTH) {
     setSendStatus(`Messages can be up to ${MAX_MESSAGE_LENGTH} characters.`, true);
     return;
   }
 
   isSending = true;
+  const conversation = activeConversation;
   setSendStatus('Sending…');
   updateComposer();
   try {
-    const { message, saved } = await addMessage(text, 'outgoing');
+    await saveMessage(text, 'outgoing', conversation);
     messageInput.value = '';
-    if (saved) {
-      setSendStatus('Sent');
-      replyFromCarrier();
-    } else {
-      markFailed(message);
-      setSendStatus("Couldn't send your message. Check that the server is running (npm start), then press Retry.", true);
-    }
+    updateSidebarPreview(text, conversation.code);
+    await loadMessages(conversation);
+    setSendStatus('Sent');
+    replyFromCarrier(conversation);
+  } catch (error) {
+    console.error('Unable to save outgoing message:', error);
+    setSendStatus("Couldn't send your message. Check that the server is running and try again.", true);
   } finally {
     isSending = false;
     updateComposer();
   }
 }
 
-/**
- * Sends a "Not sent" message again. On success the bubble goes back to
- * normal and the carrier replies.
- * @param {HTMLElement} message The failed `.message` element.
- */
-async function retryMessage(message) {
-  const retryButton = message.querySelector('.message-retry-btn');
-  retryButton.disabled = true;
-  retryButton.textContent = 'Retrying…';
-  const text = message.querySelector('.message-content p').textContent;
-  if (await saveMessage(text, 'outgoing')) {
-    message.classList.remove('failed');
-    message.querySelector('.time').textContent = getCurrentFormattedTime();
-    retryButton.remove();
-    setSendStatus('Sent');
-    replyFromCarrier();
-  } else {
-    retryButton.disabled = false;
-    retryButton.textContent = 'Retry';
-    setSendStatus("Still couldn't send your message. Please try again.", true);
-  }
-}
-
-/**
- * Updates the character counter, and enables Send only when there is
- * something to send and nothing is already sending.
- */
 function updateComposer() {
-  sendButton.disabled = isSending || messageInput.value.trim() === '';
+  sendButton.disabled = isSending || !activeConversation || messageInput.value.trim() === '';
   messageCharacterCount.textContent = `${messageInput.value.length} / ${MAX_MESSAGE_LENGTH}`;
 }
 
-/**
- * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#supplying_options
- * Wipes the entire chat history: clears localStorage, empties the chat
- * window, and resets the sidebar preview text. Triggered by the trash
- * icon after a confirmation prompt.
- */
 async function clearChat() {
+  if (!window.confirm('Clear messages for this booking? This cannot be undone.')) return;
+  const conversation = activeConversation;
   try {
-    const response = await fetch(`${API_BASE_URL}/api/messages`, {
-      method: 'DELETE',
-    });
-
-    if (!response.ok) {
-      throw new Error(`Server returned status ${response.status}`);
+    const response = await fetch(
+      `${API_BASE_URL}/api/messages?conversationId=${encodeURIComponent(conversation.code)}`,
+      { method: 'DELETE' },
+    );
+    if (!response.ok) throw new Error(`Server returned status ${response.status}`);
+    updateSidebarPreview('No messages yet.', conversation.code);
+    if (activeConversation === conversation) {
+      messagesContainer.replaceChildren();
+      emptyConversation.hidden = false;
+      setSendStatus('Conversation cleared.');
     }
-
-    const result = await response.json();
-    console.log(result.message);
-
-    // Clear the message container on screen
-    if (messagesContainer) {
-      messagesContainer.innerHTML = '';
-    }
-
-    // Reset the sidebar preview snippet
-    updateSidebarPreview('No messages yet.');
-
   } catch (error) {
-    console.error('Failed to clear chat:', error);
+    console.error('Unable to clear booking messages:', error);
+    setSendStatus("Couldn't clear this conversation. Please try again.", true);
   }
 }
 
-//Event listeners for sending messages and clearing chat history.
-// Send triggers
-// Event listeners for sending messages and clearing chat history.
-document.addEventListener('DOMContentLoaded', () => {
-  // Send button click trigger
-  if (sendButton) {
-    sendButton.addEventListener('click', sendMessage);
+renderConversations();
+const requestedConversation = conversations.find(
+  (conversation) => conversation.code === getConversationIdFromUrl(),
+);
+selectConversation(requestedConversation || conversations[0], false);
+sendButton.addEventListener('click', sendMessage);
+messageInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    sendMessage();
   }
-
-  // Enter key trigger
-  if (messageInput) {
-    messageInput.addEventListener('keydown', function (event) {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        sendMessage();
-      }
-    });
-    messageInput.addEventListener('input', () => {
-      setSendStatus('');
-      updateComposer();
-    });
-    updateComposer();
-  }
-
-  // Retry buttons on "Not sent" messages
-  messagesContainer.addEventListener('click', (event) => {
-    const retryButton = event.target.closest('.message-retry-btn');
-    if (retryButton) retryMessage(retryButton.closest('.message'));
+});
+messageInput.addEventListener('input', () => {
+  setSendStatus('');
+  updateComposer();
+});
+document.querySelector('#clear-btn').addEventListener('click', clearChat);
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.trim().toLowerCase();
+  conversationList.querySelectorAll('.conversation-item').forEach((item) => {
+    item.hidden = !item.textContent.toLowerCase().includes(query);
   });
-
-  // Clear Button / Trash Icon Listener
-  const trashIcon = document.querySelector('#clear-btn') ||
-                    document.querySelector('.fa-trash') ||
-                    document.querySelector('button[title*="Delete"]');
-
-  if (trashIcon) {
-    trashIcon.addEventListener('click', function () {
-      if (confirm('Are you sure you want to clear this conversation history?')) {
-        clearChat();
-      }
-    });
-  }
-
-  // Initialize messages on page load
-  loadMessages();
+  window.addEventListener('storage', (event) => {
+    if (event.key !== 'cargoflow_bookings') return;
+    const activeCode = activeConversation?.code;
+    conversations = getConversations();
+    renderConversations();
+    const retainedSelection = conversations.find((conversation) => conversation.code === activeCode);
+    if (retainedSelection) selectConversation(retainedSelection, false);
+  });
 });

@@ -15,9 +15,9 @@
  * It also hosts the messages API used by js/messages.js, which saves the
  * carrier chat in data/messages.json:
  *   GET    /api/health    server status check
- *   GET    /api/messages  chat history
- *   POST   /api/messages  save one message ({ text, sender, recipient })
- *   DELETE /api/messages  clear the chat history
+ *   GET    /api/messages?conversationId=...  one booking's chat history
+ *   POST   /api/messages  save one message ({ conversationId, text, sender, recipient })
+ *   DELETE /api/messages?conversationId=...  clear one booking's chat history
  *
  * Run:  npm install   (first time only)
  *       npm run dev   (restarts automatically when a file changes)
@@ -82,7 +82,12 @@ app.get('/api/messages', (req, res) => {
   try {
     const fileData = fs.readFileSync(DATA_FILE, 'utf8');
     const messages = JSON.parse(fileData || '[]');
-    res.json(messages);
+    const conversationId = req.query.conversationId;
+    if (!conversationId) return res.json(messages);
+    res.json(messages.filter((message) =>
+      message.conversationId === conversationId ||
+      (!message.conversationId && conversationId === 'CF-24810293')
+    ));
   } catch (error) {
     res.status(500).json({ error: 'Failed to read messages.' });
   }
@@ -93,6 +98,13 @@ app.get('/api/messages', (req, res) => {
 app.post('/api/messages', (req, res) => {
   try {
     const { text, sender, recipient } = req.body;
+    const conversationId = typeof req.body.conversationId === 'string'
+      ? req.body.conversationId.trim().toUpperCase()
+      : 'CF-24810293';
+
+    if (!conversationId || conversationId.length > 64) {
+      return res.status(400).json({ error: 'A valid booking conversation is required.' });
+    }
 
     // Validation: Reject empty or non-string messages
     if (!text || typeof text !== 'string' || text.trim() === '') {
@@ -115,6 +127,7 @@ app.post('/api/messages', (req, res) => {
       id: Date.now().toString(),
       sender: sender || 'Shipper',
       recipient: recipient || 'Carrier',
+      conversationId,
       text: text.trim(),
       timestamp: new Date().toISOString()
     }
@@ -142,6 +155,18 @@ app.post('/api/messages', (req, res) => {
 app.delete('/api/messages', (req, res) => {
   try {
     ensureDataFileExists();
+    const conversationId = typeof req.query.conversationId === 'string'
+      ? req.query.conversationId.trim().toUpperCase()
+      : '';
+    if (conversationId) {
+      const messages = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8') || '[]');
+      const retained = messages.filter((message) =>
+        message.conversationId !== conversationId &&
+        (message.conversationId || conversationId !== 'CF-24810293')
+      );
+      fs.writeFileSync(DATA_FILE, JSON.stringify(retained, null, 2), 'utf8');
+      return res.status(200).json({ message: 'Conversation messages deleted successfully.' });
+    }
     fs.writeFileSync(DATA_FILE, JSON.stringify([], null, 2), 'utf8');
     res.status(200).json({ message: 'All messages deleted successfully.' });
   } catch (error) {

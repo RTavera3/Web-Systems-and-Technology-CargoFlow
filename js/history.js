@@ -35,6 +35,7 @@ import { listBookings } from './storage.js';
  * @property {"Booking Placed"|"In Transit"|"Delivered"} status
  * @property {boolean} trackable   True if the Track Shipment page can show
  *                                 this code (the demo code and saved bookings).
+ * @property {Object|null} booking Full booking details for saved shipments.
  */
 
 /**
@@ -52,6 +53,7 @@ const sampleShipments = [
     cost: 8450,
     status: "In Transit",
     trackable: true,
+    booking: null,
   },
   {
     code: "CF-24750118",
@@ -62,6 +64,7 @@ const sampleShipments = [
     cost: 12300,
     status: "Delivered",
     trackable: false,
+    booking: null,
   },
   {
     code: "CF-24690457",
@@ -72,6 +75,7 @@ const sampleShipments = [
     cost: 6900,
     status: "Delivered",
     trackable: false,
+    booking: null,
   },
   {
     code: "CF-24610932",
@@ -82,6 +86,7 @@ const sampleShipments = [
     cost: 3750,
     status: "Delivered",
     trackable: false,
+    booking: null,
   },
 ];
 
@@ -100,9 +105,8 @@ const statusBadgeClass = {
 /**
  * Converts one booking saved by js/payment.js into a Shipment row.
  *
- * payment.js stores only `from`, `to`, `pickupDate`, `pickupTime`,
- * `paymentMethod` and `createdAt`, and fills any missing form value with
- * "Not provided". It does not store a price, so `cost` is null and the
+ * payment.js stores the booking fields needed for transaction details and
+ * its conversation. It does not store a price, so `cost` is null and the
  * table shows a dash instead of a made-up number.
  *
  * @param {string} code The booking's tracking code.
@@ -119,6 +123,7 @@ function normalizeBooking(code, booking) {
     cost: null,
     status: "Booking Placed",
     trackable: true,
+    booking,
   };
 }
 
@@ -265,7 +270,48 @@ function buildRow(shipment) {
   badge.textContent = shipment.status;
   statusCell.appendChild(badge);
 
-  row.append(codeCell, routeCell, dateCell, paymentCell, costCell, statusCell);
+  const detailsCell = document.createElement("td");
+  const details = document.createElement("details");
+  const detailsSummary = document.createElement("summary");
+  const detailsText = document.createElement("p");
+  detailsSummary.textContent = "View details";
+  const booking = shipment.booking;
+  detailsText.textContent = booking
+    ? [
+        booking.cargoDescription,
+        booking.weight && `${booking.weight} kg`,
+        booking.packageCount && `${booking.packageCount} package(s)`,
+        booking.cargoType,
+        booking.vehicleType,
+        booking.senderName && `Sender: ${booking.senderName}`,
+        booking.senderUserId && `Sender ID: ${booking.senderUserId}`,
+        booking.senderContact && `Sender contact: ${booking.senderContact}`,
+        booking.pickupAddress && `Pickup: ${booking.pickupAddress}, ${booking.pickupCity} ${booking.pickupProvince} ${booking.pickupZip}`,
+        booking.receiverName && `Receiver: ${booking.receiverName}`,
+        booking.receiverUserId && `Receiver ID: ${booking.receiverUserId}`,
+        booking.receiverContact && `Receiver contact: ${booking.receiverContact}`,
+        booking.dropoffAddress && `Drop-off: ${booking.dropoffAddress}, ${booking.dropoffCity} ${booking.dropoffProvince} ${booking.dropoffZip}`,
+        booking.pickupTime && `Pickup time: ${booking.pickupTime}`,
+        booking.customerName && `Account owner: ${booking.customerName}`,
+        booking.customerContact && `Owner contact: ${booking.customerContact}`,
+        booking.customerAddress && `Owner address: ${booking.customerAddress}, ${booking.customerCity} ${booking.customerProvince} ${booking.customerZip}`,
+        booking.specialInstructions && `Notes: ${booking.specialInstructions}`,
+        booking.fragile && "Handle with care",
+        booking.loading && "Help loading requested",
+      ].filter(Boolean).join(" · ") || "No additional booking details."
+    : "Sample shipment; no extra booking details available.";
+  details.append(detailsSummary, detailsText);
+  detailsCell.appendChild(details);
+
+  const messagesCell = document.createElement("td");
+  const messagesLink = document.createElement("a");
+  messagesLink.href = `messages.html?conversation=${encodeURIComponent(shipment.code)}`;
+  messagesLink.className = "fw-semibold";
+  messagesLink.textContent = "Open messages";
+  messagesLink.setAttribute("aria-label", `Open messages for ${shipment.code}`);
+  messagesCell.appendChild(messagesLink);
+
+  row.append(codeCell, routeCell, dateCell, paymentCell, costCell, statusCell, detailsCell, messagesCell);
   return row;
 }
 
