@@ -1,69 +1,13 @@
 /**
  * Track Shipment page.
  *
- * Shipment tracking uses the same transaction records as history and profile,
- * so every listed tracking code reports its current saved/demo status.
+ * Every tracking result comes from the Express server, GET
+ * /api/shipments/:code (routes/shipments.js) through js/api.js. The server
+ * looks the code up in the demo shipment and in the bookings saved through
+ * POST /api/bookings, and builds the timeline, so this page only shows it.
  */
 
-import { getTransactionRecords } from './transaction-data.js';
-
-const statusBadgeClasses = {
-  "Booking Placed": "cf-badge-placed",
-  "In Transit": "cf-badge-transit",
-  Delivered: "cf-badge-delivered",
-};
-
-function formatPickupDate(value) {
-  const date = new Date(`${value}T00:00:00`);
-  return Number.isNaN(date.getTime())
-    ? value || "Date not provided"
-    : date.toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" });
-}
-
-function getShipment(code) {
-  const record = getTransactionRecords().find((shipment) => shipment.code === code);
-  if (!record) return null;
-
-  const status = statusBadgeClasses[record.status] ? record.status : "Booking Placed";
-  const bookingPlaced = status === "Booking Placed";
-  const inTransit = status === "In Transit";
-  const pickupDate = formatPickupDate(record.pickupDate);
-  const timeline = [
-    { label: "Order Placed", time: pickupDate, state: "is-done" },
-    {
-      label: "Picked Up",
-      time: bookingPlaced ? `Scheduled ${pickupDate}${record.booking?.pickupTime ? `, ${record.booking.pickupTime}` : ""}` : pickupDate,
-      state: bookingPlaced ? "is-upcoming" : "is-done",
-    },
-    {
-      label: "In Transit",
-      time: bookingPlaced ? "Pending pickup" : inTransit ? "Current shipment status" : pickupDate,
-      state: bookingPlaced ? "is-upcoming" : inTransit ? "is-current" : "is-done",
-    },
-    {
-      label: "Out for Delivery",
-      time: bookingPlaced ? "Pending pickup" : inTransit ? `Estimated ${formatPickupDate(record.eta || record.pickupDate)}` : pickupDate,
-      state: bookingPlaced || inTransit ? "is-upcoming" : "is-done",
-    },
-    {
-      label: "Delivered",
-      time: bookingPlaced ? "Pending pickup" : inTransit ? `Estimated ${formatPickupDate(record.eta || record.pickupDate)}` : pickupDate,
-      state: bookingPlaced || inTransit ? "is-upcoming" : "is-done",
-    },
-  ];
-
-  return {
-    route: `${record.from} &rarr; ${record.to}`,
-    eta: status === "Delivered"
-      ? "Delivered"
-      : bookingPlaced
-        ? `${pickupDate} (pending pickup)`
-        : record.eta ? formatPickupDate(record.eta) : "In transit",
-    status,
-    badgeClass: statusBadgeClasses[status],
-    timeline,
-  };
-}
+import { getShipment } from './api.js';
 
 const form = document.getElementById("track-form");
 const summarySection = document.getElementById("summary");
@@ -79,38 +23,41 @@ const trackingInput = document.getElementById("trackingNumber");
 const trackButton = form.querySelector("button[type='submit']");
 
 /**
- * Fills in and reveals the shipment summary card + delivery timeline.
+ * Fills in and reveals the shipment summary card + delivery timeline for
+ * a found shipment from the server's response.
  *
- * `summaryRoute` is set with `innerHTML` (not `textContent`) because the
- * route string contains an `&rarr;` HTML entity for the arrow between
- * cities; the timeline `<li>` markup is rebuilt from scratch every call so
- * it always matches the given shipment's own step count/labels/state,
- * rather than trying to patch the 5 sample `<li>`s already in the HTML.
- *
- * @param {string} code The tracking code, used for display only.
- * @param {{
- *   route: string, eta: string, status: string, badgeClass: string,
- *   timeline: {label: string, time: string, state: string}[],
- * }} shipment
+ * Every value is inserted with `textContent` and `createElement`, never
+ * `innerHTML`, so booking data (city names, dates) can't inject HTML
+ * into the page.
  */
 function renderShipment(code, shipment) {
   summaryCode.textContent = code;
   summaryTrackingId.textContent = code;
-  summaryRoute.innerHTML = shipment.route;
+  summaryRoute.textContent = shipment.route;
   summaryEta.textContent = shipment.eta;
   summaryBadge.textContent = shipment.status;
   summaryBadge.className = `badge ${shipment.badgeClass} fs-6 mb-3`;
 
-  timelineList.innerHTML = shipment.timeline
-    .map(
-      (step) => `
-        <li class="cf-step ${step.state}">
-          <span class="cf-step-dot"></span>
-          <p class="cf-step-label">${step.label}</p>
-          <p class="cf-step-time">${step.time}</p>
-        </li>`,
-    )
-    .join("");
+  timelineList.replaceChildren(
+    ...shipment.timeline.map((step) => {
+      const li = document.createElement("li");
+      li.className = `cf-step ${step.state}`;
+
+      const dot = document.createElement("span");
+      dot.className = "cf-step-dot";
+
+      const label = document.createElement("p");
+      label.className = "cf-step-label";
+      label.textContent = step.label;
+
+      const time = document.createElement("p");
+      time.className = "cf-step-time";
+      time.textContent = step.time;
+
+      li.append(dot, label, time);
+      return li;
+    }),
+  );
 
   summarySection.hidden = false;
   timelineSection.hidden = false;
@@ -121,48 +68,44 @@ function renderShipment(code, shipment) {
  * Handles the tracking search form's submit event.
  *
  * Flow:
- *   1. Empty input -> show a "please enter a code" message and stop.
- *   2. Otherwise, disable the button and show "Searching..." for 600ms
- *      (a fake delay purely for the feel of a real lookup - there is no
- *      actual network request).
- *   3. Look the code up in the shared transaction records. If found, render it;
- *      otherwise show the "not found" message with a hint toward the sample code.
- *   4. Re-enable the button either way.
+ *  1. Empty input -> shows a message, then the button shows “Searching...”, 
+ *  getShipment() is called, the result is rendered or an error message is shown, 
+ *  and the button is re-enabled.
  */
-form.addEventListener("submit", (event) => {
+function showMessage(text) {
+  summarySection.hidden = true;
+  timelineSection.hidden = true;
+  notFoundMessage.hidden = false;
+  notFoundMessage.textContent = text;
+}
+
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const enteredCode = trackingInput.value.trim().toUpperCase();
 
-  // Empty input — show a distinct message, skip the fake "search"
   if (enteredCode === "") {
-    summarySection.hidden = true;
-    timelineSection.hidden = true;
-    notFoundMessage.hidden = false;
-    notFoundMessage.textContent = "Please enter a tracking number.";
+    showMessage("Please enter a tracking number.");
     return;
   }
 
-  // Brief fake loading state for realism
   trackButton.disabled = true;
   trackButton.textContent = "Searching...";
 
-  setTimeout(() => {
-    const shipment = getShipment(enteredCode);
-
-    if (shipment) {
-      renderShipment(enteredCode, shipment);
+  try {
+    const shipment = await getShipment(enteredCode);
+    renderShipment(enteredCode, shipment);
+  } catch (error) {
+    // 400: not a valid code. 404: no shipment or booking has it.
+    if (error.status === 400 || error.status === 404) {
+      showMessage(error.message);
     } else {
-      summarySection.hidden = true;
-      timelineSection.hidden = true;
-      notFoundMessage.hidden = false;
-      notFoundMessage.innerHTML =
-        'No shipment found for that tracking number. Try <strong>CF-24810293</strong> for a sample result.';
+      showMessage("Could not reach the server. Please make sure it is running and try again.");
     }
-
+  } finally {
     trackButton.disabled = false;
     trackButton.textContent = "Track";
-  }, 600);
+  }
 });
 
 /**

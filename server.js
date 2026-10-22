@@ -6,54 +6,51 @@
  * For now it only serves the existing front end (HTML, CSS, JS and
  * resources) exactly as it is, so the site works the same as before but
  * runs from http://localhost:3000 instead of opening the HTML files
- * directly. This also lets js/booking-details.js load
- * resources/users.json with fetch(), which browsers block on file:// pages.
+ * directly.
  *
  * Only the front-end folders are served, so files like server.js,
- * package.json and data/messages.json are not reachable from the browser.
+ * package.json and everything in data/ are not reachable from the browser.
  *
- * It also hosts the messages API used by js/messages.js, which saves the
- * carrier chat in data/messages.json:
- *   GET    /api/health    server status check
- *   GET    /api/messages?conversationId=...  one booking's chat history
- *   POST   /api/messages  save one message ({ conversationId, text, sender, recipient })
- *   DELETE /api/messages?conversationId=...  clear one booking's chat history
+ * The API is split into Express routers in routes/, each mounted below:
+ *   GET    /api/health            server status check
+ *   GET    /api/messages?conversationId=CF-...  one booking's chat history (routes/messages.js)
+ *   POST   /api/messages          save one message ({ conversationId, text, sender, recipient })
+ *   DELETE /api/messages?conversationId=CF-...  clear one booking's chat history
+ *   GET    /api/bookings          every booking, summary fields only (routes/bookings.js)
+ *   POST   /api/bookings          check and save one booking; the server makes its code
+ *   PATCH  /api/bookings/:code/status  move a booking to its next delivery step
+ *   GET    /api/shipments/:code   one shipment's tracking details   (routes/shipments.js)
+ *   POST   /api/contact           save a contact form message      (routes/contact.js)
+ *   GET    /api/profile           the account profile              (routes/profile.js)
+ *   PUT    /api/profile           save the account profile
+ *   GET    /api/users             every user's ID and name         (routes/users.js)
+ *   GET    /api/users/:id         one user's saved details
  *
  * Run:  npm install   (first time only)
  *       npm run dev   (restarts automatically when a file changes)
  *       npm start
  */
 
-const express = require("express");
-const cors = require("cors");
-const fs = require("fs");
-const path = require("path");
+// ES modules ("type": "module" in package.json): import/export instead of
+// require/module.exports. Reference: https://nodejs.org/api/esm.html
+import express from "express";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+
+import bookingsRouter from "./routes/bookings.js";
+import contactRouter from "./routes/contact.js";
+import messagesRouter from "./routes/messages.js";
+import profileRouter from "./routes/profile.js";
+import shipmentsRouter from "./routes/shipments.js";
+import usersRouter from "./routes/users.js";
+
+// ES modules have no __dirname; build it from this file's URL.
+// Reference: https://nodejs.org/api/esm.html#importmetaurl
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-//Reference: https://nodejs.org/api/path.html#pathjoinpaths
-// Absolute path to data/messages.json
-// Uses path.join() and __dirname to build reliable absolute directory paths on any OS.
-// Locates where messages are saved.
-const DATA_DIR = path.join(__dirname, 'data');
-const DATA_FILE = path.join(DATA_DIR, 'messages.json');
-
-// Reference: https://nodejs.org/api/fs.html#fsexistssyncpath
-// Reference: https://nodejs.org/api/fs.html#fsmkdirsyncpath-options
-// Reference: https://nodejs.org/api/fs.html#fswritefilesyncfile-data-options
-// Ensure that the data directory and messages.json file exist before starting the server
-// Prepares the backend database file automatically before reading or writing data.
-function ensureDataFileExists() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-  if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(DATA_FILE, JSON.stringify([], null, 2), 'utf8');
-  }
-}
-
-ensureDataFileExists();
 
 //Reference:https://expressjs.com/en/resources/middleware/cors/
 // Enable CORS and JSON body parsing middleware
@@ -77,117 +74,37 @@ app.get('/api/health', (req, res) => {
   res.send({ status: 'OK', message: 'CargoFlow Messaging Server is Running!' });
 });
 
-// GET route: Load chat history from data/messages.json
-app.get('/api/messages', (req, res) => {
-  try {
-    const fileData = fs.readFileSync(DATA_FILE, 'utf8');
-    const messages = JSON.parse(fileData || '[]');
-    const conversationId = req.query.conversationId;
-    if (!conversationId) return res.json(messages);
-    res.json(messages.filter((message) =>
-      message.conversationId === conversationId ||
-      (!message.conversationId && conversationId === 'CF-24810293')
-    ));
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to read messages.' });
-  }
-});
-
-
-// POST route: Save a new message to data/messages.json - acccepted 
-app.post('/api/messages', (req, res) => {
-  try {
-    const { text, sender, recipient } = req.body;
-    const clientMessageId = typeof req.body.clientMessageId === 'string'
-      ? req.body.clientMessageId.trim()
-      : '';
-    const conversationId = typeof req.body.conversationId === 'string'
-      ? req.body.conversationId.trim().toUpperCase()
-      : 'CF-24810293';
-
-    if (!conversationId || conversationId.length > 64) {
-      return res.status(400).json({ error: 'A valid booking conversation is required.' });
-    }
-
-    // Validation: Reject empty or non-string messages
-    if (!text || typeof text !== 'string' || text.trim() === '') {
-      return res.status(400).json({ error: 'Message text cannot be empty.' });
-    }
-    if (clientMessageId.length > 128) {
-      return res.status(400).json({ error: 'Invalid client message ID.' });
-    }
-
-    // Reference: https://expressjs.com/en/4x/api.html#res.status
-    // Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
-    // Reject messages exceeding 500 characters
-    if (text.length > 500) {
-      return res.status(400).json({ error: 'Message exceeds the 500 character limit.' });
-    }
-
-    ensureDataFileExists();
-
-    const fileData = fs.readFileSync(DATA_FILE, 'utf8');
-    const messages = JSON.parse(fileData || '[]');
-    if (clientMessageId) {
-      const existing = messages.find((message) => message.clientMessageId === clientMessageId);
-      if (existing) return res.status(200).json({ message: existing, duplicate: true });
-    }
-
-    const newMessage = {
-      id: Date.now().toString(),
-      ...(clientMessageId ? { clientMessageId } : {}),
-      sender: sender || 'Shipper',
-      recipient: recipient || 'Carrier',
-      conversationId,
-      text: text.trim(),
-      timestamp: new Date().toISOString()
-    }
-
-    messages.push(newMessage);
-    fs.writeFileSync(DATA_FILE, JSON.stringify(messages, null, 2), 'utf8');
-
-    res.status(201).json({ message: newMessage, duplicate: false });
-  } catch (error) {
-    console.error('Error saving message:', error);
-    res.status(500).json({ error: 'Failed to save message.' });
-  }
-});
-
-
-
-// DELETE route: Clear all messages from data/messages.json
-// Reference: https://expressjs.com/en/4x/api.html#app.delete.method
-// Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200
-// Writes an empty JSON array [] to data/messages.json.
-// Clears stored chat history on the server when requested by the frontend.
-app.delete('/api/messages', (req, res) => {
-  try {
-    ensureDataFileExists();
-    const conversationId = typeof req.query.conversationId === 'string'
-      ? req.query.conversationId.trim().toUpperCase()
-      : '';
-    if (conversationId) {
-      const messages = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8') || '[]');
-      const retained = messages.filter((message) =>
-        message.conversationId !== conversationId &&
-        (message.conversationId || conversationId !== 'CF-24810293')
-      );
-      fs.writeFileSync(DATA_FILE, JSON.stringify(retained, null, 2), 'utf8');
-      return res.status(200).json({ message: 'Conversation messages deleted successfully.' });
-    }
-    fs.writeFileSync(DATA_FILE, JSON.stringify([], null, 2), 'utf8');
-    res.status(200).json({ message: 'All messages deleted successfully.' });
-  } catch (error) {
-    console.error('Error deleting messages:', error);
-    res.status(500).json({ error: 'Failed to delete messages.' });
-  }
-});
+// Reference: https://expressjs.com/en/guide/routing.html#express-router
+// API routes. Each router handles everything under its path.
+app.use("/api/bookings", bookingsRouter);
+app.use("/api/contact", contactRouter);
+app.use("/api/messages", messagesRouter);
+app.use("/api/profile", profileRouter);
+app.use("/api/shipments", shipmentsRouter);
+app.use("/api/users", usersRouter);
 
 // Anything else is not part of the site.
 app.use((req, res) => {
   res.status(404).send("Page not found");
 });
 
-app.listen(PORT, () => {
-  console.log(`CargoFlow running on http://localhost:${PORT}`);
+// Reference: https://expressjs.com/en/guide/error-handling.html
+// express.json() throws when a request body isn't valid JSON. Answer with a
+// JSON error like the rest of the API instead of Express's default HTML page.
+// Any other error goes on to Express's default handler.
+app.use((err, req, res, next) => {
+  if (err.type === "entity.parse.failed" && !res.headersSent) {
+    return res.status(400).json({ error: "Invalid JSON" });
+  }
+  next(err);
 });
+
+// Start listening only when run directly (npm start / npm run dev), not when
+// the tests import the app.
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  app.listen(PORT, () => {
+    console.log(`CargoFlow running on http://localhost:${PORT}`);
+  });
+}
+
+export default app;

@@ -5,7 +5,8 @@
  * pickup date, payment method and cost, and lets them filter by status,
  * search by tracking number or city, and sort by pickup date.
  *
- * Every page that summarizes transactions uses js/transaction-data.js,
+ * Every page that summarizes transactions uses js/transaction-data.js
+ * (saved bookings from GET /api/bookings plus the shared demo records),
  * keeping the transaction count and conversation list in sync.
  */
 
@@ -22,7 +23,7 @@ import { getTransactionRecords } from './transaction-data.js';
  * @property {number|null} cost    The shipper's share of the trip cost in
  *                                 pesos, or null if not known (bookings
  *                                 saved by payment.js do not store a price).
- * @property {"Booking Placed"|"In Transit"|"Delivered"} status
+ * @property {"Booking Placed"|"Picked Up"|"In Transit"|"Out for Delivery"|"Delivered"} status
  * @property {boolean} trackable   True if the Track Shipment page can show
  *                                 this code (the demo code and saved bookings).
  * @property {Object|null} booking Full booking details for saved shipments.
@@ -36,11 +37,15 @@ import { getTransactionRecords } from './transaction-data.js';
  */
 const statusBadgeClass = {
   "Booking Placed": "cf-badge-placed",
+  "Picked Up": "cf-badge-transit",
   "In Transit": "cf-badge-transit",
+  "Out for Delivery": "cf-badge-transit",
   Delivered: "cf-badge-delivered",
 };
 
-let allShipments = getTransactionRecords();
+// Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await#top_level_await
+// Waits for the bookings before the page builds the table below.
+let allShipments = await getTransactionRecords();
 
 // --- Page elements ---
 const rowsEl = document.getElementById("history-rows");
@@ -157,7 +162,7 @@ function buildRow(shipment, index) {
   costCell.textContent = formatPeso(shipment.cost);
   costCell.dataset.label = "Your share";
   if (shipment.cost === null) {
-    costCell.title = "Price not saved for bookings made on this device";
+    costCell.title = "Price not saved for this booking";
   }
 
   const statusCell = document.createElement("td");
@@ -196,7 +201,7 @@ function buildRow(shipment, index) {
         booking.receiverUserId && `Receiver ID: ${booking.receiverUserId}`,
         booking.receiverContact && `Receiver contact: ${booking.receiverContact}`,
         booking.dropoffAddress && `Drop-off: ${booking.dropoffAddress}, ${booking.dropoffCity} ${booking.dropoffProvince} ${booking.dropoffZip}`,
-        booking.pickupTime && `Pickup time: ${booking.pickupTime}`,
+        (booking.pickupTime || booking.time) && `Pickup time: ${booking.pickupTime || booking.time}`,
         booking.customerName && `Account owner: ${booking.customerName}`,
         booking.customerContact && `Owner contact: ${booking.customerContact}`,
         booking.customerAddress && `Owner address: ${booking.customerAddress}, ${booking.customerCity} ${booking.customerProvince} ${booking.customerZip}`,
@@ -298,8 +303,8 @@ function renderStats() {
   document.getElementById("stat-spent").textContent = formatPeso(spent);
 }
 
-function refreshTransactions() {
-  allShipments = getTransactionRecords();
+async function refreshTransactions() {
+  allShipments = await getTransactionRecords();
   renderStats();
   render();
 }

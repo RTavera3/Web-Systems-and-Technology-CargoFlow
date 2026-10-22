@@ -11,6 +11,9 @@
  * rather than a native <input type="time">, so "disabling the past" means
  * disabling individual <option> elements - a native time input's `.min`
  * attribute doesn't apply here.
+ *
+ * Loaded as an ES module (<script type="module">) like every other script;
+ * it imports and exports nothing.
  */
 
 /** @type {HTMLInputElement} The pick-up date field (type="date"). */

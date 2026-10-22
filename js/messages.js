@@ -3,10 +3,12 @@ import {
   getPendingMessages,
   removePendingMessage,
   savePendingMessage,
-} from './storage.js';
+} from './message-outbox.js';
 import { getTransactionRecords } from './transaction-data.js';
 
-const API_BASE_URL = 'http://localhost:3000';
+// Express serves this page too, so the API is on the same host and port:
+// relative URLs work wherever the server runs, not only localhost:3000.
+const API_BASE_URL = '';
 const DEMO_BOOKING_CODE = 'CF-24810293';
 const MAX_MESSAGE_LENGTH = 500;
 const RETRY_AFTER_RECONNECT_MESSAGE =
@@ -26,11 +28,16 @@ const chatTrackingNumber = document.querySelector('#chatTrackingNumber');
 const chatShipmentSummary = document.querySelector('#chatShipmentSummary');
 const offlineBanner = document.querySelector('#offlineBanner');
 
-let conversations = getConversations();
+// Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await#top_level_await
+// The conversation list comes from the saved bookings (GET /api/bookings) and the demo records.
+let conversations = await getConversations();
 let activeConversation = null;
 let isSending = false;
 let isServerAvailable = navigator.onLine;
-let demoFirstSendAvailable = true;
+// Demo of the failed-message notice and Retry button: with ?demoFailure=1 in
+// the page URL, the first message sent after the page loads is shown as
+// failed instead of being sent. Without it every message is sent normally.
+let demoFirstSendAvailable = new URLSearchParams(window.location.search).get('demoFailure') === '1';
 const sendingMessageIds = new Set();
 let pendingMessages = getPendingMessages().map((message) => {
   if (message.demoFailureShown && message.lastError?.startsWith('Demo:')) {
@@ -45,8 +52,8 @@ let pendingMessages = getPendingMessages().map((message) => {
 });
 let isCheckingServer = false;
 
-function getConversations() {
-  return getTransactionRecords().map((transaction) => ({
+async function getConversations() {
+  return (await getTransactionRecords()).map((transaction) => ({
     ...transaction,
     eta: transaction.eta || null,
   })).sort((a, b) => {
@@ -568,16 +575,19 @@ messageInput.addEventListener('input', () => {
 });
 document.querySelector('#clear-btn').addEventListener('click', clearChat);
 searchInput.addEventListener('input', filterConversations);
+// Bookings are saved on the server, so reload the conversation list when the
+// page is shown again (e.g. after booking in another tab and coming back).
+window.addEventListener('pageshow', async (event) => {
+  if (!event.persisted) return; // the first load already built the list
+  const activeCode = activeConversation?.code;
+  conversations = await getConversations();
+  renderConversations();
+  filterConversations();
+  const selection = conversations.find((conversation) => conversation.code === activeCode)
+    || conversations[0];
+  if (selection) selectConversation(selection, false);
+});
 window.addEventListener('storage', (event) => {
-  if (event.key === 'cargoflow_bookings') {
-    const activeCode = activeConversation?.code;
-    conversations = getConversations();
-    renderConversations();
-    filterConversations();
-    const selection = conversations.find((conversation) => conversation.code === activeCode)
-      || conversations[0];
-    if (selection) selectConversation(selection, false);
-  }
   if (event.key === 'cargoflow_message_outbox') {
     pendingMessages = getPendingMessages();
     if (activeConversation) loadMessages(activeConversation);
