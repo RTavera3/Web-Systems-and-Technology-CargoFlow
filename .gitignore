@@ -5,3 +5,4 @@ data/contact-messages.json
 data/profile.json
 data/*.corrupt-*
 data/.*.tmp
+data/messages.json
