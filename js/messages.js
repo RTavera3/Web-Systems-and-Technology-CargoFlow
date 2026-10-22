@@ -34,7 +34,10 @@ let conversations = await getConversations();
 let activeConversation = null;
 let isSending = false;
 let isServerAvailable = navigator.onLine;
-let demoFirstSendAvailable = true;
+// Demo of the failed-message notice and Retry button: with ?demoFailure=1 in
+// the page URL, the first message sent after the page loads is shown as
+// failed instead of being sent. Without it every message is sent normally.
+let demoFirstSendAvailable = new URLSearchParams(window.location.search).get('demoFailure') === '1';
 const sendingMessageIds = new Set();
 let pendingMessages = getPendingMessages().map((message) => {
   if (message.demoFailureShown && message.lastError?.startsWith('Demo:')) {
