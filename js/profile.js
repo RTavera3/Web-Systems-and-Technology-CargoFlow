@@ -7,11 +7,12 @@
  * profile) and reused elsewhere:
  *   - js/booking-details.js fills step 4's "Account Owner Details" with them.
  *   - js/payment.js starts on the preferred payment method.
- * Bookings themselves are listed on pages/history.html, so this page only
- * links there with a count.
+ * The booking count comes from the same transaction source as
+ * pages/history.html, including its demo records.
  */
 
-import { getProfile, listBookings, saveProfile } from './api.js';
+import { getProfile, saveProfile } from './api.js';
+import { getTransactionRecords } from './transaction-data.js';
 
 /** @type {HTMLFormElement} */
 const profileForm = document.getElementById('profileForm');
@@ -79,11 +80,13 @@ const render = (profile) => {
   renderSummary(profile);
 };
 
-// Bookings are saved on the Express server (GET /api/bookings).
+// The count matches pages/history.html: saved bookings from the server
+// (GET /api/bookings) plus the shared demo records, via js/transaction-data.js.
 const bookingCountEl = document.getElementById('profileBookingCount');
-listBookings()
-  .then((bookings) => { bookingCountEl.textContent = String(bookings.length); })
-  .catch(() => { bookingCountEl.textContent = '-'; });
+const renderBookingCount = async () => {
+  bookingCountEl.textContent = String((await getTransactionRecords()).length);
+};
+renderBookingCount();
 
 // The form can't be saved until the profile has loaded, so a save never
 // overwrites the server's profile with the page's placeholder values.
@@ -121,3 +124,6 @@ profileForm.addEventListener('submit', async (event) => {
 
 // Clear the "saved" message once the form is edited again.
 profileForm.addEventListener('input', () => setStatus(''));
+
+// Recount when the page is shown again, e.g. after booking in another tab.
+window.addEventListener('pageshow', renderBookingCount);

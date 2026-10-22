@@ -13,9 +13,9 @@
  *
  * The API is split into Express routers in routes/, each mounted below:
  *   GET    /api/health            server status check
- *   GET    /api/messages          chat history            (routes/messages.js)
- *   POST   /api/messages          save one message
- *   DELETE /api/messages          clear the chat history
+ *   GET    /api/messages?conversationId=CF-...  one booking's chat history (routes/messages.js)
+ *   POST   /api/messages          save one message ({ conversationId, text, sender, recipient })
+ *   DELETE /api/messages?conversationId=CF-...  clear one booking's chat history
  *   GET    /api/bookings          every booking, summary fields only (routes/bookings.js)
  *   POST   /api/bookings          check and save one booking; the server makes its code
  *   PATCH  /api/bookings/:code/status  move a booking to its next delivery step

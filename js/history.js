@@ -5,20 +5,12 @@
  * pickup date, payment method and cost, and lets them filter by status,
  * search by tracking number or city, and sort by pickup date.
  *
- * The list is built from two sources:
- *   1. `sampleShipments` below - a few hardcoded past and current shipments
- *      for demos and grading. CF-24810293 matches the sample shipment on the
- *      Track Shipment page, so both pages tell the same story.
- *   2. Bookings saved on the Express server (GET /api/bookings through
- *      js/api.js) when someone completes the booking + payment flow.
- *      Each shows its current delivery step, which
- *      PATCH /api/bookings/:code/status moves along.
- *
- * Both sources are normalized into one shape (see `normalizeBooking`) so a
- * single render function can display them.
+ * Every page that summarizes transactions uses js/transaction-data.js
+ * (saved bookings from GET /api/bookings plus the shared demo records),
+ * keeping the transaction count and conversation list in sync.
  */
 
-import { listBookings } from './api.js';
+import { getTransactionRecords } from './transaction-data.js';
 
 /**
  * One shipment row, after normalizing either source.
@@ -34,55 +26,8 @@ import { listBookings } from './api.js';
  * @property {"Booking Placed"|"Picked Up"|"In Transit"|"Out for Delivery"|"Delivered"} status
  * @property {boolean} trackable   True if the Track Shipment page can show
  *                                 this code (the demo code and saved bookings).
+ * @property {Object|null} booking Full booking details for saved shipments.
  */
-
-/**
- * Hardcoded sample shipments. Only CF-24810293 also exists on the Track
- * Shipment page, so it is the only sample marked `trackable`.
- * @type {Shipment[]}
- */
-const sampleShipments = [
-  {
-    code: "CF-24810293",
-    from: "Manila",
-    to: "Cebu",
-    pickupDate: "2026-09-10",
-    payment: "GCash",
-    cost: 8450,
-    status: "In Transit",
-    trackable: true,
-  },
-  {
-    code: "CF-24750118",
-    from: "Quezon City",
-    to: "Davao",
-    pickupDate: "2026-08-28",
-    payment: "Credit or debit card",
-    cost: 12300,
-    status: "Delivered",
-    trackable: false,
-  },
-  {
-    code: "CF-24690457",
-    from: "Pasig",
-    to: "Iloilo",
-    pickupDate: "2026-08-12",
-    payment: "Cash on pickup",
-    cost: 6900,
-    status: "Delivered",
-    trackable: false,
-  },
-  {
-    code: "CF-24610932",
-    from: "Makati",
-    to: "Baguio",
-    pickupDate: "2026-07-30",
-    payment: "GCash",
-    cost: 3750,
-    status: "Delivered",
-    trackable: false,
-  },
-];
 
 /**
  * CSS class for each status badge. These classes already exist in
@@ -98,68 +43,9 @@ const statusBadgeClass = {
   Delivered: "cf-badge-delivered",
 };
 
-/**
- * Converts one booking from the server (GET /api/bookings) into a Shipment row.
- *
- * The server saves every field from the booking form, including `code`,
- * `date` and `paymentMethod`. It does not save a price, so `cost` is null
- * and the table shows a dash instead of a made-up number.
- *
- * @param {{code: string, from: string, to: string, date: string, paymentMethod: string}} booking
- * @returns {Shipment}
- */
-function normalizeBooking(booking) {
-  return {
-    code: booking.code,
-    from: booking.from,
-    to: booking.to,
-    pickupDate: booking.date,
-    payment: formatPaymentMethod(booking.paymentMethod),
-    cost: null,
-    status: booking.status || "Booking Placed",
-    trackable: true,
-  };
-}
-
-/**
- * Returns the payment method as a display label. The payment form's options
- * are already readable ("GCash", "Credit or debit card", "Cash on pickup"),
- * so this only guards against an empty value from an older or edited booking.
- * @param {string} method
- * @returns {string}
- */
-function formatPaymentMethod(method) {
-  return method && method.trim() ? method : "Not provided";
-}
-
-/**
- * Loads the saved bookings from the Express server (GET /api/bookings
- * through js/api.js). If the server can't be reached, the page still works
- * and shows only the sample shipments.
- * @returns {Promise<Shipment[]>}
- */
-async function getSavedBookings() {
-  try {
-    const bookings = await listBookings();
-    return bookings.map(normalizeBooking);
-  } catch (error) {
-    console.error('Error loading bookings:', error);
-    return [];
-  }
-}
-
 // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await#top_level_await
 // Waits for the bookings before the page builds the table below.
-const savedBookings = await getSavedBookings();
-
-/**
- * Every shipment shown on the page: saved bookings first, then the samples.
- * A saved booking with the same code as a sample replaces that sample, so a
- * code never appears twice.
- * @type {Shipment[]}
- */
-const savedCodes = new Set(savedBookings.map((s) => s.code));
-const allShipments = [...savedBookings, ...sampleShipments.filter((s) => !savedCodes.has(s.code))];
+let allShipments = await getTransactionRecords();
 
 // --- Page elements ---
 const rowsEl = document.getElementById("history-rows");
@@ -274,7 +160,48 @@ function buildRow(shipment) {
   badge.textContent = shipment.status;
   statusCell.appendChild(badge);
 
-  row.append(codeCell, routeCell, dateCell, paymentCell, costCell, statusCell);
+  const detailsCell = document.createElement("td");
+  const details = document.createElement("details");
+  const detailsSummary = document.createElement("summary");
+  const detailsText = document.createElement("p");
+  detailsSummary.textContent = "View details";
+  const booking = shipment.booking;
+  detailsText.textContent = booking
+    ? [
+        booking.cargoDescription,
+        booking.weight && `${booking.weight} kg`,
+        booking.packageCount && `${booking.packageCount} package(s)`,
+        booking.cargoType,
+        booking.vehicleType,
+        booking.senderName && `Sender: ${booking.senderName}`,
+        booking.senderUserId && `Sender ID: ${booking.senderUserId}`,
+        booking.senderContact && `Sender contact: ${booking.senderContact}`,
+        booking.pickupAddress && `Pickup: ${booking.pickupAddress}, ${booking.pickupCity} ${booking.pickupProvince} ${booking.pickupZip}`,
+        booking.receiverName && `Receiver: ${booking.receiverName}`,
+        booking.receiverUserId && `Receiver ID: ${booking.receiverUserId}`,
+        booking.receiverContact && `Receiver contact: ${booking.receiverContact}`,
+        booking.dropoffAddress && `Drop-off: ${booking.dropoffAddress}, ${booking.dropoffCity} ${booking.dropoffProvince} ${booking.dropoffZip}`,
+        (booking.pickupTime || booking.time) && `Pickup time: ${booking.pickupTime || booking.time}`,
+        booking.customerName && `Account owner: ${booking.customerName}`,
+        booking.customerContact && `Owner contact: ${booking.customerContact}`,
+        booking.customerAddress && `Owner address: ${booking.customerAddress}, ${booking.customerCity} ${booking.customerProvince} ${booking.customerZip}`,
+        booking.specialInstructions && `Notes: ${booking.specialInstructions}`,
+        booking.fragile && "Handle with care",
+        booking.loading && "Help loading requested",
+      ].filter(Boolean).join(" · ") || "No additional booking details."
+    : "Sample shipment; no extra booking details available.";
+  details.append(detailsSummary, detailsText);
+  detailsCell.appendChild(details);
+
+  const messagesCell = document.createElement("td");
+  const messagesLink = document.createElement("a");
+  messagesLink.href = `messages.html?conversation=${encodeURIComponent(shipment.code)}`;
+  messagesLink.className = "fw-semibold";
+  messagesLink.textContent = "Open messages";
+  messagesLink.setAttribute("aria-label", `Open messages for ${shipment.code}`);
+  messagesCell.appendChild(messagesLink);
+
+  row.append(codeCell, routeCell, dateCell, paymentCell, costCell, statusCell, detailsCell, messagesCell);
   return row;
 }
 
@@ -317,6 +244,12 @@ function renderStats() {
   document.getElementById("stat-spent").textContent = formatPeso(spent);
 }
 
+async function refreshTransactions() {
+  allShipments = await getTransactionRecords();
+  renderStats();
+  render();
+}
+
 /**
  * Status filter buttons: mark the clicked one active (and update
  * aria-pressed for screen readers), then redraw the table.
@@ -336,6 +269,10 @@ filterButtons.forEach((button) => {
 // Redraw while typing in the search box and when the sort order changes.
 searchEl.addEventListener("input", render);
 sortEl.addEventListener("change", render);
+window.addEventListener("storage", (event) => {
+  if (event.key === "cargoflow_bookings") refreshTransactions();
+});
+window.addEventListener("pageshow", refreshTransactions);
 
 renderStats();
 render();

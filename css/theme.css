@@ -35,6 +35,39 @@ body {
 }
 
 /* Header */
+.navbar > .container {
+  position: relative;
+}
+
+.navbar-collapse {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1050;
+  width: max-content;
+  min-width: 220px;
+  max-width: min(320px, calc(100vw - 2rem));
+  padding: 0.5rem;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.16);
+}
+
+.navbar-collapse .navbar-nav {
+  width: 100%;
+}
+
+.navbar-collapse .nav-link {
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.3rem;
+}
+
+.navbar-collapse .nav-link:hover,
+.navbar-collapse .nav-link:focus {
+  background: #f4f7fc;
+}
+
 .navbar-brand span {
   font-weight: bold;
   color: var(--cf-navy);
@@ -48,6 +81,39 @@ body {
 .nav-link:hover,
 .nav-link.active {
   color: var(--cf-navy);
+}
+
+.messages-shortcut {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1040;
+  display: grid;
+  width: 60px;
+  height: 60px;
+  place-items: center;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--cf-navy);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.messages-shortcut:hover {
+  transform: translateY(-2px);
+  background: #082c69;
+  color: #fff;
+}
+
+.messages-shortcut:focus-visible {
+  outline: 3px solid var(--cf-orange);
+  outline-offset: 3px;
+}
+
+.messages-shortcut svg {
+  width: 28px;
+  height: 28px;
 }
 
 /* Hero — only .cf-hero (the Book cargo space section) is navy.
@@ -124,6 +190,52 @@ body {
   border: none;
   border-top: 4px solid var(--cf-orange);
   border-radius: 0;
+}
+
+.history-table {
+  min-width: 1000px;
+  table-layout: fixed;
+}
+
+.history-col-tracking { width: 12%; }
+.history-col-route { width: 19%; }
+.history-col-date { width: 11%; }
+.history-col-payment { width: 16%; }
+.history-col-share { width: 8%; }
+.history-col-status { width: 9%; }
+.history-col-details { width: 13%; }
+.history-col-messages { width: 12%; }
+
+.history-table th,
+.history-table td {
+  overflow-wrap: anywhere;
+}
+
+.history-table details summary {
+  color: var(--cf-navy);
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.35rem 0;
+  text-decoration: underline;
+  text-decoration-color: rgba(11, 61, 145, 0.35);
+  text-underline-offset: 3px;
+}
+
+.history-table details[open] summary {
+  color: #9a4b00;
+  text-decoration-color: currentColor;
+}
+
+.history-table details p {
+  background: #f8f7f4;
+  border-left: 3px solid var(--cf-orange);
+  border-radius: 0.25rem;
+  color: #343a40;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0.5rem 0 0;
+  overflow-wrap: anywhere;
+  padding: 0.65rem 0.75rem;
 }
 
 /* The "Get a price" card floats on the boundary between the navy hero and
@@ -384,10 +496,39 @@ body {
 
 .conversation-item {
   display: flex;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
   gap: 12px;
   padding: 15px;
   border-bottom: 1px solid #eee;
   cursor: pointer;
+}
+
+.conversation-item:focus-visible {
+  outline: 3px solid var(--cf-orange);
+  outline-offset: -3px;
+}
+
+.conversation-info {
+  display: block;
+  min-width: 0;
+  flex: 1;
+}
+
+.item-header,
+.preview-text {
+  display: block;
+}
+
+.conversation-empty {
+  margin: auto 20px;
+  padding: 12px;
+  color: #666;
+  text-align: center;
 }
 
 .conversation-item:hover {
@@ -528,7 +669,7 @@ body {
 
 .time {
   font-size: 11px;
-  color: #888;
+  color: #595959;
   margin-top: 4px;
 }
 
@@ -578,6 +719,12 @@ body {
   outline-offset: -1px;
 }
 
+.chat-app :focus-visible,
+.navbar-toggler:focus-visible {
+  outline: 3px solid var(--cf-navy);
+  outline-offset: 2px;
+}
+
 .icon-btn {
   background: none;
   border: none;
@@ -588,7 +735,7 @@ body {
 }
 
 .send-btn {
-  background-color: var(--cf-orange);
+  background-color: #a83f00;
   color: #fff;
   border: none;
   padding: 8px 16px;
@@ -598,11 +745,11 @@ body {
 }
 
 .send-btn:hover {
-  background-color: #e96d00;
+  background-color: #873300;
 }
 
 .send-btn:disabled {
-  background-color: #c9c9c9;
+  background-color: #595959;
   cursor: not-allowed;
 }
 
@@ -616,7 +763,7 @@ body {
 .message-character-count {
   align-self: flex-end;
   font-size: 11px;
-  color: #666;
+  color: #595959;
   margin-top: 2px;
 }
 
@@ -632,6 +779,8 @@ body {
 .message-send-status.is-error {
   color: #b02a37;
 }
+
+
 
 /* An outgoing message the server could not save, with its Retry button. */
 .message.failed .message-content p {
@@ -659,6 +808,32 @@ body {
 .message-retry-btn:disabled {
   opacity: 0.6;
   cursor: wait;
+}
+
+.offline-banner {
+  margin: 12px 20px 0;
+  padding: 10px 12px;
+  border: 1px solid #8a4b00;
+  border-radius: 4px;
+  background: #fff4e5;
+  color: #5c3100;
+  font-size: 14px;
+}
+
+.message-state {
+  display: block;
+  margin-top: 4px;
+  color: #595959;
+  font-size: 12px;
+}
+
+.message.failed .message-state {
+  color: #8b1e2d;
+}
+
+.message-retry-btn:focus-visible {
+  outline: 3px solid var(--cf-navy);
+  outline-offset: 2px;
 }
 
 /* Booking details page (pages/booking-details.html) — vehicle-guidance is

@@ -207,6 +207,11 @@ paymentFormEl.addEventListener('submit', async (event) => {
   try {
     const { data: booking } = await createBooking(bookingToSend());
     document.getElementById('paymentBookingCode').textContent = booking.code;
+    // The booking's conversation and tracking page use the server's code.
+    document.getElementById('paymentMessagesLink').href =
+      `messages.html?conversation=${encodeURIComponent(booking.code)}`;
+    document.getElementById('paymentTrackingLink').href =
+      `trackshipment.html?code=${encodeURIComponent(booking.code)}`;
     document.getElementById('paymentSuccess').hidden = false;
   } catch (error) {
     // A 400 means the booking itself is wrong (e.g. the pickup time passed
