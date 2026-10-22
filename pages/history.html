@@ -139,7 +139,7 @@
             <p class="text-muted small mb-0" id="history-count" aria-live="polite"></p>
           </div>
 
-          <div class="table-responsive">
+          <div class="history-table-wrap">
             <table class="table align-middle mb-0 history-table">
               <colgroup>
                 <col class="history-col-tracking" />
@@ -148,7 +148,6 @@
                 <col class="history-col-payment" />
                 <col class="history-col-share" />
                 <col class="history-col-status" />
-                <col class="history-col-details" />
                 <col class="history-col-messages" />
               </colgroup>
               <thead>
@@ -157,9 +156,8 @@
                   <th scope="col">Route</th>
                   <th scope="col">Pickup date</th>
                   <th scope="col">Payment</th>
-                  <th scope="col" class="text-end">Your share</th>
+                  <th scope="col">Your share</th>
                   <th scope="col">Status</th>
-                  <th scope="col">Details</th>
                   <th scope="col">Messages</th>
                 </tr>
               </thead>
@@ -173,11 +171,6 @@
           </p>
         </div>
       </section>
-
-      <p class="text-muted small mt-3 mb-0">
-        Bookings you complete on this device appear here automatically with the status
-        <strong>Booking placed</strong>. Sample past shipments are included for demonstration.
-      </p>
     </main>
 
     <footer class="border-top py-4 text-center text-muted small">

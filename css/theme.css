@@ -193,49 +193,198 @@ body {
 }
 
 .history-table {
-  min-width: 1000px;
+  min-width: 0;
+  width: 100%;
   table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0 0.65rem;
 }
 
-.history-col-tracking { width: 12%; }
+.history-col-tracking { width: 15%; }
 .history-col-route { width: 19%; }
-.history-col-date { width: 11%; }
-.history-col-payment { width: 16%; }
-.history-col-share { width: 8%; }
-.history-col-status { width: 9%; }
-.history-col-details { width: 13%; }
-.history-col-messages { width: 12%; }
+.history-col-date { width: 14%; }
+.history-col-payment { width: 18%; }
+.history-col-share { width: 12%; }
+.history-col-status { width: 12%; }
+.history-col-messages { width: 10%; }
+
+.history-table-wrap {
+  width: 100%;
+}
 
 .history-table th,
 .history-table td {
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  padding: 0.9rem 0.55rem;
+  text-align: center;
+  white-space: nowrap;
 }
 
-.history-table details summary {
+.history-table thead th {
+  background: #f4f7fb;
+  border-bottom: 2px solid #d8e0eb;
   color: var(--cf-navy);
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.history-table tbody td {
+  background-color: #f7f9fc;
+  border: 0;
+  box-shadow: none;
+  padding-bottom: 1.1rem;
+  padding-top: 1.1rem;
+}
+
+.history-table tbody td:first-child {
+  border-radius: 0.4rem 0 0 0.4rem;
+}
+
+.history-table tbody td:last-child {
+  border-radius: 0 0.4rem 0.4rem 0;
+}
+
+.history-booking-row {
   cursor: pointer;
-  font-weight: 600;
-  padding: 0.35rem 0;
-  text-decoration: underline;
-  text-decoration-color: rgba(11, 61, 145, 0.35);
-  text-underline-offset: 3px;
 }
 
-.history-table details[open] summary {
-  color: #9a4b00;
-  text-decoration-color: currentColor;
+.history-message-link {
+  align-items: center;
+  background: #eef4ff;
+  border-radius: 0.45rem;
+  color: var(--cf-navy);
+  display: inline-flex;
+  justify-content: center;
+  padding: 0.45rem;
+  transition: background-color 150ms ease, color 150ms ease;
 }
 
-.history-table details p {
+.history-message-link:hover {
+  background: #dce8fb;
+  color: #082d6b;
+}
+
+.history-message-link:focus-visible {
+  outline: 3px solid var(--cf-orange);
+  outline-offset: 2px;
+}
+
+.history-message-link svg {
+  fill: none;
+  height: 1.35rem;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  width: 1.35rem;
+}
+
+.history-booking-row:focus-visible {
+  outline: 3px solid var(--cf-orange);
+  outline-offset: 2px;
+}
+
+.history-booking-row[aria-expanded="true"] > * {
+  background-color: #eaf1ff;
+  box-shadow: inset 0 2px 0 #c6d8f5, inset 0 -2px 0 #c6d8f5;
+}
+
+.history-booking-row[aria-expanded="true"] > :first-child {
+  border-left: 4px solid var(--cf-orange);
+  border-radius: 0.4rem 0 0 0.4rem;
+}
+
+.history-booking-row[aria-expanded="true"] > :last-child {
+  border-radius: 0 0.4rem 0.4rem 0;
+}
+
+.history-table tbody tr:hover > * {
+  background-color: #eef4ff;
+}
+
+.history-table tbody tr.history-booking-row[aria-expanded="true"] > * {
+  background-color: #eaf1ff;
+}
+
+.history-table .history-details-row > td {
+  background: transparent;
+  padding: 0 0.5rem 0.5rem;
+  white-space: normal;
+}
+
+.history-details-panel {
   background: #f8f7f4;
   border-left: 3px solid var(--cf-orange);
   border-radius: 0.25rem;
   color: #343a40;
   font-size: 0.875rem;
   line-height: 1.5;
-  margin: 0.5rem 0 0;
   overflow-wrap: anywhere;
-  padding: 0.65rem 0.75rem;
+  padding: 1rem 1.1rem;
+}
+
+@media (max-width: 991.98px) {
+  .history-table,
+  .history-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .history-table thead {
+    display: none;
+  }
+
+  .history-table tbody {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .history-table tbody tr[hidden] {
+    display: none !important;
+  }
+
+  .history-table .history-booking-row {
+    display: block;
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .history-table .history-booking-row > td {
+    align-items: start;
+    border-radius: 0;
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: minmax(6.25rem, 35%) minmax(0, 1fr);
+    padding: 0.7rem 0.85rem;
+    text-align: left !important;
+    white-space: normal;
+  }
+
+  .history-table .history-booking-row > td::before {
+    color: #536173;
+    content: attr(data-label);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .history-table .history-booking-row > td:first-child {
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+
+  .history-table .history-booking-row > td:last-child {
+    border-radius: 0 0 0.5rem 0.5rem;
+  }
+
+  .history-table .history-details-row {
+    display: block;
+    margin-top: -0.45rem;
+  }
+
+  .history-table .history-details-row > td {
+    display: block;
+    padding: 0;
+  }
 }
 
 /* The "Get a price" card floats on the boundary between the navy hero and
