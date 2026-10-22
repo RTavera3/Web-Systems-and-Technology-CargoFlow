@@ -1,35 +1,39 @@
 /**
  * Homepage mini shipment lookup ("Track your shipment" section).
  *
- * This is a lightweight, hardcoded lookup separate from the full
- * pages/trackshipment.html experience (see js/trackshipment.js). It exists
- * so a visitor can get a quick status without leaving the homepage.
- *
- * No backend: results come from the `shipments` map below. There is no
- * connection to the real bookings saved by js/payment.js into
- * localStorage - that integration only lives on the full Track Shipment
- * page.
+ * A quick status check without leaving the homepage. It asks the same
+ * Express route as the full Track Shipment page (GET /api/shipments/:code
+ * through js/api.js), so it finds the demo shipment and every saved
+ * booking. pages/trackshipment.html shows the whole timeline.
  */
 
-/**
- * Sample tracking codes and their canned status text, used only by this
- * homepage widget.
- * @type {Record<string, string>}
- */
-const shipments = {
-  "CF-10492": "In transit, expected in Cebu on Sep 20",
-  "CF-10501": "Delivered on Sep 15",
-  "CF-10333": "Picked up, awaiting carrier match",
-};
+import { getShipment } from './api.js';
+
+/** @type {HTMLFormElement} The mini tracking form. */
+const trackForm = document.querySelector('.track-search');
+/** @type {HTMLElement} Where the result is shown. */
+const trackResult = document.getElementById('track-result');
 
 /**
- * Handles the mini tracking form's submit event: looks up the entered
- * code (case-insensitive) in `shipments` and shows the result inline.
+ * Looks the entered code up and shows its route, status and ETA inline.
+ * textContent, not innerHTML, so booking data can't inject HTML.
  */
-document.querySelector(".track-search").addEventListener("submit", (event) => {
+trackForm.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const code = event.target.code.value.trim().toUpperCase();
-  const result = document.getElementById("track-result");
-  result.textContent = shipments[code] || "No shipment found for that code.";
-  result.hidden = false;
+  const code = trackForm.code.value.trim().toUpperCase();
+  trackResult.hidden = false;
+  if (!code) {
+    trackResult.textContent = 'Enter a tracking code, e.g. CF-24810293.';
+    return;
+  }
+
+  trackResult.textContent = 'Looking up your shipment...';
+  try {
+    const shipment = await getShipment(code);
+    trackResult.textContent = `${shipment.route}: ${shipment.status}. ETA ${shipment.eta}.`;
+  } catch (error) {
+    trackResult.textContent = error.status
+      ? error.message
+      : 'Tracking is unavailable right now. Please try again.';
+  }
 });

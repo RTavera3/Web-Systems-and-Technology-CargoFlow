@@ -1,8 +1,7 @@
 /**
  * Payment page.
  *
- * There is no backend and no session/database, so this page is entirely
- * driven by the URL's query string, which booking-details.html's form
+ * This page is driven by the URL's query string, which booking-details.html's form
  * (method="get") populates when the booking wizard is submitted - see
  * js/booking-details.js. This script:
  *
@@ -11,12 +10,13 @@
  *   2. Shows/hides the GCash vs. card detail fields based on the chosen
  *      payment method, and enables only the relevant ones (so a hidden
  *      field's `required` attribute never blocks submission).
- *   3. On successful "payment", generates a booking reference code and
- *      saves the booking through js/storage.js so pages/trackshipment.html
- *      and pages/history.html can show it later.
+ *   3. On successful "payment", sends the booking to the Express server
+ *      (POST /api/bookings through js/api.js). The server checks it, makes
+ *      the tracking code and saves it in data/bookings.json, so
+ *      pages/trackshipment.html and pages/history.html can show it later.
  */
 
-import { findBooking, getProfile, saveBooking } from './storage.js';
+import { createBooking, getProfile } from './api.js';
 
 /** Parses the booking details carried over in the URL's query string. */
 const paymentParams = new URLSearchParams(window.location.search);
@@ -50,7 +50,6 @@ const bookingIsComplete = requiredBookingDetails.every(
  * @returns {string} The param's value, or "Not provided" if absent.
  */
 const paymentValue = (name) => paymentParams.get(name) || 'Not provided';
-const optionalPaymentValue = (name) => paymentParams.get(name)?.trim() || null;
 
 /**
  * Sets an element's displayed text to a query param's value (or the
@@ -151,108 +150,80 @@ const updatePaymentFields = () => {
   document.getElementById('cashPaymentNote').hidden = paymentMethod.value !== 'Cash on pickup';
 };
 
-// Start on the preferred payment method from the account profile, if any.
-const { preferredPayment } = getProfile();
-if (preferredPayment && [...paymentMethod.options].some((option) => option.value === preferredPayment)) {
-  paymentMethod.value = preferredPayment;
-}
-
 paymentMethod.addEventListener('change', updatePaymentFields);
 updatePaymentFields(); // Apply once for whichever method is pre-selected on load.
 
-// --- Booking confirmation: generate a code and save the booking ---
+// Start on the preferred payment method from the account profile, if any.
+// If the profile can't be loaded, the page keeps its default method.
+getProfile()
+  .then(({ preferredPayment }) => {
+    if (preferredPayment && [...paymentMethod.options].some((option) => option.value === preferredPayment)) {
+      paymentMethod.value = preferredPayment;
+      updatePaymentFields();
+    }
+  })
+  .catch((error) => console.warn('Account profile could not be loaded.', error));
 
-/**
- * Generates a booking reference code in the same "CF-########" shape as
- * the site's one hardcoded sample tracking number, using 8 random digits.
- * Not guaranteed unique against past bookings, but collisions are
- * astronomically unlikely for a class-project demo (1 in 100 million).
- * @returns {string} e.g. "CF-04829371"
- */
-const generateBookingCode = () => {
-  let code;
-  do {
-    const digits = String(Math.floor(Math.random() * 1e8)).padStart(8, '0');
-    code = `CF-${digits}`;
-  } while (findBooking(code));
-  return code;
-};
+// --- Booking confirmation: save the booking on the server ---
 
-/**
- * Saves the complete booking through js/storage.js under its reference code,
- * so shipment history, tracking, and the matching message conversation all
- * refer to the same booking.
- * @param {string} code The reference code to store this booking under.
- */
-const recordBooking = (code) => {
-  return saveBooking(code, {
-    from: paymentValue('from'),
-    to: paymentValue('to'),
-    pickupDate: paymentValue('date'),
-    pickupTime: paymentValue('time'),
-    paymentMethod: paymentMethod.value,
-    weight: paymentValue('weight'),
-    cargoType: paymentValue('type'),
-    vehicleType: paymentValue('vehicleType'),
-    declaredValue: paymentValue('declaredValue'),
-    cargoDescription: paymentValue('cargoDescription'),
-    packageCount: paymentValue('packageCount'),
-    senderName: paymentValue('senderName'),
-    senderContact: paymentValue('senderContact'),
-    senderUserId: optionalPaymentValue('senderUserId'),
-    pickupAddress: paymentValue('pickupAddress'),
-    pickupCity: paymentValue('pickupCity'),
-    pickupProvince: paymentValue('pickupProvince'),
-    pickupZip: paymentValue('pickupZip'),
-    receiverName: paymentValue('receiverName'),
-    receiverContact: paymentValue('receiverContact'),
-    receiverUserId: optionalPaymentValue('receiverUserId'),
-    dropoffAddress: paymentValue('dropoffAddress'),
-    dropoffCity: paymentValue('dropoffCity'),
-    dropoffProvince: paymentValue('dropoffProvince'),
-    dropoffZip: paymentValue('dropoffZip'),
-    customerName: paymentValue('customerName'),
-    customerContact: paymentValue('customerContact'),
-    customerAddress: paymentValue('customerAddress'),
-    customerCity: paymentValue('customerCity'),
-    customerProvince: paymentValue('customerProvince'),
-    customerZip: paymentValue('customerZip'),
-    specialInstructions: optionalPaymentValue('specialInstructions'),
-    fragile: paymentParams.has('fragile'),
-    loading: paymentParams.has('loading'),
-    status: 'Booking Placed',
-  });
-};
+/** @type {HTMLElement} Shows why the server turned the booking down. */
+const paymentErrorEl = document.getElementById('paymentError');
 
 /** @type {HTMLFormElement} The payment method + detail fields form. */
 const paymentFormEl = document.getElementById('paymentForm');
 
 /**
- * Handles the payment form's submit event. There is no real payment
- * processor, so a "successful" submission just means every visible,
- * required field passed validation - at that point we generate a booking
- * code, persist it, display it, and show the success message.
+ * The booking sent to POST /api/bookings: the booking details from the URL
+ * and the payment METHOD. Card numbers and GCash details are never sent.
+ * The server keeps only the booking form's fields (lib/bookings.js).
+ *
+ * Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries
+ * @returns {Object}
  */
-paymentFormEl.addEventListener('submit', (event) => {
+function bookingToSend() {
+  const booking = Object.fromEntries(paymentParams);
+  booking.paymentMethod = paymentMethod.value;
+  return booking;
+}
+
+/**
+ * Handles the payment form's submit event. There is no real payment
+ * processor, so a "successful" payment means every visible, required field
+ * passed validation. The booking is then saved on the server, and the code
+ * the server created is shown to the user.
+ */
+paymentFormEl.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!paymentFormEl.checkValidity()) {
     paymentFormEl.classList.add('was-validated');
     return;
   }
-  const bookingCode = generateBookingCode();
-  if (!recordBooking(bookingCode)) {
+
+  // Disable the button so a double-click doesn't create two bookings.
+  const submitButton = paymentFormEl.querySelector('button[type="submit"]');
+  submitButton.disabled = true;
+  paymentErrorEl.hidden = true;
+
+  try {
+    const { data: booking } = await createBooking(bookingToSend());
+    document.getElementById('paymentBookingCode').textContent = booking.code;
+    // The booking's conversation and tracking page use the server's code.
+    document.getElementById('paymentMessagesLink').href =
+      `messages.html?conversation=${encodeURIComponent(booking.code)}`;
+    document.getElementById('paymentTrackingLink').href =
+      `trackshipment.html?code=${encodeURIComponent(booking.code)}`;
     document.getElementById('paymentSuccess').hidden = false;
-    document.getElementById('paymentSuccess').classList.remove('alert-success');
-    document.getElementById('paymentSuccess').classList.add('alert-danger');
-    document.getElementById('paymentSuccess').textContent =
-      'Unable to save this booking in this browser. Please try again.';
-    return;
+  } catch (error) {
+    // A 400 means the booking itself is wrong (e.g. the pickup time passed
+    // while this page was open): show the server's reason. Without a status
+    // the server couldn't be reached.
+    console.error('Error saving booking:', error);
+    paymentErrorEl.textContent = error.status === 400
+      ? `${error.message} Go back to the booking details to fix it.`
+      : error.status === undefined
+        ? 'Could not reach the server. Please make sure it is running and try again.'
+        : 'Could not save the booking. Please try again.';
+    paymentErrorEl.hidden = false;
+    submitButton.disabled = false;
   }
-  document.getElementById('paymentBookingCode').textContent = bookingCode;
-  const messagesLink = document.getElementById('paymentMessagesLink');
-  messagesLink.href = `messages.html?conversation=${encodeURIComponent(bookingCode)}`;
-  document.getElementById('paymentTrackingLink').href =
-    `trackshipment.html?code=${encodeURIComponent(bookingCode)}`;
-  document.querySelector('#paymentForm button[type="submit"]').disabled = true;
-  document.getElementById('paymentSuccess').hidden = false;
 });

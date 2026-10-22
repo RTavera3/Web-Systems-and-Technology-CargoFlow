@@ -16,6 +16,9 @@
  * but layer their own `submit` listener with `event.preventDefault()` and
  * a `form.checkValidity()` check on top - see js/contact.js, js/payment.js,
  * and js/booking-details.js.
+ *
+ * Loaded as an ES module (<script type="module">) like every other script;
+ * it imports and exports nothing.
  */
 document.querySelectorAll('form.needs-validation').forEach((form) => {
   form.addEventListener('submit', (event) => {

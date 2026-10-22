@@ -102,16 +102,18 @@
       <section class="card cf-card mb-4" aria-label="Filter shipments">
         <div class="card-body p-4">
           <div class="row g-3 align-items-end">
-            <div class="col-lg-5">
+            <div class="col-12">
               <p class="form-label fw-semibold mb-2" id="status-filter-label">Status</p>
               <div class="btn-group flex-wrap" role="group" aria-labelledby="status-filter-label" id="status-filter">
                 <button type="button" class="btn btn-outline-secondary active" data-status="all" aria-pressed="true">All</button>
                 <button type="button" class="btn btn-outline-secondary" data-status="Booking Placed" aria-pressed="false">Booking placed</button>
+                <button type="button" class="btn btn-outline-secondary" data-status="Picked Up" aria-pressed="false">Picked up</button>
                 <button type="button" class="btn btn-outline-secondary" data-status="In Transit" aria-pressed="false">In transit</button>
+                <button type="button" class="btn btn-outline-secondary" data-status="Out for Delivery" aria-pressed="false">Out for delivery</button>
                 <button type="button" class="btn btn-outline-secondary" data-status="Delivered" aria-pressed="false">Delivered</button>
               </div>
             </div>
-            <div class="col-md-7 col-lg-4">
+            <div class="col-md-7 col-lg-8">
               <label class="form-label fw-semibold" for="history-search">Search</label>
               <input
                 type="search"
@@ -120,7 +122,7 @@
                 placeholder="Tracking number or city, e.g. Cebu"
               />
             </div>
-            <div class="col-md-5 col-lg-3">
+            <div class="col-md-5 col-lg-4">
               <label class="form-label fw-semibold" for="history-sort">Sort by</label>
               <select id="history-sort" class="form-select">
                 <option value="newest" selected>Pickup date: newest first</option>

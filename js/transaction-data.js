@@ -1,4 +1,4 @@
-import { listBookings } from './storage.js';
+import { listBookings } from './api.js';
 
 /**
  * Shared demo records used by the transaction history, profile summary,
@@ -56,25 +56,40 @@ export const SAMPLE_TRANSACTIONS = [
   },
 ];
 
-function normalizeBooking(code, booking) {
+/**
+ * One booking from the server (GET /api/bookings, summary fields only) as a
+ * transaction record. The server saves no price, so `cost` is null.
+ */
+function normalizeBooking(booking) {
   return {
-    code,
+    code: booking.code,
     from: booking.from,
     to: booking.to,
-    pickupDate: booking.pickupDate,
+    pickupDate: booking.date,
     payment: booking.paymentMethod?.trim() || 'Not provided',
     cost: null,
-    status: 'Booking Placed',
+    status: booking.status || 'Booking Placed',
     trackable: true,
     eta: null,
     carrier: 'Carrier match pending',
+    createdAt: booking.createdAt,
     booking,
   };
 }
 
-/** Returns saved bookings and demo records once each, with saved data taking precedence. */
-export function getTransactionRecords() {
-  const savedBookings = listBookings().map(({ code, ...booking }) => normalizeBooking(code, booking));
+/**
+ * Saved bookings from the server and the demo records, once each, with saved
+ * data taking precedence. If the server can't be reached, only the demo
+ * records are returned so the pages still work.
+ * @returns {Promise<object[]>}
+ */
+export async function getTransactionRecords() {
+  let savedBookings = [];
+  try {
+    savedBookings = (await listBookings()).map(normalizeBooking);
+  } catch (error) {
+    console.error('Error loading bookings:', error);
+  }
   const savedCodes = new Set(savedBookings.map(({ code }) => code));
   return [
     ...savedBookings,
