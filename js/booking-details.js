@@ -235,21 +235,6 @@ setProvinceFromCity('dropoffCitySelect', 'dropoffProvinceSelect', 'dropoffProvin
 // --- Step 2: Sender/Receiver User ID auto-fill ---
 
 /**
- * Adds `value` as a new <option> to `select` if it isn't already one of
- * its options (matched by value or visible text), then selects it. Used
- * so a looked-up user's city (e.g. "Batangas City") can be selected even
- * if the address card's <select> only lists the shorter city names.
- * @param {HTMLSelectElement} select
- * @param {string} value
- */
-const addSelectOption = (select, value) => {
-  if (!value) return;
-  const existingOption = [...select.options].find((option) => option.value === value || option.textContent === value);
-  if (!existingOption) select.add(new Option(value, value));
-  select.value = value;
-};
-
-/**
  * Applies a looked-up user's saved details to one address card (sender or
  * receiver), and reflects whether the lookup succeeded via a custom
  * validity message + status text + `.is-error`/`.user-id-invalid` styling
@@ -282,14 +267,10 @@ const fillUserDetails = (userIdFieldId, statusId, fieldIds, user) => {
   document.getElementById(fieldIds.contact).value = user.contactNumber;
   document.getElementById(fieldIds.address).value = user.streetAddress;
   document.getElementById(fieldIds.zip).value = user.zipCode;
-  addSelectOption(document.getElementById(fieldIds.citySelect), user.city);
-  addSelectOption(document.getElementById(fieldIds.provinceSelect), user.province);
-  document.getElementById(fieldIds.cityInput).value = user.city;
-  document.getElementById(fieldIds.provinceInput).value = user.province;
-  // Also push the city back onto step 1's route select, so a user looked
-  // up in step 2 keeps the whole form's route in agreement.
-  addSelectOption(document.getElementById(fieldIds.routeSelect), user.city);
-  document.getElementById(fieldIds.routeSelect).value = user.city;
+  // The selected route, not a user's saved home city, controls each address
+  // card's city and province.
+  syncAddressCity(fieldIds.routeSelect, fieldIds.citySelect, fieldIds.cityInput);
+  setProvinceFromCity(fieldIds.citySelect, fieldIds.provinceSelect, fieldIds.provinceInput);
 };
 
 /** Shows "User records could not be loaded." next to both User ID fields. */
