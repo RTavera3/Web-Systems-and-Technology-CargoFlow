@@ -471,6 +471,15 @@ const bookingSteps = [...document.querySelectorAll('.booking-step')];
 const stepIndicators = [...document.querySelectorAll('[data-step-indicator]')];
 /** @type {number} 1-indexed number of the currently visible step. */
 let activeStep = 1;
+const bookingBackButton = document.getElementById('bookingBackButton');
+
+if (document.referrer) {
+  const previousPage = new URL(document.referrer);
+  if (previousPage.origin === window.location.origin
+    && previousPage.pathname !== window.location.pathname) {
+    bookingBackButton.href = previousPage.href;
+  }
+}
 
 // Remember which controls started out disabled (the address cards' city
 // <select>s are always disabled, kept in sync via JS instead of being
@@ -492,6 +501,12 @@ bookingSteps.forEach((step) => {
  */
 const setActiveStep = (stepNumber) => {
   activeStep = stepNumber;
+  bookingBackButton.setAttribute(
+    'aria-label',
+    activeStep > 1
+      ? `Go back to ${stepIndicators[activeStep - 2].textContent.trim()}`
+      : 'Go back to the previous page',
+  );
   bookingSteps.forEach((step) => {
     const isActive = Number(step.dataset.step) === activeStep;
     step.hidden = !isActive;
@@ -503,6 +518,13 @@ const setActiveStep = (stepNumber) => {
   });
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
+
+bookingBackButton.addEventListener('click', (event) => {
+  if (activeStep > 1) {
+    event.preventDefault();
+    setActiveStep(activeStep - 1);
+  }
+});
 
 /**
  * Checks every input/select/textarea within the currently active step

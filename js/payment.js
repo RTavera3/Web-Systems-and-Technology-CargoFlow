@@ -20,6 +20,8 @@ import { createBooking, getProfile } from './api.js';
 
 /** Parses the booking details carried over in the URL's query string. */
 const paymentParams = new URLSearchParams(window.location.search);
+document.getElementById('editBookingDetails').href =
+  `booking-details.html${window.location.search}`;
 
 /**
  * Every field booking-details.html's form is expected to submit. If any
