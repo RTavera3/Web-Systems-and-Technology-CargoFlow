@@ -117,10 +117,17 @@ function compareByDate(a, b, order) {
  * `innerHTML`, because city names come from what the user typed in the
  * booking form - this keeps any HTML they typed from running on the page.
  * @param {Shipment} shipment
- * @returns {HTMLTableRowElement}
+ * @param {number} index
+ * @returns {HTMLTableRowElement[]}
  */
-function buildRow(shipment) {
+function buildRow(shipment, index) {
   const row = document.createElement("tr");
+  const detailsId = `history-details-${index}`;
+  row.tabIndex = 0;
+  row.setAttribute("aria-expanded", "false");
+  row.setAttribute("aria-controls", detailsId);
+  row.setAttribute("aria-label", `Shipment ${shipment.code}; select to view booking details`);
+  row.className = "history-booking-row";
 
   // Tracking ID: a link to the Track Shipment page when that page can show
   // this code, plain bold text otherwise (older sample shipments).
@@ -137,19 +144,23 @@ function buildRow(shipment) {
     strong.textContent = shipment.code;
     codeCell.appendChild(strong);
   }
+  codeCell.dataset.label = "Tracking ID";
 
   const routeCell = document.createElement("td");
   routeCell.textContent = `${shipment.from} → ${shipment.to}`;
+  routeCell.dataset.label = "Route";
 
   const dateCell = document.createElement("td");
   dateCell.textContent = formatDate(shipment.pickupDate);
+  dateCell.dataset.label = "Pickup date";
 
   const paymentCell = document.createElement("td");
   paymentCell.textContent = shipment.payment;
+  paymentCell.dataset.label = "Payment";
 
   const costCell = document.createElement("td");
-  costCell.className = "text-end";
   costCell.textContent = formatPeso(shipment.cost);
+  costCell.dataset.label = "Your share";
   if (shipment.cost === null) {
     costCell.title = "Price not saved for this booking";
   }
@@ -159,12 +170,21 @@ function buildRow(shipment) {
   badge.className = `badge ${statusBadgeClass[shipment.status]}`;
   badge.textContent = shipment.status;
   statusCell.appendChild(badge);
+  statusCell.dataset.label = "Status";
 
+  const detailsRow = document.createElement("tr");
+  detailsRow.className = "history-details-row";
+  detailsRow.id = detailsId;
+  detailsRow.hidden = true;
   const detailsCell = document.createElement("td");
-  const details = document.createElement("details");
-  const detailsSummary = document.createElement("summary");
+  detailsCell.colSpan = 7;
+  const detailsPanel = document.createElement("div");
+  detailsPanel.className = "history-details-panel";
+  const detailsHeading = document.createElement("h3");
+  detailsHeading.className = "h6 fw-bold mb-2";
+  detailsHeading.textContent = "Booking details";
   const detailsText = document.createElement("p");
-  detailsSummary.textContent = "View details";
+  detailsText.className = "mb-0";
   const booking = shipment.booking;
   detailsText.textContent = booking
     ? [
@@ -190,20 +210,59 @@ function buildRow(shipment) {
         booking.loading && "Help loading requested",
       ].filter(Boolean).join(" · ") || "No additional booking details."
     : "Sample shipment; no extra booking details available.";
-  details.append(detailsSummary, detailsText);
-  detailsCell.appendChild(details);
+  detailsPanel.append(detailsHeading, detailsText);
+  detailsCell.appendChild(detailsPanel);
+  detailsRow.appendChild(detailsCell);
 
   const messagesCell = document.createElement("td");
   const messagesLink = document.createElement("a");
   messagesLink.href = `messages.html?conversation=${encodeURIComponent(shipment.code)}`;
-  messagesLink.className = "fw-semibold";
-  messagesLink.textContent = "Open messages";
+  messagesLink.className = "history-message-link";
   messagesLink.setAttribute("aria-label", `Open messages for ${shipment.code}`);
+  messagesLink.title = "Open messages";
+  const messageIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  messageIcon.setAttribute("viewBox", "0 0 24 24");
+  messageIcon.setAttribute("aria-hidden", "true");
+  messageIcon.setAttribute("focusable", "false");
+  const messageBubble = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  messageBubble.setAttribute("d", "M5 5.5A2.5 2.5 0 0 1 7.5 3h9A2.5 2.5 0 0 1 19 5.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-5 4v-4.5a2.5 2.5 0 0 1 0-2Z");
+  const messageLines = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  messageLines.setAttribute("d", "M8 8h8M8 11.5h5");
+  messageIcon.append(messageBubble, messageLines);
+  messagesLink.appendChild(messageIcon);
   messagesCell.appendChild(messagesLink);
+  messagesCell.dataset.label = "Messages";
 
-  row.append(codeCell, routeCell, dateCell, paymentCell, costCell, statusCell, detailsCell, messagesCell);
-  return row;
+  row.append(codeCell, routeCell, dateCell, paymentCell, costCell, statusCell, messagesCell);
+  return [row, detailsRow];
 }
+
+function toggleBookingDetails(row) {
+  const isExpanded = row.getAttribute("aria-expanded") === "true";
+  rowsEl.querySelectorAll(".history-booking-row[aria-expanded='true']").forEach((expandedRow) => {
+    expandedRow.setAttribute("aria-expanded", "false");
+    expandedRow.nextElementSibling.hidden = true;
+  });
+
+  if (!isExpanded) {
+    row.setAttribute("aria-expanded", "true");
+    row.nextElementSibling.hidden = false;
+  }
+}
+
+rowsEl.addEventListener("click", (event) => {
+  const row = event.target.closest(".history-booking-row");
+  if (!row || event.target.closest("a, button")) return;
+  toggleBookingDetails(row);
+});
+
+rowsEl.addEventListener("keydown", (event) => {
+  const row = event.target.closest(".history-booking-row");
+  if (!row || event.target.closest("a, button")) return;
+  if (event.key !== "Enter" && event.key !== " ") return;
+  event.preventDefault();
+  toggleBookingDetails(row);
+});
 
 /**
  * Applies the status filter, the search text and the sort order, then
@@ -224,7 +283,7 @@ function render() {
     )
     .sort((a, b) => compareByDate(a, b, sortEl.value));
 
-  rowsEl.replaceChildren(...visible.map(buildRow));
+  rowsEl.replaceChildren(...visible.flatMap(buildRow));
   emptyEl.hidden = visible.length > 0;
   countEl.textContent = `Showing ${visible.length} of ${allShipments.length} shipment${allShipments.length === 1 ? "" : "s"}`;
 }

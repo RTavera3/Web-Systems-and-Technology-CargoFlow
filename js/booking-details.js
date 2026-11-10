@@ -265,6 +265,20 @@ if (bookingParams.has('dropoffCity') || bookingParams.has('dropoffProvince')) {
 // --- Step 2: Sender/Receiver User ID auto-fill ---
 
 /**
+ * True when the user lives in the city already chosen for this leg of the
+ * route (compared by province, so "Cebu" matches "Cebu City"), or when no
+ * city has been chosen yet.
+ * @param {{ city: string, province: string }} user
+ * @param {string} routeSelectId Id of step 1's from/to <select>.
+ */
+const livesOnRoute = (user, routeSelectId) => {
+  const routeCity = document.getElementById(routeSelectId).value;
+  if (!routeCity) return true;
+  const routeProvince = cityProvinceMap[routeCity];
+  return routeProvince ? routeProvince === user.province : routeCity === user.city;
+};
+
+/**
  * Applies a saved profile to one address card when available. Unknown IDs
  * remain valid for manually entered sender/receiver details.
  *
@@ -272,7 +286,7 @@ if (bookingParams.has('dropoffCity') || bookingParams.has('dropoffProvince')) {
  * @param {string} statusId Id of the small status text element next to it.
  * @param {{
  *   name: string, contact: string, address: string, zip: string,
- *   city: string, province: string,
+ *   city: string, province: string, routeSelect: string,
  * }} fieldIds Ids of every field this user's details should fill in.
  * @param {{
  *   name: string, contactNumber: string, streetAddress: string,
@@ -286,6 +300,7 @@ const fillUserDetails = (userIdFieldId, statusId, fieldIds, user) => {
   const userIdField = document.getElementById(userIdFieldId);
   const status = document.getElementById(statusId);
   userIdField.setCustomValidity('');
+  userIdField.classList.remove('user-id-invalid');
   status.textContent = user
     ? `Details loaded for ${user.name}.`
     : userIdField.value.trim() ? 'No saved profile found. Enter details manually.' : '';
@@ -315,6 +330,19 @@ const fillUserDetails = (userIdFieldId, statusId, fieldIds, user) => {
     return;
   }
 
+  if (!livesOnRoute(user, fieldIds.routeSelect)) {
+    const routeCity = document.getElementById(fieldIds.routeSelect).value;
+    const leg = fieldIds.routeSelect === 'detailFrom' ? 'pick-up' : 'drop-off';
+    const message = `${user.name} is in ${user.city}, but the ${leg} city is ${routeCity}. `
+      + `Enter a User ID from ${routeCity}, or change the ${leg} city in step 1.`;
+    userIdField.setCustomValidity(message);
+    userIdField.classList.add('user-id-invalid');
+    status.textContent = message;
+    status.classList.add('is-error');
+    return;
+  }
+
+  userIdField.classList.remove('user-id-invalid');
   addressLocationOverrides.add(userIdFieldId);
   lastLoadedUsers.set(userIdFieldId, user);
   const userFields = [
@@ -336,6 +364,20 @@ const fillUserDetails = (userIdFieldId, statusId, fieldIds, user) => {
     && !manuallyEditedAddressFields.has(fieldIds.province)) {
     document.getElementById(fieldIds.province).value = user.province;
   }
+};
+
+/**
+ * Finds a user who lives in the city chosen for this leg of the route.
+ * @param {{ userId: string }[]} users Every user from GET /api/users.
+ * @param {string} routeSelectId Id of step 1's from/to <select>.
+ * @returns {Promise<object|undefined>} The first matching user's details.
+ */
+const findUserOnRoute = async (users, routeSelectId) => {
+  for (const { userId } of users) {
+    const user = await getUser(userId).catch(() => undefined);
+    if (user && livesOnRoute(user, routeSelectId)) return user;
+  }
+  return undefined;
 };
 
 /** Shows "User records could not be loaded." next to both User ID fields. */
@@ -367,7 +409,7 @@ listUsers()
         status: 'senderUserIdStatus',
         fields: {
           name: 'senderName', contact: 'senderContact', address: 'pickupAddress', zip: 'pickupZip',
-          city: 'pickupCity', province: 'pickupProvince',
+          city: 'pickupCity', province: 'pickupProvince', routeSelect: 'detailFrom',
         },
       },
       {
@@ -375,7 +417,7 @@ listUsers()
         status: 'receiverUserIdStatus',
         fields: {
           name: 'receiverName', contact: 'receiverContact', address: 'dropoffAddress', zip: 'dropoffZip',
-          city: 'dropoffCity', province: 'dropoffProvince',
+          city: 'dropoffCity', province: 'dropoffProvince', routeSelect: 'detailTo',
         },
       },
     ];
@@ -394,9 +436,20 @@ listUsers()
           return;
         }
         try {
-          const user = await getUser(value);
+          let user = await getUser(value);
           // Ignore the answer if the field changed while it was loading.
-          if (input.value === value) fillUserDetails(userId, status, fields, user);
+          if (input.value !== value) return;
+          // The HTML's sample ID lives in one city only. When it doesn't
+          // match the route from the homepage, use a sample user from that
+          // city instead, so the no-typing demo works for every route.
+          if (input.value === input.defaultValue && !livesOnRoute(user, fields.routeSelect)) {
+            const onRoute = await findUserOnRoute(users, fields.routeSelect);
+            if (onRoute && input.value === value) {
+              input.value = onRoute.userId;
+              user = onRoute;
+            }
+          }
+          if (input.value === user.userId.toUpperCase()) fillUserDetails(userId, status, fields, user);
         } catch (error) {
           if (error.status === 404) fillUserDetails(userId, status, fields, undefined);
           else showUsersUnavailable();
@@ -410,6 +463,8 @@ listUsers()
         lookup();
       });
       input.addEventListener('change', lookup);
+      // A city changed in step 1 must still match this user.
+      document.getElementById(fields.routeSelect).addEventListener('change', lookup);
       // Run immediately if the field already has a value (e.g. pre-filled
       // by the HTML's demo defaults, or restored via `setValue` above).
       if (input.value) lookup();
