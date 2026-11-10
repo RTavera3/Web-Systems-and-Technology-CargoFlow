@@ -7,8 +7,8 @@
  *   1. Pre-fill step 1 (Cargo) from the URL query string the homepage
  *      quote form submitted, and keep its date/time fields valid.
  *   2. Sync each address card's city/province from the route chosen in
- *      step 1, so "Pick-up city: Manila" also sets the pickup address's
- *      city/province without the user re-selecting it.
+ *      step 1 until a user ID is selected, then use that user's saved
+ *      city/province for the address.
  *   3. Sender/Receiver "User ID" auto-fill: looks a typed ID up on the
  *      server (GET /api/users/:id) and fills in that person's saved details.
  *   4. Account owner details (step 4): filled in from the account profile
@@ -216,11 +216,15 @@ const syncAddressCity = (routeCityId, addressCitySelectId, addressCityInputId) =
   document.getElementById(addressCityInputId).value = city;
 };
 
+const userAddressSelections = new Set();
+
 document.getElementById('detailFrom').addEventListener('change', () => {
+  if (userAddressSelections.has('senderUserId')) return;
   syncAddressCity('detailFrom', 'pickupCitySelect', 'pickupCity');
   setProvinceFromCity('pickupCitySelect', 'pickupProvinceSelect', 'pickupProvince');
 });
 document.getElementById('detailTo').addEventListener('change', () => {
+  if (userAddressSelections.has('receiverUserId')) return;
   syncAddressCity('detailTo', 'dropoffCitySelect', 'dropoffCity');
   setProvinceFromCity('dropoffCitySelect', 'dropoffProvinceSelect', 'dropoffProvince');
 });
@@ -262,15 +266,21 @@ const fillUserDetails = (userIdFieldId, statusId, fieldIds, user) => {
   status.textContent = isValid ? `Details loaded for ${user.name}.` : 'User ID not found.';
   status.classList.toggle('is-error', !isValid);
 
-  if (!user) return;
+  if (!user) {
+    userAddressSelections.delete(userIdFieldId);
+    syncAddressCity(fieldIds.routeSelect, fieldIds.citySelect, fieldIds.cityInput);
+    setProvinceFromCity(fieldIds.citySelect, fieldIds.provinceSelect, fieldIds.provinceInput);
+    return;
+  }
+  userAddressSelections.add(userIdFieldId);
   document.getElementById(fieldIds.name).value = user.name;
   document.getElementById(fieldIds.contact).value = user.contactNumber;
   document.getElementById(fieldIds.address).value = user.streetAddress;
   document.getElementById(fieldIds.zip).value = user.zipCode;
-  // The selected route, not a user's saved home city, controls each address
-  // card's city and province.
-  syncAddressCity(fieldIds.routeSelect, fieldIds.citySelect, fieldIds.cityInput);
-  setProvinceFromCity(fieldIds.citySelect, fieldIds.provinceSelect, fieldIds.provinceInput);
+  document.getElementById(fieldIds.citySelect).value = user.city;
+  document.getElementById(fieldIds.cityInput).value = user.city;
+  document.getElementById(fieldIds.provinceSelect).value = user.province;
+  document.getElementById(fieldIds.provinceInput).value = user.province;
 };
 
 /** Shows "User records could not be loaded." next to both User ID fields. */
