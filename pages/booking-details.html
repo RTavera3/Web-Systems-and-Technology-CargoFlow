@@ -233,35 +233,14 @@
                   <div class="invalid-feedback">Enter the pick-up address.</div>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label" for="pickupCitySelect">City</label>
-                  <select class="form-select" id="pickupCitySelect" disabled>
-                    <option value="">Select city</option>
-                    <option>Manila</option>
-                    <option>Batangas</option>
-                    <option>Batangas City</option>
-                    <option>Baguio</option>
-                    <option>Baguio City</option>
-                    <option>Cebu</option>
-                    <option>Cebu City</option>
-                    <option>Davao</option>
-                    <option>Davao City</option>
-                    <option>Pampanga</option>
-                    <option>San Fernando</option>
-                  </select>
-                  <input type="hidden" name="pickupCity" id="pickupCity" />
+                  <label class="form-label" for="pickupCity">City</label>
+                  <input type="text" class="form-control" name="pickupCity" id="pickupCity" autocomplete="address-level2" placeholder="City" required />
+                  <div class="invalid-feedback">Enter the pick-up city.</div>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label" for="pickupProvinceSelect">Province</label>
-                  <select class="form-select" id="pickupProvinceSelect" disabled required>
-                    <option value="">Select province</option>
-                    <option>Metro Manila</option>
-                    <option>Batangas</option>
-                    <option>Benguet</option>
-                    <option>Cebu</option>
-                    <option>Davao del Sur</option>
-                    <option>Pampanga</option>
-                  </select>
-                  <input type="hidden" name="pickupProvince" id="pickupProvince" />
+                  <label class="form-label" for="pickupProvince">Province</label>
+                  <input type="text" class="form-control" name="pickupProvince" id="pickupProvince" autocomplete="address-level1" placeholder="Province" required />
+                  <div class="invalid-feedback">Enter the pick-up province.</div>
                 </div>
                 <div class="mb-0">
                   <label class="form-label" for="pickupZip">Zip code</label>
@@ -297,35 +276,14 @@
                   <div class="invalid-feedback">Enter the drop-off address.</div>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label" for="dropoffCitySelect">City</label>
-                  <select class="form-select" id="dropoffCitySelect" disabled>
-                    <option value="">Select city</option>
-                    <option>Manila</option>
-                    <option>Batangas</option>
-                    <option>Batangas City</option>
-                    <option>Baguio</option>
-                    <option>Baguio City</option>
-                    <option>Cebu</option>
-                    <option>Cebu City</option>
-                    <option>Davao</option>
-                    <option>Davao City</option>
-                    <option>Pampanga</option>
-                    <option>San Fernando</option>
-                  </select>
-                  <input type="hidden" name="dropoffCity" id="dropoffCity" />
+                  <label class="form-label" for="dropoffCity">City</label>
+                  <input type="text" class="form-control" name="dropoffCity" id="dropoffCity" autocomplete="address-level2" placeholder="City" required />
+                  <div class="invalid-feedback">Enter the drop-off city.</div>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label" for="dropoffProvinceSelect">Province</label>
-                  <select class="form-select" id="dropoffProvinceSelect" disabled required>
-                    <option value="">Select province</option>
-                    <option>Metro Manila</option>
-                    <option>Batangas</option>
-                    <option>Benguet</option>
-                    <option>Cebu</option>
-                    <option>Davao del Sur</option>
-                    <option>Pampanga</option>
-                  </select>
-                  <input type="hidden" name="dropoffProvince" id="dropoffProvince" />
+                  <label class="form-label" for="dropoffProvince">Province</label>
+                  <input type="text" class="form-control" name="dropoffProvince" id="dropoffProvince" autocomplete="address-level1" placeholder="Province" required />
+                  <div class="invalid-feedback">Enter the drop-off province.</div>
                 </div>
                 <div class="mb-0">
                   <label class="form-label" for="dropoffZip">Zip code</label>

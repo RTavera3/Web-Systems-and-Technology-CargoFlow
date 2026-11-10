@@ -115,10 +115,7 @@ const limitTimeForSelectedDate = () => {
 };
 
 /**
- * Maps a city name to its province, used to auto-fill the Province field
- * whenever a City is chosen (in step 1's route or a step-2 address card).
- * Covers both the short city names used in the <select> options and the
- * "___ City" variants that come back from GET /api/users/:id.
+ * Maps the route cities to their provinces for address-field defaults.
  * @type {Record<string, string>}
  */
 const cityProvinceMap = {
@@ -176,111 +173,169 @@ setValue('receiverUserId', 'receiverUserId');
 setValue('senderName', 'senderName');
 setValue('senderContact', 'senderContact');
 setValue('pickupAddress', 'pickupAddress');
+setValue('pickupCity', 'pickupCity');
+setValue('pickupProvince', 'pickupProvince');
 setValue('pickupZip', 'pickupZip');
 setValue('dropoffAddress', 'dropoffAddress');
 setValue('receiverName', 'receiverName');
 setValue('receiverContact', 'receiverContact');
+setValue('dropoffCity', 'dropoffCity');
+setValue('dropoffProvince', 'dropoffProvince');
 setValue('dropoffZip', 'dropoffZip');
 
 document.getElementById('detailFragile').checked = bookingParams.has('fragile');
 document.getElementById('detailLoading').checked = bookingParams.has('loading');
 
-// --- Step 2 (Addresses): keep city/province in sync with step 1's route ---
+// --- Step 2 (Addresses): prefill from the route but preserve edits ---
 
 /**
- * Looks up a city's province and writes it into both the visible
- * <select> (disabled, display-only) and the hidden input that actually
- * gets submitted for that province.
- * @param {string} cityId Id of the city <select> to read.
- * @param {string} provinceSelectId Id of the disabled province <select> to update.
- * @param {string} provinceInputId Id of the hidden province input to update.
+ * Looks up a city's province and uses it as the initial value for the
+ * editable province field.
+ * @param {string} cityId Id of the city input to read.
+ * @param {string} provinceId Id of the province input to update.
  */
-const setProvinceFromCity = (cityId, provinceSelectId, provinceInputId) => {
+const setProvinceFromCity = (cityId, provinceId) => {
   const city = document.getElementById(cityId).value;
   const province = cityProvinceMap[city] || '';
-  document.getElementById(provinceSelectId).value = province;
-  document.getElementById(provinceInputId).value = province;
+  document.getElementById(provinceId).value = province;
 };
 
 /**
  * Copies the city chosen for a route endpoint (step 1's pick-up/drop-off
- * city) into the matching address card's city <select> and hidden input,
- * so the two stay in agreement without the user re-selecting the city.
+ * city) into the matching address card as an initial value.
  * @param {string} routeCityId Id of step 1's from/to <select>.
- * @param {string} addressCitySelectId Id of the address card's (disabled) city <select>.
- * @param {string} addressCityInputId Id of the address card's hidden city input.
+ * @param {string} addressCityId Id of the address card's city input.
  */
-const syncAddressCity = (routeCityId, addressCitySelectId, addressCityInputId) => {
+const syncAddressCity = (routeCityId, addressCityId) => {
   const city = document.getElementById(routeCityId).value;
-  document.getElementById(addressCitySelectId).value = city;
-  document.getElementById(addressCityInputId).value = city;
+  document.getElementById(addressCityId).value = city;
 };
 
-const userAddressSelections = new Set();
+const addressLocationOverrides = new Set();
+const manuallyEditedAddressFields = new Set();
+const restoredAddressDetails = new Set();
+if (['senderName', 'senderContact', 'pickupAddress', 'pickupCity', 'pickupProvince', 'pickupZip']
+  .some((field) => bookingParams.has(field))) {
+  restoredAddressDetails.add('senderUserId');
+}
+if (['receiverName', 'receiverContact', 'dropoffAddress', 'dropoffCity', 'dropoffProvince', 'dropoffZip']
+  .some((field) => bookingParams.has(field))) {
+  restoredAddressDetails.add('receiverUserId');
+}
 
 document.getElementById('detailFrom').addEventListener('change', () => {
-  if (userAddressSelections.has('senderUserId')) return;
-  syncAddressCity('detailFrom', 'pickupCitySelect', 'pickupCity');
-  setProvinceFromCity('pickupCitySelect', 'pickupProvinceSelect', 'pickupProvince');
+  if (addressLocationOverrides.has('senderUserId')) return;
+  syncAddressCity('detailFrom', 'pickupCity');
+  setProvinceFromCity('pickupCity', 'pickupProvince');
 });
 document.getElementById('detailTo').addEventListener('change', () => {
-  if (userAddressSelections.has('receiverUserId')) return;
-  syncAddressCity('detailTo', 'dropoffCitySelect', 'dropoffCity');
-  setProvinceFromCity('dropoffCitySelect', 'dropoffProvinceSelect', 'dropoffProvince');
+  if (addressLocationOverrides.has('receiverUserId')) return;
+  syncAddressCity('detailTo', 'dropoffCity');
+  setProvinceFromCity('dropoffCity', 'dropoffProvince');
 });
 
 // Run once on load too, so a route pre-filled from the URL immediately
 // propagates to the address cards instead of waiting for a change event.
-syncAddressCity('detailFrom', 'pickupCitySelect', 'pickupCity');
-syncAddressCity('detailTo', 'dropoffCitySelect', 'dropoffCity');
-setProvinceFromCity('pickupCitySelect', 'pickupProvinceSelect', 'pickupProvince');
-setProvinceFromCity('dropoffCitySelect', 'dropoffProvinceSelect', 'dropoffProvince');
+if (!bookingParams.has('pickupCity')) syncAddressCity('detailFrom', 'pickupCity');
+if (!bookingParams.has('dropoffCity')) syncAddressCity('detailTo', 'dropoffCity');
+if (!bookingParams.has('pickupProvince')) {
+  setProvinceFromCity('pickupCity', 'pickupProvince');
+}
+if (!bookingParams.has('dropoffProvince')) {
+  setProvinceFromCity('dropoffCity', 'dropoffProvince');
+}
+if (bookingParams.has('pickupCity') || bookingParams.has('pickupProvince')) {
+  addressLocationOverrides.add('senderUserId');
+}
+if (bookingParams.has('dropoffCity') || bookingParams.has('dropoffProvince')) {
+  addressLocationOverrides.add('receiverUserId');
+}
+[
+  ['pickupCity', 'pickupProvince', 'senderUserId'],
+  ['dropoffCity', 'dropoffProvince', 'receiverUserId'],
+].forEach(([cityId, provinceId, userId]) => {
+  [cityId, provinceId].forEach((fieldId) => {
+    document.getElementById(fieldId).addEventListener('input', () => {
+      addressLocationOverrides.add(userId);
+      manuallyEditedAddressFields.add(fieldId);
+    });
+  });
+});
 
 // --- Step 2: Sender/Receiver User ID auto-fill ---
 
 /**
- * Applies a looked-up user's saved details to one address card (sender or
- * receiver), and reflects whether the lookup succeeded via a custom
- * validity message + status text + `.is-error`/`.user-id-invalid` styling
- * (see the `.user-id-status`/`.user-id-invalid` rules in css/theme.css).
+ * Applies a saved profile to one address card when available. Unknown IDs
+ * remain valid for manually entered sender/receiver details.
  *
  * @param {string} userIdFieldId Id of the User ID <input> being validated.
  * @param {string} statusId Id of the small status text element next to it.
  * @param {{
  *   name: string, contact: string, address: string, zip: string,
- *   citySelect: string, provinceSelect: string, cityInput: string,
- *   provinceInput: string, routeSelect: string,
+ *   city: string, province: string,
  * }} fieldIds Ids of every field this user's details should fill in.
  * @param {{
  *   name: string, contactNumber: string, streetAddress: string,
  *   zipCode: string, city: string, province: string,
  * }|undefined} user The matched user record, or undefined if the ID
- *   wasn't found (GET /api/users/:id returned 404).
+ *   wasn't found; unknown IDs can be entered manually.
  */
+const lastLoadedUsers = new Map();
+
 const fillUserDetails = (userIdFieldId, statusId, fieldIds, user) => {
   const userIdField = document.getElementById(userIdFieldId);
   const status = document.getElementById(statusId);
-  const isValid = Boolean(user);
-  userIdField.setCustomValidity(isValid ? '' : 'Enter a valid User ID.');
-  userIdField.classList.toggle('user-id-invalid', !isValid);
-  status.textContent = isValid ? `Details loaded for ${user.name}.` : 'User ID not found.';
-  status.classList.toggle('is-error', !isValid);
+  userIdField.setCustomValidity('');
+  status.textContent = user
+    ? `Details loaded for ${user.name}.`
+    : userIdField.value.trim() ? 'No saved profile found. Enter details manually.' : '';
+  status.classList.toggle('is-error', false);
 
+  const isReceiver = userIdFieldId === 'receiverUserId';
+  const addressPrefix = isReceiver ? 'dropoff' : 'pickup';
+  const contactPrefix = isReceiver ? 'receiver' : 'sender';
   if (!user) {
-    userAddressSelections.delete(userIdFieldId);
-    syncAddressCity(fieldIds.routeSelect, fieldIds.citySelect, fieldIds.cityInput);
-    setProvinceFromCity(fieldIds.citySelect, fieldIds.provinceSelect, fieldIds.provinceInput);
+    const previousUser = lastLoadedUsers.get(userIdFieldId);
+    if (previousUser) {
+      const previousFields = [
+        [fieldIds.name, previousUser.name],
+        [fieldIds.contact, previousUser.contactNumber],
+        [fieldIds.address, previousUser.streetAddress],
+        [fieldIds.zip, previousUser.zipCode],
+        [fieldIds.city, previousUser.city],
+        [fieldIds.province, previousUser.province],
+      ];
+      previousFields.forEach(([id, value]) => {
+        const field = document.getElementById(id);
+        if (!restoredAddressDetails.has(userIdFieldId) && field.value === value) field.value = '';
+      });
+      lastLoadedUsers.delete(userIdFieldId);
+    }
+    addressLocationOverrides.delete(userIdFieldId);
     return;
   }
-  userAddressSelections.add(userIdFieldId);
-  document.getElementById(fieldIds.name).value = user.name;
-  document.getElementById(fieldIds.contact).value = user.contactNumber;
-  document.getElementById(fieldIds.address).value = user.streetAddress;
-  document.getElementById(fieldIds.zip).value = user.zipCode;
-  document.getElementById(fieldIds.citySelect).value = user.city;
-  document.getElementById(fieldIds.cityInput).value = user.city;
-  document.getElementById(fieldIds.provinceSelect).value = user.province;
-  document.getElementById(fieldIds.provinceInput).value = user.province;
+
+  addressLocationOverrides.add(userIdFieldId);
+  lastLoadedUsers.set(userIdFieldId, user);
+  const userFields = [
+    [fieldIds.name, `${contactPrefix}Name`, user.name],
+    [fieldIds.contact, `${contactPrefix}Contact`, user.contactNumber],
+    [fieldIds.address, `${addressPrefix}Address`, user.streetAddress],
+    [fieldIds.zip, `${addressPrefix}Zip`, user.zipCode],
+  ];
+  userFields.forEach(([id, param, value]) => {
+    if (!restoredAddressDetails.has(userIdFieldId) || !bookingParams.has(param)) {
+      document.getElementById(id).value = value;
+    }
+  });
+  if ((!restoredAddressDetails.has(userIdFieldId) || !bookingParams.has(`${addressPrefix}City`))
+    && !manuallyEditedAddressFields.has(fieldIds.city)) {
+    document.getElementById(fieldIds.city).value = user.city;
+  }
+  if ((!restoredAddressDetails.has(userIdFieldId) || !bookingParams.has(`${addressPrefix}Province`))
+    && !manuallyEditedAddressFields.has(fieldIds.province)) {
+    document.getElementById(fieldIds.province).value = user.province;
+  }
 };
 
 /** Shows "User records could not be loaded." next to both User ID fields. */
@@ -312,8 +367,7 @@ listUsers()
         status: 'senderUserIdStatus',
         fields: {
           name: 'senderName', contact: 'senderContact', address: 'pickupAddress', zip: 'pickupZip',
-          citySelect: 'pickupCitySelect', provinceSelect: 'pickupProvinceSelect',
-          cityInput: 'pickupCity', provinceInput: 'pickupProvince', routeSelect: 'detailFrom',
+          city: 'pickupCity', province: 'pickupProvince',
         },
       },
       {
@@ -321,8 +375,7 @@ listUsers()
         status: 'receiverUserIdStatus',
         fields: {
           name: 'receiverName', contact: 'receiverContact', address: 'dropoffAddress', zip: 'dropoffZip',
-          citySelect: 'dropoffCitySelect', provinceSelect: 'dropoffProvinceSelect',
-          cityInput: 'dropoffCity', provinceInput: 'dropoffProvince', routeSelect: 'detailTo',
+          city: 'dropoffCity', province: 'dropoffProvince',
         },
       },
     ];
@@ -349,7 +402,13 @@ listUsers()
           else showUsersUnavailable();
         }
       };
-      input.addEventListener('input', lookup);
+      input.addEventListener('input', () => {
+        addressLocationOverrides.delete(userId);
+        manuallyEditedAddressFields.delete(fields.city);
+        manuallyEditedAddressFields.delete(fields.province);
+        restoredAddressDetails.delete(userId);
+        lookup();
+      });
       input.addEventListener('change', lookup);
       // Run immediately if the field already has a value (e.g. pre-filled
       // by the HTML's demo defaults, or restored via `setValue` above).
@@ -481,10 +540,8 @@ if (document.referrer) {
   }
 }
 
-// Remember which controls started out disabled (the address cards' city
-// <select>s are always disabled, kept in sync via JS instead of being
-// user-editable) so future logic could distinguish "disabled by design"
-// from "disabled because its step is hidden", if ever needed.
+// Remember which controls started out disabled so they can be distinguished
+// from controls disabled while another step is shown.
 bookingSteps.forEach((step) => {
   step.querySelectorAll('input, select, textarea').forEach((control) => {
     control.dataset.initiallyDisabled = control.disabled ? 'true' : 'false';
