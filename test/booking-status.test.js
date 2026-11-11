@@ -66,8 +66,8 @@ test("the tracking timeline fills in as the booking moves", async () => {
   assert.equal(res.body.status, "Booking Placed");
   assert.equal(res.body.badgeClass, "cf-badge-placed");
   assert.deepEqual(states(res), ["is-done", "is-upcoming", "is-upcoming", "is-upcoming", "is-upcoming"]);
-  assert.match(res.body.timeline[1].time, /^Scheduled /);
-  assert.match(res.body.eta, /pending pickup/);
+  assert.match(res.body.timeline[1].time, /^Scheduled [A-Z][a-z]{2} \d{1,2}, 9:00 AM$/);
+  assert.match(res.body.eta, /^[A-Z][a-z]{2} \d{1,2}, \d{4} \(pending pickup\)$/);
 
   await setStatus(code, "Picked Up");
   await setStatus(code, "In Transit");
@@ -139,4 +139,13 @@ test("bookings saved before statuses could change still move and track", () => {
   ]);
   assert.equal(old.status, "Booking Placed", "the saved booking isn't changed in place");
   assert.equal(bookingToShipment(booking).timeline[1].time, "Dec 1, 9:30 AM", "times are shown in Philippine time");
+});
+
+test("a new booking's pickup dates read like the rest of the tracking page", () => {
+  const shipment = bookingToShipment({
+    from: "Manila", to: "Cebu", date: "2026-11-08", time: "14:30", createdAt: "2026-11-07T14:12:00.000Z",
+  });
+  assert.equal(shipment.eta, "Nov 8, 2026 (pending pickup)");
+  assert.equal(shipment.timeline[1].time, "Scheduled Nov 8, 2:30 PM");
+  assert.equal(shipment.timeline[0].time, "Nov 7, 10:12 PM");
 });

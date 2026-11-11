@@ -86,6 +86,15 @@ test("rejects missing required fields and lists each one", async () => {
   assert.ok(fieldsOf(res).includes("receiverContact"));
 });
 
+test("error messages use the form's field names, not the code's", async () => {
+  const res = await post(validBooking({ senderContact: "", dropoffZip: "" }));
+  assert.equal(res.status, 400);
+  const messages = res.body.errors.map((e) => e.message);
+  assert.ok(messages.includes("Sender contact number is required."), messages.join(" | "));
+  assert.ok(messages.includes("Drop-off zip code is required."), messages.join(" | "));
+  assert.ok(messages.every((m) => !/[a-z][A-Z]/.test(m)), "no camelCase field names in messages");
+});
+
 test("rejects a body that isn't an object", async () => {
   const res = await post([validBooking()]);
   assert.equal(res.status, 400);
